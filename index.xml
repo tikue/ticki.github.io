@@ -6,8 +6,17 @@
     <description>Recent content on Ticki</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 06 Jun 2016 09:12:56 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 06 Jun 2016 11:06:21 +0200</lastBuildDate>
     <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Lambda crabs (part 2): Region inference is (not) magic.</title>
+      <link>/blog/lambda_crabs_2/</link>
+      <pubDate>Mon, 06 Jun 2016 11:06:21 +0200</pubDate>
+      
+      <guid>/blog/lambda_crabs_2/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Lambda crabs (part 1): A mathematical introduction to lifetimes and regions</title>
@@ -25,11 +34,11 @@
 
 &lt;p&gt;A region &lt;code&gt;&#39;a&lt;/code&gt; outlives &lt;code&gt;&#39;b&lt;/code&gt; if &lt;code&gt;&#39;b&lt;/code&gt;&amp;rsquo;s span is covered by &lt;code&gt;&#39;a&lt;/code&gt;. For example:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;&#39;a: I---------I
-&#39;b: I----------------I
+&lt;pre&gt;&lt;code&gt;&#39;a: I----------------I
+&#39;b: I---------I
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;As you can see &lt;code&gt;&#39;a: &#39;b&lt;/code&gt; since the second span covers the first. But what is the nature of the outlives relation?&lt;/p&gt;
+&lt;p&gt;As you can see &lt;code&gt;&#39;b: &#39;a&lt;/code&gt; since the second span covers the first. But what is the nature of the outlives relation?&lt;/p&gt;
 
 &lt;h2 id=&#34;regions-a-poset:a1cc048e046558d378d2e7f432f3236a&#34;&gt;Regions: a poset&lt;/h2&gt;
 
@@ -79,9 +88,9 @@
 
 &lt;p&gt;For example,&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;&#39;a:      I---------I
+&lt;pre&gt;&lt;code&gt;&#39;a: I--------------------I
 &#39;b:   I----------------I
-&#39;c: I--------------------I
+&#39;c:      I---------I
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Say we know that, &lt;code&gt;&#39;a: &#39;b&lt;/code&gt;, and &lt;code&gt;&#39;b: &#39;c&lt;/code&gt;. We can then conclude that &lt;code&gt;&#39;a: &#39;c&lt;/code&gt;.&lt;/p&gt;
