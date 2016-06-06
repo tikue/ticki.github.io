@@ -15,7 +15,130 @@
       <pubDate>Mon, 06 Jun 2016 11:06:21 +0200</pubDate>
       
       <guid>/blog/lambda_crabs_2/</guid>
-      <description></description>
+      <description>
+
+&lt;p&gt;This post will cover region (lifetime) inference with a mathematical and type
+theoretical focus.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-problem:c70e7a562d412474947a41ef47c81d75&#34;&gt;The problem&lt;/h2&gt;
+
+&lt;p&gt;Inference is a very handy concept. We no longer have to annotate redundant
+types, which is a major pain point in languages, that lacks of type inference.&lt;/p&gt;
+
+&lt;p&gt;Now, we want such an inference scheme for regions as well.&lt;/p&gt;
+
+&lt;p&gt;We described the problem of region inference in &lt;a href=&#34;/blog/lambda_crabs_1/&#34;&gt;last post&lt;/a&gt; as:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;So, this is just a classical optimization problem:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; minimize    &#39;a
+&amp;gt; subject to  A, B, C...
+&amp;gt;
+&amp;gt; A, B, C… are outlives relations. ‘a may or may not be free in those.
+&amp;gt; ```
+
+Namely, we want to minimize some lifetimes, while holding some conditions.
+
+## &amp;quot;Adding&amp;quot; regions
+
+One thing we will use throughout the region inference algorithm is the notion of &amp;quot;adding&amp;quot; lifetimes.
+
+You may have seen `&#39;a + &#39;b` before. Intuitively, `&#39;a: &#39;b + &#39;c` is equivalent to
+`&#39;a: &#39;b, &#39;a: &#39;c`, but we can go further and use `&#39;a + &#39;b` as a way to construct
+new regions:
+
+Define `&#39;a + &#39;b` as the smallest region that outlives both &#39;a and &#39;b.
+
+In a sense, you &amp;quot;widen&amp;quot; the region until it covers both regions:
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&amp;lsquo;a:       I&amp;mdash;&amp;mdash;&amp;mdash;I
+&amp;lsquo;b:            I&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;I
+&amp;lsquo;a + &amp;lsquo;b:  I&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;I&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+## Funky but useless: Regions under addition as an abelian semigroup
+
+A semigroup is an algebraic structure satisfying two properties:
+
+1. Closure, for any a, b in S, a + b is contained in S.
+2. Associativity, for any a, b, and c in S, (a + b) + c = a + (b + c).
+
+But in contrary to monoids, there is no identity element.
+
+&amp;quot;Abelian&amp;quot; means commutative. That is, a + b = b + a.
+
+And, in fact, regions follows all these rules, making it an abelian semigroup.
+
+We know to additional facts about our operator:
+
+1. It follows from the fact &#39;a: &#39;a, that a + a = a
+2. It follows from the fact &#39;static: &#39;a for all &#39;a, that ∃s∈L  ∀a∈L  s + a = s
+
+## Directed Acyclic Graphs
+
+A directed acyclic graph is a finite directed graph with no directed cycles.
+That is, any arbitrary directed walk in the graph will &amp;quot;end&amp;quot; at some point.
+
+![](https://upload.wikimedia.org/wikipedia/commons/6/61/Polytree.svg)
+
+Let&#39;s forget the `&#39;a: &#39;a` case for a moment. As such, the regions under our
+_strict_ outlive relation, _&amp;lt;_, forms a directed acyclic graph (DAG).
+
+In particular, if to node are connected, with a directed edge A → B, A
+represents a region, which _outlives_ B.
+
+Consider we take a reference `&amp;amp;&#39;b T` where `T: &#39;a`
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&amp;lsquo;static
+ |
+ v
+&amp;lsquo;a &amp;mdash;&amp;mdash;&amp;mdash;-\
+ |           |
+ |           |
+ |           |
+ v           v
+&amp;lsquo;b &amp;mdash;&amp;mdash;-&amp;gt; &amp;lsquo;a + &amp;lsquo;b
+```&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;handling-cycles:c70e7a562d412474947a41ef47c81d75&#34;&gt;Handling cycles&lt;/h2&gt;
+
+&lt;p&gt;Every lifetime outlives itself, as explained in the last post. So our outlives
+relation doesn&amp;rsquo;t form a DAG, due to these cycles.&lt;/p&gt;
+
+&lt;p&gt;The solution is relatively simple, though.&lt;/p&gt;
+
+&lt;p&gt;Let {&amp;lsquo;a, &amp;lsquo;b, &amp;lsquo;c, &amp;hellip;} be cyclic such that &lt;code&gt;&#39;a &amp;lt; &#39;b &amp;lt; &#39;c ... &amp;lt; &#39;a&lt;/code&gt;. Due to
+transitivity and antisymmetry, we can assume that &amp;lsquo;a = &amp;lsquo;b = &amp;lsquo;c = &amp;hellip;, thus we
+can, without loss of generality, collapse the cycle into a single node.&lt;/p&gt;
+
+&lt;p&gt;This lets us interpret the graph, where edges represents outlives relations, as
+a DAG.&lt;/p&gt;
+
+&lt;h2 id=&#34;recursively-widening-the-regions:c70e7a562d412474947a41ef47c81d75&#34;&gt;Recursively widening the regions&lt;/h2&gt;
+
+&lt;p&gt;Say we want to infer the span of some node &amp;lsquo;a. Assume &amp;lsquo;a neighbors (outlives)
+&amp;lsquo;b, &amp;lsquo;c, &amp;rsquo;d&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;Since we know the bound, we can say &amp;lsquo;a = &amp;lsquo;b + &amp;lsquo;c + &amp;rsquo;d + &amp;hellip;, since this is the
+smallest &amp;lsquo;a subject to the outlives conditions.&lt;/p&gt;
+
+&lt;p&gt;Now, recursively do the same with &amp;lsquo;b, &amp;lsquo;c, &amp;rsquo;d, &amp;hellip; Since the graph is acyclic,
+this will terminate at some point.&lt;/p&gt;
+
+&lt;p&gt;On an implementation note: you can optimize this process by 1. deduplicating
+the regions, 2. collapsing sums containing &amp;lsquo;static into &amp;lsquo;static, 3. caching the
+nodes to avoid redundant calculations.&lt;/p&gt;
+
+&lt;h2 id=&#34;questions-and-errata:c70e7a562d412474947a41ef47c81d75&#34;&gt;Questions and errata&lt;/h2&gt;
+
+&lt;p&gt;Ping me at #rust in Mozilla IRC.&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -38,7 +161,7 @@
 &#39;b: I---------I
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;As you can see &lt;code&gt;&#39;b: &#39;a&lt;/code&gt; since the first span covers the second. But what is the nature of the outlives relation?&lt;/p&gt;
+&lt;p&gt;As you can see &lt;code&gt;&#39;a: &#39;b&lt;/code&gt; since the first span covers the second. But what is the nature of the outlives relation?&lt;/p&gt;
 
 &lt;h2 id=&#34;regions-a-poset:a1cc048e046558d378d2e7f432f3236a&#34;&gt;Regions: a poset&lt;/h2&gt;
 
@@ -84,7 +207,7 @@
 &#39;a: &#39;c
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;In other words, regions are hierarchal. It might seem very simple, but the implications are in fact very important: it allows us to conclude things from transitivity. Think of it like you can &amp;ldquo;inherit&amp;rdquo; bounds from outliving regions.&lt;/p&gt;
+&lt;p&gt;In other words, regions are hierarchical. It might seem very simple, but the implications are in fact very important: it allows us to conclude things from transitivity. Think of it like you can &amp;ldquo;inherit&amp;rdquo; bounds from outliving regions.&lt;/p&gt;
 
 &lt;p&gt;For example,&lt;/p&gt;
 
@@ -135,7 +258,7 @@
 subject to  A, B, C...
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;A, B, C&amp;hellip; are outlives relations. &amp;lsquo;a may or may not be free in those.&lt;/p&gt;
+&lt;p&gt;A, B, C&amp;hellip; are outlives relations. &lt;code&gt;&#39;a&lt;/code&gt; may or may not be free in those.&lt;/p&gt;
 
 &lt;p&gt;We will cover how we actually solve this optimization problem in a future blog post, but until then you can see if you can find an algorithm to do so ;).&lt;/p&gt;
 

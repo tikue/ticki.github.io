@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.15" />
+
+
+<title>Lambda crabs (part 2): Region inference is (not) magic. - Ticki</title>
+<meta property="og:title" content="Lambda crabs (part 2): Region inference is (not) magic. - Ticki">
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo"><img src="/images/logo.png" width="50" height="50"></a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/ticki">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+
+    <h1 class="article-title">Lambda crabs (part 2): Region inference is (not) magic.</h1>
+
+    
+
+    <div class="article-content">
+      
+
+<p>This post will cover region (lifetime) inference with a mathematical and type
+theoretical focus.</p>
+
+<h2 id="the-problem:c70e7a562d412474947a41ef47c81d75">The problem</h2>
+
+<p>Inference is a very handy concept. We no longer have to annotate redundant
+types, which is a major pain point in languages, that lacks of type inference.</p>
+
+<p>Now, we want such an inference scheme for regions as well.</p>
+
+<p>We described the problem of region inference in <a href="/blog/lambda_crabs_1/">last post</a> as:</p>
+
+<blockquote>
+<p>So, this is just a classical optimization problem:</p>
+
+<pre><code>&gt; minimize    'a
+&gt; subject to  A, B, C...
+&gt;
+&gt; A, B, C… are outlives relations. ‘a may or may not be free in those.
+&gt; ```
+
+Namely, we want to minimize some lifetimes, while holding some conditions.
+
+## &quot;Adding&quot; regions
+
+One thing we will use throughout the region inference algorithm is the notion of &quot;adding&quot; lifetimes.
+
+You may have seen `'a + 'b` before. Intuitively, `'a: 'b + 'c` is equivalent to
+`'a: 'b, 'a: 'c`, but we can go further and use `'a + 'b` as a way to construct
+new regions:
+
+Define `'a + 'b` as the smallest region that outlives both 'a and 'b.
+
+In a sense, you &quot;widen&quot; the region until it covers both regions:
+
+</code></pre>
+
+<p>&lsquo;a:       I&mdash;&mdash;&mdash;I
+&lsquo;b:            I&mdash;&mdash;&mdash;&mdash;I
+&lsquo;a + &lsquo;b:  I&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;I</p>
+
+<pre><code>
+## Funky but useless: Regions under addition as an abelian semigroup
+
+A semigroup is an algebraic structure satisfying two properties:
+
+1. Closure, for any a, b in S, a + b is contained in S.
+2. Associativity, for any a, b, and c in S, (a + b) + c = a + (b + c).
+
+But in contrary to monoids, there is no identity element.
+
+&quot;Abelian&quot; means commutative. That is, a + b = b + a.
+
+And, in fact, regions follows all these rules, making it an abelian semigroup.
+
+We know to additional facts about our operator:
+
+1. It follows from the fact 'a: 'a, that a + a = a
+2. It follows from the fact 'static: 'a for all 'a, that ∃s∈L  ∀a∈L  s + a = s
+
+## Directed Acyclic Graphs
+
+A directed acyclic graph is a finite directed graph with no directed cycles.
+That is, any arbitrary directed walk in the graph will &quot;end&quot; at some point.
+
+![](https://upload.wikimedia.org/wikipedia/commons/6/61/Polytree.svg)
+
+Let's forget the `'a: 'a` case for a moment. As such, the regions under our
+_strict_ outlive relation, _&lt;_, forms a directed acyclic graph (DAG).
+
+In particular, if to node are connected, with a directed edge A → B, A
+represents a region, which _outlives_ B.
+
+Consider we take a reference `&amp;'b T` where `T: 'a`
+
+</code></pre>
+
+<p>&lsquo;static
+ |
+ v
+&lsquo;a &mdash;&mdash;&mdash;-\
+ |           |
+ |           |
+ |           |
+ v           v
+&lsquo;b &mdash;&mdash;-&gt; &lsquo;a + &lsquo;b
+```</p>
+</blockquote>
+
+<h2 id="handling-cycles:c70e7a562d412474947a41ef47c81d75">Handling cycles</h2>
+
+<p>Every lifetime outlives itself, as explained in the last post. So our outlives
+relation doesn&rsquo;t form a DAG, due to these cycles.</p>
+
+<p>The solution is relatively simple, though.</p>
+
+<p>Let {&lsquo;a, &lsquo;b, &lsquo;c, &hellip;} be cyclic such that <code>'a &lt; 'b &lt; 'c ... &lt; 'a</code>. Due to
+transitivity and antisymmetry, we can assume that &lsquo;a = &lsquo;b = &lsquo;c = &hellip;, thus we
+can, without loss of generality, collapse the cycle into a single node.</p>
+
+<p>This lets us interpret the graph, where edges represents outlives relations, as
+a DAG.</p>
+
+<h2 id="recursively-widening-the-regions:c70e7a562d412474947a41ef47c81d75">Recursively widening the regions</h2>
+
+<p>Say we want to infer the span of some node &lsquo;a. Assume &lsquo;a neighbors (outlives)
+&lsquo;b, &lsquo;c, &rsquo;d&hellip;</p>
+
+<p>Since we know the bound, we can say &lsquo;a = &lsquo;b + &lsquo;c + &rsquo;d + &hellip;, since this is the
+smallest &lsquo;a subject to the outlives conditions.</p>
+
+<p>Now, recursively do the same with &lsquo;b, &lsquo;c, &rsquo;d, &hellip; Since the graph is acyclic,
+this will terminate at some point.</p>
+
+<p>On an implementation note: you can optimize this process by 1. deduplicating
+the regions, 2. collapsing sums containing &lsquo;static into &lsquo;static, 3. caching the
+nodes to avoid redundant calculations.</p>
+
+<h2 id="questions-and-errata:c70e7a562d412474947a41ef47c81d75">Questions and errata</h2>
+
+<p>Ping me at #rust in Mozilla IRC.</p>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+

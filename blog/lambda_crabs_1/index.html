@@ -64,7 +64,7 @@
 'b: I---------I
 </code></pre>
 
-<p>As you can see <code>'b: 'a</code> since the first span covers the second. But what is the nature of the outlives relation?</p>
+<p>As you can see <code>'a: 'b</code> since the first span covers the second. But what is the nature of the outlives relation?</p>
 
 <h2 id="regions-a-poset:a1cc048e046558d378d2e7f432f3236a">Regions: a poset</h2>
 
@@ -110,7 +110,7 @@
 'a: 'c
 </code></pre>
 
-<p>In other words, regions are hierarchal. It might seem very simple, but the implications are in fact very important: it allows us to conclude things from transitivity. Think of it like you can &ldquo;inherit&rdquo; bounds from outliving regions.</p>
+<p>In other words, regions are hierarchical. It might seem very simple, but the implications are in fact very important: it allows us to conclude things from transitivity. Think of it like you can &ldquo;inherit&rdquo; bounds from outliving regions.</p>
 
 <p>For example,</p>
 
@@ -161,7 +161,7 @@
 subject to  A, B, C...
 </code></pre>
 
-<p>A, B, C&hellip; are outlives relations. &lsquo;a may or may not be free in those.</p>
+<p>A, B, C&hellip; are outlives relations. <code>'a</code> may or may not be free in those.</p>
 
 <p>We will cover how we actually solve this optimization problem in a future blog post, but until then you can see if you can find an algorithm to do so ;).</p>
 
