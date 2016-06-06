@@ -38,7 +38,7 @@
 &#39;b: I---------I
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;As you can see &lt;code&gt;&#39;b: &#39;a&lt;/code&gt; since the second span covers the first. But what is the nature of the outlives relation?&lt;/p&gt;
+&lt;p&gt;As you can see &lt;code&gt;&#39;b: &#39;a&lt;/code&gt; since the first span covers the second. But what is the nature of the outlives relation?&lt;/p&gt;
 
 &lt;h2 id=&#34;regions-a-poset:a1cc048e046558d378d2e7f432f3236a&#34;&gt;Regions: a poset&lt;/h2&gt;
 
