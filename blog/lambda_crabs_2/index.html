@@ -118,7 +118,7 @@ new regions:</p>
 <h2 id="regions-as-a-lattice:c70e7a562d412474947a41ef47c81d75">Regions as a lattice</h2>
 
 <p>It makes much more sense to think of regions as a lattice. A lattice is a poset
-with two operations defined on it:</p>
+with two operators defined on it:</p>
 
 <ol>
 <li><p>Join, an unique supremum (that is, least upper-bound). This is our <code>+</code>
@@ -126,6 +126,16 @@ operator.</p></li>
 
 <li><p>Meet, an unique infimum (that is, greatest lower-bound). This isn&rsquo;t very
 useful for the matter of regions, but it is still defined on them.</p></li>
+</ol>
+
+<p>which follows a set of laws:</p>
+
+<ol>
+<li><p>The law of commutativity: Both meet and join are commutative operators.</p></li>
+
+<li><p>The law of associativity: Both meet and join are associative operators.</p></li>
+
+<li><p>The law of absorption: Meet(a, Meet(a, b)) = Meet(a, b) and Join(a, Join(a, b)) = Join(a, b).</p></li>
 </ol>
 
 <p>In fact, this describes our structure perfectly. In particular, L is an

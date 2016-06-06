@@ -83,7 +83,7 @@ new regions:&lt;/p&gt;
 &lt;h2 id=&#34;regions-as-a-lattice:c70e7a562d412474947a41ef47c81d75&#34;&gt;Regions as a lattice&lt;/h2&gt;
 
 &lt;p&gt;It makes much more sense to think of regions as a lattice. A lattice is a poset
-with two operations defined on it:&lt;/p&gt;
+with two operators defined on it:&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;Join, an unique supremum (that is, least upper-bound). This is our &lt;code&gt;+&lt;/code&gt;
@@ -91,6 +91,16 @@ operator.&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;Meet, an unique infimum (that is, greatest lower-bound). This isn&amp;rsquo;t very
 useful for the matter of regions, but it is still defined on them.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;which follows a set of laws:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;The law of commutativity: Both meet and join are commutative operators.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The law of associativity: Both meet and join are associative operators.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The law of absorption: Meet(a, Meet(a, b)) = Meet(a, b) and Join(a, Join(a, b)) = Join(a, b).&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;p&gt;In fact, this describes our structure perfectly. In particular, L is an
