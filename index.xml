@@ -43,13 +43,13 @@ types, which is a major pain point in languages, that lacks of type inference.&l
 
 &lt;h2 id=&#34;adding-regions:c70e7a562d412474947a41ef47c81d75&#34;&gt;&amp;ldquo;Adding&amp;rdquo; regions&lt;/h2&gt;
 
-&lt;p&gt;One thing we will use throughout the region inference algorithm is the notion of &amp;ldquo;adding&amp;rdquo; lifetimes.&lt;/p&gt;
+&lt;p&gt;One thing we will use throughout the region inference algorithm is the notion of &amp;ldquo;adding&amp;rdquo; regions.&lt;/p&gt;
 
 &lt;p&gt;You may have seen &lt;code&gt;&#39;a + &#39;b&lt;/code&gt; before. Intuitively, &lt;code&gt;&#39;a: &#39;b + &#39;c&lt;/code&gt; is equivalent to
 &lt;code&gt;&#39;a: &#39;b, &#39;a: &#39;c&lt;/code&gt;, but we can go further and use &lt;code&gt;&#39;a + &#39;b&lt;/code&gt; as a way to construct
 new regions:&lt;/p&gt;
 
-&lt;p&gt;Define &lt;code&gt;&#39;a + &#39;b&lt;/code&gt; as the smallest region that outlives both &amp;lsquo;a and &amp;lsquo;b.&lt;/p&gt;
+&lt;p&gt;Define &lt;code&gt;&#39;a + &#39;b&lt;/code&gt; as the smallest region that outlives both &lt;code&gt;&#39;a&lt;/code&gt; and &lt;code&gt;&#39;b&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;In a sense, you &amp;ldquo;widen&amp;rdquo; the region until it covers both regions:&lt;/p&gt;
 
@@ -76,9 +76,28 @@ new regions:&lt;/p&gt;
 &lt;p&gt;We know to additional facts about our operator:&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;It follows from the fact &amp;lsquo;a: &amp;lsquo;a, that a + a = a&lt;/li&gt;
-&lt;li&gt;It follows from the fact &amp;lsquo;static: &amp;lsquo;a for all &amp;lsquo;a, that ∃s∈L  ∀a∈L  s + a = s&lt;/li&gt;
+&lt;li&gt;It follows from the fact &lt;code&gt;&#39;a: &#39;a&lt;/code&gt;, that a + a = a&lt;/li&gt;
+&lt;li&gt;It follows from the fact &lt;code&gt;&#39;static: &#39;a&lt;/code&gt; for all &lt;code&gt;&#39;a&lt;/code&gt;, that &lt;code&gt;∃s∈L  ∀a∈L  s + a = s&lt;/code&gt;.&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;h2 id=&#34;regions-as-a-lattice:c70e7a562d412474947a41ef47c81d75&#34;&gt;Regions as a lattice&lt;/h2&gt;
+
+&lt;p&gt;It makes much more sense to think of regions as a lattice. A lattice is a poset
+with two operations defined on it:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Join, an unique supremum (that is, least upper-bound). This is our &lt;code&gt;+&lt;/code&gt;
+operator.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Meet, an unique infimum (that is, greatest lower-bound). This isn&amp;rsquo;t very
+useful for the matter of regions, but it is still defined on them.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;In fact, this describes our structure perfectly. In particular, L is an
+&lt;em&gt;upper-bounded lattice&lt;/em&gt;, i.e. we have a maximal element (&lt;code&gt;&#39;static&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;Lattice theory, which we will cover in-depth in a later post is perfect for
+studying subtyping relations.&lt;/p&gt;
 
 &lt;h2 id=&#34;directed-acyclic-graphs:c70e7a562d412474947a41ef47c81d75&#34;&gt;Directed Acyclic Graphs&lt;/h2&gt;
 
@@ -113,8 +132,8 @@ relation doesn&amp;rsquo;t form a DAG, due to these cycles.&lt;/p&gt;
 
 &lt;p&gt;The solution is relatively simple, though.&lt;/p&gt;
 
-&lt;p&gt;Let {&amp;lsquo;a, &amp;lsquo;b, &amp;lsquo;c, &amp;hellip;} be cyclic such that &lt;code&gt;&#39;a &amp;lt; &#39;b &amp;lt; &#39;c ... &amp;lt; &#39;a&lt;/code&gt;. Due to
-transitivity and antisymmetry, we can assume that &amp;lsquo;a = &amp;lsquo;b = &amp;lsquo;c = &amp;hellip;, thus we
+&lt;p&gt;Let &lt;code&gt;{&#39;a, &#39;b, &#39;c, ...}&lt;/code&gt; be cycle such that &lt;code&gt;&#39;a &amp;lt; &#39;b &amp;lt; &#39;c ... &amp;lt; &#39;a&lt;/code&gt;. Due to
+transitivity and antisymmetry, we can assume that &lt;code&gt;&#39;a = &#39;b = &#39;c = ...&lt;/code&gt;, thus we
 can, without loss of generality, collapse the cycle into a single node.&lt;/p&gt;
 
 &lt;p&gt;This lets us interpret the graph, where edges represents outlives relations, as
@@ -122,18 +141,41 @@ a DAG.&lt;/p&gt;
 
 &lt;h2 id=&#34;recursively-widening-the-regions:c70e7a562d412474947a41ef47c81d75&#34;&gt;Recursively widening the regions&lt;/h2&gt;
 
-&lt;p&gt;Say we want to infer the span of some node &amp;lsquo;a. Assume &amp;lsquo;a neighbors (outlives)
-&amp;lsquo;b, &amp;lsquo;c, &amp;rsquo;d&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Say we want to infer the span of some node &lt;code&gt;&#39;a&lt;/code&gt;. Assume &lt;code&gt;&#39;a&lt;/code&gt; neighbors (outlives)
+&lt;code&gt;&#39;b, &#39;c, &#39;d...&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;Since we know the bound, we can say &amp;lsquo;a = &amp;lsquo;b + &amp;lsquo;c + &amp;rsquo;d + &amp;hellip;, since this is the
+&lt;p&gt;Since we know the bound, we can say &lt;code&gt;&#39;a = &#39;b + &#39;c + &#39;d + ...&lt;/code&gt;, since this is the
 smallest &amp;lsquo;a subject to the outlives conditions.&lt;/p&gt;
 
-&lt;p&gt;Now, recursively do the same with &amp;lsquo;b, &amp;lsquo;c, &amp;rsquo;d, &amp;hellip; Since the graph is acyclic,
+&lt;p&gt;Now, recursively do the same with &lt;code&gt;&#39;b, &#39;c, &#39;d, ...&lt;/code&gt; Since the graph is acyclic,
 this will terminate at some point.&lt;/p&gt;
 
 &lt;p&gt;On an implementation note: you can optimize this process by 1. deduplicating
-the regions, 2. collapsing sums containing &amp;lsquo;static into &amp;lsquo;static, 3. caching the
+the regions, 2. collapsing sums containing &lt;code&gt;&#39;static&lt;/code&gt; into &lt;code&gt;&#39;static&lt;/code&gt;, 3. caching the
 nodes to avoid redundant calculations.&lt;/p&gt;
+
+&lt;h2 id=&#34;going-further-liveness:c70e7a562d412474947a41ef47c81d75&#34;&gt;Going further: liveness&lt;/h2&gt;
+
+&lt;p&gt;Now that we have a closed form for inferring lifetimes, we can do lots of cool stuff.&lt;/p&gt;
+
+&lt;p&gt;Liveness of a value is the span starting where the value is declared and ending
+where the last access to it is made. This is in contrary to the classical
+lexical approach, where the initial lifetimes are assigned as the scopes of the
+variables.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s start by defining &lt;code&gt;empty(x)&lt;/code&gt; as the region spanning from x to x (that is,
+an empty region at x). Assign every value declared at x a region, &lt;code&gt;empty(x)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Whenever a value of lifetime &lt;code&gt;&#39;x&lt;/code&gt; is used at some point y, we add a bound &lt;code&gt;&#39;x:
+empty(y)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;So we essentially expand the region whenever used, effectively yielding the
+liveness of the value.&lt;/p&gt;
+
+&lt;h2 id=&#34;a-happy-ending:c70e7a562d412474947a41ef47c81d75&#34;&gt;A happy ending&lt;/h2&gt;
+
+&lt;p&gt;That&amp;rsquo;s it&amp;hellip; The algorithm is really that simple. In fact, you can implement it
+in only a 100-200 lines.&lt;/p&gt;
 
 &lt;h2 id=&#34;questions-and-errata:c70e7a562d412474947a41ef47c81d75&#34;&gt;Questions and errata&lt;/h2&gt;
 

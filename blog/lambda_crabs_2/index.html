@@ -78,13 +78,13 @@ types, which is a major pain point in languages, that lacks of type inference.</
 
 <h2 id="adding-regions:c70e7a562d412474947a41ef47c81d75">&ldquo;Adding&rdquo; regions</h2>
 
-<p>One thing we will use throughout the region inference algorithm is the notion of &ldquo;adding&rdquo; lifetimes.</p>
+<p>One thing we will use throughout the region inference algorithm is the notion of &ldquo;adding&rdquo; regions.</p>
 
 <p>You may have seen <code>'a + 'b</code> before. Intuitively, <code>'a: 'b + 'c</code> is equivalent to
 <code>'a: 'b, 'a: 'c</code>, but we can go further and use <code>'a + 'b</code> as a way to construct
 new regions:</p>
 
-<p>Define <code>'a + 'b</code> as the smallest region that outlives both &lsquo;a and &lsquo;b.</p>
+<p>Define <code>'a + 'b</code> as the smallest region that outlives both <code>'a</code> and <code>'b</code>.</p>
 
 <p>In a sense, you &ldquo;widen&rdquo; the region until it covers both regions:</p>
 
@@ -111,9 +111,28 @@ new regions:</p>
 <p>We know to additional facts about our operator:</p>
 
 <ol>
-<li>It follows from the fact &lsquo;a: &lsquo;a, that a + a = a</li>
-<li>It follows from the fact &lsquo;static: &lsquo;a for all &lsquo;a, that ∃s∈L  ∀a∈L  s + a = s</li>
+<li>It follows from the fact <code>'a: 'a</code>, that a + a = a</li>
+<li>It follows from the fact <code>'static: 'a</code> for all <code>'a</code>, that <code>∃s∈L  ∀a∈L  s + a = s</code>.</li>
 </ol>
+
+<h2 id="regions-as-a-lattice:c70e7a562d412474947a41ef47c81d75">Regions as a lattice</h2>
+
+<p>It makes much more sense to think of regions as a lattice. A lattice is a poset
+with two operations defined on it:</p>
+
+<ol>
+<li><p>Join, an unique supremum (that is, least upper-bound). This is our <code>+</code>
+operator.</p></li>
+
+<li><p>Meet, an unique infimum (that is, greatest lower-bound). This isn&rsquo;t very
+useful for the matter of regions, but it is still defined on them.</p></li>
+</ol>
+
+<p>In fact, this describes our structure perfectly. In particular, L is an
+<em>upper-bounded lattice</em>, i.e. we have a maximal element (<code>'static</code>).</p>
+
+<p>Lattice theory, which we will cover in-depth in a later post is perfect for
+studying subtyping relations.</p>
 
 <h2 id="directed-acyclic-graphs:c70e7a562d412474947a41ef47c81d75">Directed Acyclic Graphs</h2>
 
@@ -148,8 +167,8 @@ relation doesn&rsquo;t form a DAG, due to these cycles.</p>
 
 <p>The solution is relatively simple, though.</p>
 
-<p>Let {&lsquo;a, &lsquo;b, &lsquo;c, &hellip;} be cyclic such that <code>'a &lt; 'b &lt; 'c ... &lt; 'a</code>. Due to
-transitivity and antisymmetry, we can assume that &lsquo;a = &lsquo;b = &lsquo;c = &hellip;, thus we
+<p>Let <code>{'a, 'b, 'c, ...}</code> be cycle such that <code>'a &lt; 'b &lt; 'c ... &lt; 'a</code>. Due to
+transitivity and antisymmetry, we can assume that <code>'a = 'b = 'c = ...</code>, thus we
 can, without loss of generality, collapse the cycle into a single node.</p>
 
 <p>This lets us interpret the graph, where edges represents outlives relations, as
@@ -157,18 +176,41 @@ a DAG.</p>
 
 <h2 id="recursively-widening-the-regions:c70e7a562d412474947a41ef47c81d75">Recursively widening the regions</h2>
 
-<p>Say we want to infer the span of some node &lsquo;a. Assume &lsquo;a neighbors (outlives)
-&lsquo;b, &lsquo;c, &rsquo;d&hellip;</p>
+<p>Say we want to infer the span of some node <code>'a</code>. Assume <code>'a</code> neighbors (outlives)
+<code>'b, 'c, 'd...</code></p>
 
-<p>Since we know the bound, we can say &lsquo;a = &lsquo;b + &lsquo;c + &rsquo;d + &hellip;, since this is the
+<p>Since we know the bound, we can say <code>'a = 'b + 'c + 'd + ...</code>, since this is the
 smallest &lsquo;a subject to the outlives conditions.</p>
 
-<p>Now, recursively do the same with &lsquo;b, &lsquo;c, &rsquo;d, &hellip; Since the graph is acyclic,
+<p>Now, recursively do the same with <code>'b, 'c, 'd, ...</code> Since the graph is acyclic,
 this will terminate at some point.</p>
 
 <p>On an implementation note: you can optimize this process by 1. deduplicating
-the regions, 2. collapsing sums containing &lsquo;static into &lsquo;static, 3. caching the
+the regions, 2. collapsing sums containing <code>'static</code> into <code>'static</code>, 3. caching the
 nodes to avoid redundant calculations.</p>
+
+<h2 id="going-further-liveness:c70e7a562d412474947a41ef47c81d75">Going further: liveness</h2>
+
+<p>Now that we have a closed form for inferring lifetimes, we can do lots of cool stuff.</p>
+
+<p>Liveness of a value is the span starting where the value is declared and ending
+where the last access to it is made. This is in contrary to the classical
+lexical approach, where the initial lifetimes are assigned as the scopes of the
+variables.</p>
+
+<p>Let&rsquo;s start by defining <code>empty(x)</code> as the region spanning from x to x (that is,
+an empty region at x). Assign every value declared at x a region, <code>empty(x)</code>.</p>
+
+<p>Whenever a value of lifetime <code>'x</code> is used at some point y, we add a bound <code>'x:
+empty(y)</code>.</p>
+
+<p>So we essentially expand the region whenever used, effectively yielding the
+liveness of the value.</p>
+
+<h2 id="a-happy-ending:c70e7a562d412474947a41ef47c81d75">A happy ending</h2>
+
+<p>That&rsquo;s it&hellip; The algorithm is really that simple. In fact, you can implement it
+in only a 100-200 lines.</p>
 
 <h2 id="questions-and-errata:c70e7a562d412474947a41ef47c81d75">Questions and errata</h2>
 
