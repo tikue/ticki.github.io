@@ -31,80 +31,80 @@ types, which is a major pain point in languages, that lacks of type inference.&l
 
 &lt;blockquote&gt;
 &lt;p&gt;So, this is just a classical optimization problem:&lt;/p&gt;
+&lt;/blockquote&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;gt; minimize    &#39;a
-&amp;gt; subject to  A, B, C...
-&amp;gt;
-&amp;gt; A, B, C… are outlives relations. ‘a may or may not be free in those.
-&amp;gt; ```
+&lt;pre&gt;&lt;code&gt;  minimize    &#39;a
+  subject to  A, B, C...
 
-Namely, we want to minimize some lifetimes, while holding some conditions.
-
-## &amp;quot;Adding&amp;quot; regions
-
-One thing we will use throughout the region inference algorithm is the notion of &amp;quot;adding&amp;quot; lifetimes.
-
-You may have seen `&#39;a + &#39;b` before. Intuitively, `&#39;a: &#39;b + &#39;c` is equivalent to
-`&#39;a: &#39;b, &#39;a: &#39;c`, but we can go further and use `&#39;a + &#39;b` as a way to construct
-new regions:
-
-Define `&#39;a + &#39;b` as the smallest region that outlives both &#39;a and &#39;b.
-
-In a sense, you &amp;quot;widen&amp;quot; the region until it covers both regions:
-
+  A, B, C… are outlives relations. ‘a may or may not be free in those.
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&amp;lsquo;a:       I&amp;mdash;&amp;mdash;&amp;mdash;I
-&amp;lsquo;b:            I&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;I
-&amp;lsquo;a + &amp;lsquo;b:  I&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;I&lt;/p&gt;
+&lt;p&gt;Namely, we want to minimize some lifetimes, while holding some conditions.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;
-## Funky but useless: Regions under addition as an abelian semigroup
+&lt;h2 id=&#34;adding-regions:c70e7a562d412474947a41ef47c81d75&#34;&gt;&amp;ldquo;Adding&amp;rdquo; regions&lt;/h2&gt;
 
-A semigroup is an algebraic structure satisfying two properties:
+&lt;p&gt;One thing we will use throughout the region inference algorithm is the notion of &amp;ldquo;adding&amp;rdquo; lifetimes.&lt;/p&gt;
 
-1. Closure, for any a, b in S, a + b is contained in S.
-2. Associativity, for any a, b, and c in S, (a + b) + c = a + (b + c).
+&lt;p&gt;You may have seen &lt;code&gt;&#39;a + &#39;b&lt;/code&gt; before. Intuitively, &lt;code&gt;&#39;a: &#39;b + &#39;c&lt;/code&gt; is equivalent to
+&lt;code&gt;&#39;a: &#39;b, &#39;a: &#39;c&lt;/code&gt;, but we can go further and use &lt;code&gt;&#39;a + &#39;b&lt;/code&gt; as a way to construct
+new regions:&lt;/p&gt;
 
-But in contrary to monoids, there is no identity element.
+&lt;p&gt;Define &lt;code&gt;&#39;a + &#39;b&lt;/code&gt; as the smallest region that outlives both &amp;lsquo;a and &amp;lsquo;b.&lt;/p&gt;
 
-&amp;quot;Abelian&amp;quot; means commutative. That is, a + b = b + a.
+&lt;p&gt;In a sense, you &amp;ldquo;widen&amp;rdquo; the region until it covers both regions:&lt;/p&gt;
 
-And, in fact, regions follows all these rules, making it an abelian semigroup.
-
-We know to additional facts about our operator:
-
-1. It follows from the fact &#39;a: &#39;a, that a + a = a
-2. It follows from the fact &#39;static: &#39;a for all &#39;a, that ∃s∈L  ∀a∈L  s + a = s
-
-## Directed Acyclic Graphs
-
-A directed acyclic graph is a finite directed graph with no directed cycles.
-That is, any arbitrary directed walk in the graph will &amp;quot;end&amp;quot; at some point.
-
-![](https://upload.wikimedia.org/wikipedia/commons/6/61/Polytree.svg)
-
-Let&#39;s forget the `&#39;a: &#39;a` case for a moment. As such, the regions under our
-_strict_ outlive relation, _&amp;lt;_, forms a directed acyclic graph (DAG).
-
-In particular, if to node are connected, with a directed edge A → B, A
-represents a region, which _outlives_ B.
-
-Consider we take a reference `&amp;amp;&#39;b T` where `T: &#39;a`
-
+&lt;pre&gt;&lt;code&gt;&#39;a:       I---------I
+&#39;b:            I------------I
+&#39;a + &#39;b:  I-----------------I
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&amp;lsquo;static
+&lt;h2 id=&#34;funky-but-useless-regions-under-addition-as-an-abelian-semigroup:c70e7a562d412474947a41ef47c81d75&#34;&gt;Funky but useless: Regions under addition as an abelian semigroup&lt;/h2&gt;
+
+&lt;p&gt;A semigroup is an algebraic structure satisfying two properties:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Closure, for any a, b in S, a + b is contained in S.&lt;/li&gt;
+&lt;li&gt;Associativity, for any a, b, and c in S, (a + b) + c = a + (b + c).&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;But in contrary to monoids, there is no identity element.&lt;/p&gt;
+
+&lt;p&gt;&amp;ldquo;Abelian&amp;rdquo; means commutative. That is, a + b = b + a.&lt;/p&gt;
+
+&lt;p&gt;And, in fact, regions follows all these rules, making it an abelian semigroup.&lt;/p&gt;
+
+&lt;p&gt;We know to additional facts about our operator:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;It follows from the fact &amp;lsquo;a: &amp;lsquo;a, that a + a = a&lt;/li&gt;
+&lt;li&gt;It follows from the fact &amp;lsquo;static: &amp;lsquo;a for all &amp;lsquo;a, that ∃s∈L  ∀a∈L  s + a = s&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;directed-acyclic-graphs:c70e7a562d412474947a41ef47c81d75&#34;&gt;Directed Acyclic Graphs&lt;/h2&gt;
+
+&lt;p&gt;A directed acyclic graph is a finite directed graph with no directed cycles.
+That is, any arbitrary directed walk in the graph will &amp;ldquo;end&amp;rdquo; at some point.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/6/61/Polytree.svg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s forget the &lt;code&gt;&#39;a: &#39;a&lt;/code&gt; case for a moment. As such, the regions under our
+&lt;em&gt;strict&lt;/em&gt; outlive relation, &lt;em&gt;&amp;lt;&lt;/em&gt;, forms a directed acyclic graph (DAG).&lt;/p&gt;
+
+&lt;p&gt;In particular, if to node are connected, with a directed edge A → B, A
+represents a region, which &lt;em&gt;outlives&lt;/em&gt; B.&lt;/p&gt;
+
+&lt;p&gt;Consider we take a reference &lt;code&gt;&amp;amp;&#39;b T&lt;/code&gt; where &lt;code&gt;T: &#39;a&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; &#39;static
  |
  v
-&amp;lsquo;a &amp;mdash;&amp;mdash;&amp;mdash;-\
+&#39;a ----------\
  |           |
  |           |
  |           |
  v           v
-&amp;lsquo;b &amp;mdash;&amp;mdash;-&amp;gt; &amp;lsquo;a + &amp;lsquo;b
-```&lt;/p&gt;
-&lt;/blockquote&gt;
+&#39;b -------&amp;gt; &#39;a + &#39;b
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;handling-cycles:c70e7a562d412474947a41ef47c81d75&#34;&gt;Handling cycles&lt;/h2&gt;
 

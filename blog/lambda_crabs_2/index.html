@@ -66,80 +66,80 @@ types, which is a major pain point in languages, that lacks of type inference.</
 
 <blockquote>
 <p>So, this is just a classical optimization problem:</p>
+</blockquote>
 
-<pre><code>&gt; minimize    'a
-&gt; subject to  A, B, C...
-&gt;
-&gt; A, B, C… are outlives relations. ‘a may or may not be free in those.
-&gt; ```
+<pre><code>  minimize    'a
+  subject to  A, B, C...
 
-Namely, we want to minimize some lifetimes, while holding some conditions.
-
-## &quot;Adding&quot; regions
-
-One thing we will use throughout the region inference algorithm is the notion of &quot;adding&quot; lifetimes.
-
-You may have seen `'a + 'b` before. Intuitively, `'a: 'b + 'c` is equivalent to
-`'a: 'b, 'a: 'c`, but we can go further and use `'a + 'b` as a way to construct
-new regions:
-
-Define `'a + 'b` as the smallest region that outlives both 'a and 'b.
-
-In a sense, you &quot;widen&quot; the region until it covers both regions:
-
+  A, B, C… are outlives relations. ‘a may or may not be free in those.
 </code></pre>
 
-<p>&lsquo;a:       I&mdash;&mdash;&mdash;I
-&lsquo;b:            I&mdash;&mdash;&mdash;&mdash;I
-&lsquo;a + &lsquo;b:  I&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;I</p>
+<p>Namely, we want to minimize some lifetimes, while holding some conditions.</p>
 
-<pre><code>
-## Funky but useless: Regions under addition as an abelian semigroup
+<h2 id="adding-regions:c70e7a562d412474947a41ef47c81d75">&ldquo;Adding&rdquo; regions</h2>
 
-A semigroup is an algebraic structure satisfying two properties:
+<p>One thing we will use throughout the region inference algorithm is the notion of &ldquo;adding&rdquo; lifetimes.</p>
 
-1. Closure, for any a, b in S, a + b is contained in S.
-2. Associativity, for any a, b, and c in S, (a + b) + c = a + (b + c).
+<p>You may have seen <code>'a + 'b</code> before. Intuitively, <code>'a: 'b + 'c</code> is equivalent to
+<code>'a: 'b, 'a: 'c</code>, but we can go further and use <code>'a + 'b</code> as a way to construct
+new regions:</p>
 
-But in contrary to monoids, there is no identity element.
+<p>Define <code>'a + 'b</code> as the smallest region that outlives both &lsquo;a and &lsquo;b.</p>
 
-&quot;Abelian&quot; means commutative. That is, a + b = b + a.
+<p>In a sense, you &ldquo;widen&rdquo; the region until it covers both regions:</p>
 
-And, in fact, regions follows all these rules, making it an abelian semigroup.
-
-We know to additional facts about our operator:
-
-1. It follows from the fact 'a: 'a, that a + a = a
-2. It follows from the fact 'static: 'a for all 'a, that ∃s∈L  ∀a∈L  s + a = s
-
-## Directed Acyclic Graphs
-
-A directed acyclic graph is a finite directed graph with no directed cycles.
-That is, any arbitrary directed walk in the graph will &quot;end&quot; at some point.
-
-![](https://upload.wikimedia.org/wikipedia/commons/6/61/Polytree.svg)
-
-Let's forget the `'a: 'a` case for a moment. As such, the regions under our
-_strict_ outlive relation, _&lt;_, forms a directed acyclic graph (DAG).
-
-In particular, if to node are connected, with a directed edge A → B, A
-represents a region, which _outlives_ B.
-
-Consider we take a reference `&amp;'b T` where `T: 'a`
-
+<pre><code>'a:       I---------I
+'b:            I------------I
+'a + 'b:  I-----------------I
 </code></pre>
 
-<p>&lsquo;static
+<h2 id="funky-but-useless-regions-under-addition-as-an-abelian-semigroup:c70e7a562d412474947a41ef47c81d75">Funky but useless: Regions under addition as an abelian semigroup</h2>
+
+<p>A semigroup is an algebraic structure satisfying two properties:</p>
+
+<ol>
+<li>Closure, for any a, b in S, a + b is contained in S.</li>
+<li>Associativity, for any a, b, and c in S, (a + b) + c = a + (b + c).</li>
+</ol>
+
+<p>But in contrary to monoids, there is no identity element.</p>
+
+<p>&ldquo;Abelian&rdquo; means commutative. That is, a + b = b + a.</p>
+
+<p>And, in fact, regions follows all these rules, making it an abelian semigroup.</p>
+
+<p>We know to additional facts about our operator:</p>
+
+<ol>
+<li>It follows from the fact &lsquo;a: &lsquo;a, that a + a = a</li>
+<li>It follows from the fact &lsquo;static: &lsquo;a for all &lsquo;a, that ∃s∈L  ∀a∈L  s + a = s</li>
+</ol>
+
+<h2 id="directed-acyclic-graphs:c70e7a562d412474947a41ef47c81d75">Directed Acyclic Graphs</h2>
+
+<p>A directed acyclic graph is a finite directed graph with no directed cycles.
+That is, any arbitrary directed walk in the graph will &ldquo;end&rdquo; at some point.</p>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/6/61/Polytree.svg" alt="" /></p>
+
+<p>Let&rsquo;s forget the <code>'a: 'a</code> case for a moment. As such, the regions under our
+<em>strict</em> outlive relation, <em>&lt;</em>, forms a directed acyclic graph (DAG).</p>
+
+<p>In particular, if to node are connected, with a directed edge A → B, A
+represents a region, which <em>outlives</em> B.</p>
+
+<p>Consider we take a reference <code>&amp;'b T</code> where <code>T: 'a</code></p>
+
+<pre><code> 'static
  |
  v
-&lsquo;a &mdash;&mdash;&mdash;-\
+'a ----------\
  |           |
  |           |
  |           |
  v           v
-&lsquo;b &mdash;&mdash;-&gt; &lsquo;a + &lsquo;b
-```</p>
-</blockquote>
+'b -------&gt; 'a + 'b
+</code></pre>
 
 <h2 id="handling-cycles:c70e7a562d412474947a41ef47c81d75">Handling cycles</h2>
 
