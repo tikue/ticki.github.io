@@ -162,12 +162,12 @@ represents a region, which <em>outlives</em> B.</p>
 <pre><code> 'static
  |
  v
-'a ----------\
+'a &lt;---------\
  |           |
  |           |
  |           |
- v           v
-'b -------&gt; 'a + 'b
+ v           |
+'b &lt;------- 'a + 'b
 </code></pre>
 
 <h2 id="handling-cycles:c70e7a562d412474947a41ef47c81d75">Handling cycles</h2>

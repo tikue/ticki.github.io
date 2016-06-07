@@ -127,12 +127,12 @@ represents a region, which &lt;em&gt;outlives&lt;/em&gt; B.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt; &#39;static
  |
  v
-&#39;a ----------\
+&#39;a &amp;lt;---------\
  |           |
  |           |
  |           |
- v           v
-&#39;b -------&amp;gt; &#39;a + &#39;b
+ v           |
+&#39;b &amp;lt;------- &#39;a + &#39;b
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;handling-cycles:c70e7a562d412474947a41ef47c81d75&#34;&gt;Handling cycles&lt;/h2&gt;
