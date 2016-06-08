@@ -136,6 +136,9 @@ of &lt;em&gt;L&lt;/em&gt;, in the context of segregating regions.&lt;/p&gt;
 sublattice, &lt;code&gt;&amp;lt;a, b, c, d...&amp;gt;&lt;/code&gt;. In particular, this means &lt;em&gt;the smallest
 extension which forms a sublattice of L&lt;/em&gt;.&lt;/p&gt;
 
+&lt;p&gt;The compiler keeps a log of the region class of every variable. This is then
+used for alias analysis:&lt;/p&gt;
+
 &lt;h2 id=&#34;pointers-and-references:c434bc03227cc02447b532c00c82082e&#34;&gt;Pointers and references&lt;/h2&gt;
 
 &lt;p&gt;Taking an immutable reference extends our region class to contain the region of

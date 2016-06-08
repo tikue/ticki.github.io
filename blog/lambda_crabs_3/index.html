@@ -171,6 +171,9 @@ of <em>L</em>, in the context of segregating regions.</p>
 sublattice, <code>&lt;a, b, c, d...&gt;</code>. In particular, this means <em>the smallest
 extension which forms a sublattice of L</em>.</p>
 
+<p>The compiler keeps a log of the region class of every variable. This is then
+used for alias analysis:</p>
+
 <h2 id="pointers-and-references:c434bc03227cc02447b532c00c82082e">Pointers and references</h2>
 
 <p>Taking an immutable reference extends our region class to contain the region of
