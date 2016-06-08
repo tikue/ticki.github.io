@@ -64,6 +64,9 @@ analysis is essential to program verification, optimizers, and compiler theory.<
 <p>Alias analysis is the study of which pointers are aliased and, more
 importantly, which pointers <em>aren&rsquo;t aliased</em>.</p>
 
+<p>Rust guarantees that no mutable reference is aliased. This is statically
+checked, and we will show how in this post.</p>
+
 <p>So, why is aliasing guarantees even needed?</p>
 
 <p>The answer is that I need to be able to reason about the invariants of the
@@ -196,16 +199,28 @@ reference for region <code>empty(x)</code> and simply mutate it through the refe
 
 <pre><code class="language-rust">{
     let mut a = 2; // ------+ 'a
-    let b = &amp;a; // -------+ | 'b
+    let b = &amp;a;    // ----+ | 'b
     let mut c = 0; // --+ | | 'c
     c = 1;         //   | | |
     c = 2;         //   | | |
-} // -------------------+-+-|
+} // -------------------+-+-+
 </code></pre>
 
 <p>We can see that the region class of <code>'a</code> is an extension of <code>'b</code>, but <code>'c</code> is
 not entangled with <code>'a</code>&rsquo;s region class. In particular, <code>'c</code> and <code>'a</code> belong to
 different namespaces and thus, there is no shared mutability.</p>
+
+<h2 id="region-classes-and-their-relations:c434bc03227cc02447b532c00c82082e">Region classes and their relations</h2>
+
+<p>A natural question that arise is: Why don&rsquo;t we do region inference seperately
+for each region class?</p>
+
+<p>The answer is that distinct region classes are far from unrelated. Each region
+class simply defines a value and its aliases, but that doesn&rsquo;t make it isolated
+for the rest of <em>L</em>.</p>
+
+<p>If you look at our example above, you may notice that <code>'a</code> outlives <code>'c</code>,
+despite being associated with a different region class.</p>
 
 <h2 id="questions-and-errata:c434bc03227cc02447b532c00c82082e">Questions and errata</h2>
 

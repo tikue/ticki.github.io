@@ -29,6 +29,9 @@ analysis is essential to program verification, optimizers, and compiler theory.&
 &lt;p&gt;Alias analysis is the study of which pointers are aliased and, more
 importantly, which pointers &lt;em&gt;aren&amp;rsquo;t aliased&lt;/em&gt;.&lt;/p&gt;
 
+&lt;p&gt;Rust guarantees that no mutable reference is aliased. This is statically
+checked, and we will show how in this post.&lt;/p&gt;
+
 &lt;p&gt;So, why is aliasing guarantees even needed?&lt;/p&gt;
 
 &lt;p&gt;The answer is that I need to be able to reason about the invariants of the
@@ -161,16 +164,28 @@ reference for region &lt;code&gt;empty(x)&lt;/code&gt; and simply mutate it thro
 
 &lt;pre&gt;&lt;code class=&#34;language-rust&#34;&gt;{
     let mut a = 2; // ------+ &#39;a
-    let b = &amp;amp;a; // -------+ | &#39;b
+    let b = &amp;amp;a;    // ----+ | &#39;b
     let mut c = 0; // --+ | | &#39;c
     c = 1;         //   | | |
     c = 2;         //   | | |
-} // -------------------+-+-|
+} // -------------------+-+-+
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;We can see that the region class of &lt;code&gt;&#39;a&lt;/code&gt; is an extension of &lt;code&gt;&#39;b&lt;/code&gt;, but &lt;code&gt;&#39;c&lt;/code&gt; is
 not entangled with &lt;code&gt;&#39;a&lt;/code&gt;&amp;rsquo;s region class. In particular, &lt;code&gt;&#39;c&lt;/code&gt; and &lt;code&gt;&#39;a&lt;/code&gt; belong to
 different namespaces and thus, there is no shared mutability.&lt;/p&gt;
+
+&lt;h2 id=&#34;region-classes-and-their-relations:c434bc03227cc02447b532c00c82082e&#34;&gt;Region classes and their relations&lt;/h2&gt;
+
+&lt;p&gt;A natural question that arise is: Why don&amp;rsquo;t we do region inference seperately
+for each region class?&lt;/p&gt;
+
+&lt;p&gt;The answer is that distinct region classes are far from unrelated. Each region
+class simply defines a value and its aliases, but that doesn&amp;rsquo;t make it isolated
+for the rest of &lt;em&gt;L&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you look at our example above, you may notice that &lt;code&gt;&#39;a&lt;/code&gt; outlives &lt;code&gt;&#39;c&lt;/code&gt;,
+despite being associated with a different region class.&lt;/p&gt;
 
 &lt;h2 id=&#34;questions-and-errata:c434bc03227cc02447b532c00c82082e&#34;&gt;Questions and errata&lt;/h2&gt;
 
