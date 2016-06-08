@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.15" />
+
+
+<title>Lambda crabs (part 3): Region-based alias analysis - Ticki</title>
+<meta property="og:title" content="Lambda crabs (part 3): Region-based alias analysis - Ticki">
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.css" media="all">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather:400|Lato:400,400italic,700">
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo"><img src="/images/logo.png" width="50" height="50"></a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/ticki">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+
+    <h1 class="article-title">Lambda crabs (part 3): Region-based alias analysis</h1>
+
+    
+
+    <div class="article-content">
+      
+
+<p>In the <a href="http://ticki.github.io/blog/lambda_crabs_2/">last post</a>, we saw how to
+infer regions and their span. In this post, we will cover aliasing and how to
+ensure guarantees through region analysis.</p>
+
+<h2 id="aliasing-mutable-aliasing-and-unsafety:c434bc03227cc02447b532c00c82082e">Aliasing, mutable aliasing, and unsafety.</h2>
+
+<p>Two pointers are said to be <em>aliased</em>, if they refer to the same object. Alias
+analysis is essential to program verification, optimizers, and compiler theory.</p>
+
+<p>Alias analysis is the study of which pointers are aliased and, more
+importantly, which pointers <em>aren&rsquo;t aliased</em>.</p>
+
+<p>So, why is aliasing guarantees even needed?</p>
+
+<p>The answer is that I need to be able to reason about the invariants of the
+pointers content, while being sure that those aren&rsquo;t broken in the period of
+accessibility.</p>
+
+<p>Furthermore, we want strict thread-safety, which requires guarantees about
+shared mutable state.</p>
+
+<h2 id="different-values-different-namespaces:c434bc03227cc02447b532c00c82082e">Different values, different namespaces</h2>
+
+<p>To reason about mutability overlaps and aliasing through regions, we need a
+notion of different namespaces.</p>
+
+<p>For example, say some variable X is referenced in a lifetime <code>'a</code>. Does that
+mean another variable Y living in the same scope can&rsquo;t be mutated?</p>
+
+<p>Of course not! Let&rsquo;s consider:</p>
+
+<pre><code class="language-rust">{
+    let mut a = 2; // ------+ 'a
+    let b = &amp;a;    // ----+ | 'b
+    let mut c = 0; // --+ | | 'c
+    c = 1;         //   | | |
+    c = 2;         //   | | |
+} // -------------------+-+-+
+</code></pre>
+
+<p>As you can see <code>a</code> is aliased, thus mutating it is not allowed. However, <code>'a:
+'c</code>, but that doesn&rsquo;t mean they refer to the same.</p>
+
+<p>Holding a global namespace would make the above example fail, since it has no
+distinction between <code>a</code> and <code>c</code> and their respective lifetimes.</p>
+
+<p>For that reason, we need to segregate the regions, such that we can effectively
+reason about aliasing without mixing values up.</p>
+
+<h2 id="sublattices:c434bc03227cc02447b532c00c82082e">Sublattices</h2>
+
+<p>We talked a bit about lattices and their applications in the last part. I
+recommend reading that if you do not know what a lattice is.</p>
+
+<p>Now, let&rsquo;s introduce the notion of a <em>sublattice</em>:</p>
+
+<p><em>M</em> is a sublattice of <em>L</em>, if <em>M</em> is a nonempty subset of <em>L</em> forming a
+lattice under <em>L</em>&rsquo;s meet and join operators.</p>
+
+<p>Take a lattice,</p>
+
+<pre><code>       Join(a, b, c)
+           /\
+          /  \
+         /    \
+   Join(a, b)  \c
+       /\      /
+      /  \    /
+     /    \  /
+   a/      \/b
+    \      /
+     \    /
+      \  /
+       \/
+    Meet(a, b)
+</code></pre>
+
+<p>(by the way, this is why it is called a lattice)</p>
+
+<p>then</p>
+
+<pre><code>   Join(a, b)
+       /\
+      /  \
+     /    \
+  a /      \b
+    \      /
+     \    /
+      \  /
+       \/
+    Meet(a, b)
+</code></pre>
+
+<p>is a sublattice, since it holds all the conditions:</p>
+
+<ol>
+<li><p>It is a nonempty subset.</p></li>
+
+<li><p>It shares meet and join, while preserving closure (you can easily check this
+yourself).</p></li>
+</ol>
+
+<h2 id="region-classes:c434bc03227cc02447b532c00c82082e">Region classes</h2>
+
+<p>Region classes has many names, but none which is universally agreed upon, I
+prefer the name region classes. As we say, a rose by any other name would still
+smell as sweet.</p>
+
+<p>Let <em>L</em> be our region lattice, define a <em>region class</em> of <em>L</em> as a sublattice
+of <em>L</em>, in the context of segregating regions.</p>
+
+<p>In particular, assign each value a region class. Say the value has the bounds
+(outlives) <code>{a, b, c, d...}</code>, then we derive our region class as the cyclic
+sublattice, <code>&lt;a, b, c, d...&gt;</code>. In particular, this means <em>the smallest
+extension which forms a sublattice of L</em>.</p>
+
+<h2 id="pointers-and-references:c434bc03227cc02447b532c00c82082e">Pointers and references</h2>
+
+<p>Taking an immutable reference extends our region class to contain the region of
+this particular reference, denoted <code>M[N]</code>.</p>
+
+<p>Mutable references, on the other hand, works slightly different. The region
+class and the region of the reference <em>must be disjoint</em>, unless we get shared
+mutability. With this requirement satisfied, we can proceed to extend the
+region class with the new region.</p>
+
+<h2 id="mutating-a-local-variable:c434bc03227cc02447b532c00c82082e">Mutating a local variable</h2>
+
+<p>You may ask, &ldquo;Can you mutate a local variable while it is borrowed?&rdquo;, the
+answer is, &ldquo;No, you cannot&rdquo;. The reason is the same for the mutable aliasing:
+it introduce shared mutable state.</p>
+
+<p>But, how do we handle such mutations?</p>
+
+<p>We introduced <code>empty(x)</code>, the empty region at <code>x</code>, in the earlier blog posts.
+And we can use this to interpret local mutations as well: as taking a mutable
+reference for region <code>empty(x)</code> and simply mutate it through the reference.</p>
+
+<h2 id="applying-this-method:c434bc03227cc02447b532c00c82082e">Applying this method</h2>
+
+<p>If we get back to our example,</p>
+
+<pre><code class="language-rust">{
+    let mut a = 2; // ------+ 'a
+    let b = &amp;a; // -------+ | 'b
+    let mut c = 0; // --+ | | 'c
+    c = 1;         //   | | |
+    c = 2;         //   | | |
+} // -------------------+-+-|
+</code></pre>
+
+<p>We can see that the region class of <code>'a</code> is an extension of <code>'b</code>, but <code>'c</code> is
+not entangled with <code>'a</code>&rsquo;s region class. In particular, <code>'c</code> and <code>'a</code> belong to
+different namespaces and thus, there is no shared mutability.</p>
+
+<h2 id="questions-and-errata:c434bc03227cc02447b532c00c82082e">Questions and errata</h2>
+
+<p>Ping me at #rust in Mozilla IRC.</p>
+
+    </div>
+  </article>
+
+  
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+
