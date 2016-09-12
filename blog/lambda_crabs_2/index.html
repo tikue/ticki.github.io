@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.15" />
+<meta name="generator" content="Hugo 0.16" />
 
 
 <title>Lambda crabs (part 2): Region inference is (not) magic. - Ticki</title>
@@ -55,7 +55,7 @@
 <p>This post will cover region (lifetime) inference with a mathematical and type
 theoretical focus.</p>
 
-<h2 id="the-problem:c70e7a562d412474947a41ef47c81d75">The problem</h2>
+<h2 id="the-problem">The problem</h2>
 
 <p>Inference is a very handy concept. We no longer have to annotate redundant
 types, which is a major pain point in languages, that lacks of type inference.</p>
@@ -76,7 +76,7 @@ types, which is a major pain point in languages, that lacks of type inference.</
 
 <p>Namely, we want to minimize some lifetimes, while holding some conditions.</p>
 
-<h2 id="adding-regions:c70e7a562d412474947a41ef47c81d75">&ldquo;Adding&rdquo; regions</h2>
+<h2 id="adding-regions">&ldquo;Adding&rdquo; regions</h2>
 
 <p>One thing we will use throughout the region inference algorithm is the notion of &ldquo;adding&rdquo; regions.</p>
 
@@ -93,7 +93,7 @@ new regions:</p>
 'a + 'b:  I-----------------I
 </code></pre>
 
-<h2 id="funky-but-useless-regions-under-addition-as-an-abelian-semigroup:c70e7a562d412474947a41ef47c81d75">Funky but useless: Regions under addition as an abelian semigroup</h2>
+<h2 id="funky-but-useless-regions-under-addition-as-an-abelian-semigroup">Funky but useless: Regions under addition as an abelian semigroup</h2>
 
 <p>A semigroup is an algebraic structure satisfying two properties:</p>
 
@@ -115,7 +115,7 @@ new regions:</p>
 <li>It follows from the fact <code>'static: 'a</code> for all <code>'a</code>, that <code>∃s∈L  ∀a∈L  s + a = s</code>.</li>
 </ol>
 
-<h2 id="regions-as-a-lattice:c70e7a562d412474947a41ef47c81d75">Regions as a lattice</h2>
+<h2 id="regions-as-a-lattice">Regions as a lattice</h2>
 
 <p>It makes much more sense to think of regions as a lattice. A lattice is a poset
 with two operators defined on it:</p>
@@ -144,7 +144,7 @@ useful for the matter of regions, but it is still defined on them.</p></li>
 <p>Lattice theory, which we will cover in-depth in a later post is perfect for
 studying subtyping relations.</p>
 
-<h2 id="directed-acyclic-graphs:c70e7a562d412474947a41ef47c81d75">Directed Acyclic Graphs</h2>
+<h2 id="directed-acyclic-graphs">Directed Acyclic Graphs</h2>
 
 <p>A directed acyclic graph is a finite directed graph with no directed cycles.
 That is, any arbitrary directed walk in the graph will &ldquo;end&rdquo; at some point.</p>
@@ -170,7 +170,7 @@ represents a region, which <em>outlives</em> B.</p>
 'b &lt;------- 'a + 'b
 </code></pre>
 
-<h2 id="handling-cycles:c70e7a562d412474947a41ef47c81d75">Handling cycles</h2>
+<h2 id="handling-cycles">Handling cycles</h2>
 
 <p>Every lifetime outlives itself, as explained in the last post. So our outlives
 relation doesn&rsquo;t form a DAG, due to these cycles.</p>
@@ -184,7 +184,7 @@ can, without loss of generality, collapse the cycle into a single node.</p>
 <p>This lets us interpret the graph, where edges represents outlives relations, as
 a DAG.</p>
 
-<h2 id="recursively-widening-the-regions:c70e7a562d412474947a41ef47c81d75">Recursively widening the regions</h2>
+<h2 id="recursively-widening-the-regions">Recursively widening the regions</h2>
 
 <p>Say we want to infer the span of some node <code>'a</code>. Assume <code>'a</code> neighbors (outlives)
 <code>'b, 'c, 'd...</code></p>
@@ -199,7 +199,7 @@ this will terminate at some point.</p>
 the regions, 2. collapsing sums containing <code>'static</code> into <code>'static</code>, 3. caching the
 nodes to avoid redundant calculations.</p>
 
-<h2 id="going-further-liveness:c70e7a562d412474947a41ef47c81d75">Going further: liveness</h2>
+<h2 id="going-further-liveness">Going further: liveness</h2>
 
 <p>Now that we have a closed form for inferring lifetimes, we can do lots of cool stuff.</p>
 
@@ -217,12 +217,12 @@ empty(y)</code>.</p>
 <p>So we essentially expand the region whenever used, effectively yielding the
 liveness of the value.</p>
 
-<h2 id="a-happy-ending:c70e7a562d412474947a41ef47c81d75">A happy ending</h2>
+<h2 id="a-happy-ending">A happy ending</h2>
 
 <p>That&rsquo;s it&hellip; The algorithm is really that simple. In fact, you can implement it
 in only a 100-200 lines.</p>
 
-<h2 id="questions-and-errata:c70e7a562d412474947a41ef47c81d75">Questions and errata</h2>
+<h2 id="questions-and-errata">Questions and errata</h2>
 
 <p>Ping me at #rust in Mozilla IRC.</p>
 
