@@ -227,6 +227,8 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 
 <p>And, ignoring that point for a moment, The idea that your code is &lsquo;secure by default&rsquo; is a dangerous one and promotes ignorance about security. You code is <em>not</em> secure by default.</p>
 
+<p>If you really do need a fast and yet secure hash function, Sip-hasher is a wonderful choice. To be clear, I&rsquo;m not arguing against Sip-hasher (I actually like the function), but rather against having it as a default choice.</p>
+
 <h2 id="btreemap"><code>BTreeMap</code></h2>
 
 <p><code>BTreeMap</code> and <code>BTreeSet</code> are generally a good implementation. My only criticism has to do with cache efficiency, which is notoriously bad. In fact, around 60% of the links followed leads to cache misses. For a map 1000 elements, a lookup would result in approximately 6 cache misses. For 10000, the number is 8.</p>
