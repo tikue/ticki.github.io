@@ -254,7 +254,9 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 
 &lt;h1 id=&#34;the-good-parts&#34;&gt;The good parts&lt;/h1&gt;
 
-&lt;p&gt;The implementations them self are really good and well-tested. Nothing&amp;rsquo;s wrong there. It is more the implementation and API choices, which are &amp;ldquo;horrible&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;The implementations them self are really good and well-tested, and many of the points I made above are only relevant, when you are looking for very fine-grained performance. I have not criticized the API itself, because I think it does very well. Rust&amp;rsquo;s collection API is one of the most well-designed I&amp;rsquo;ve seen.&lt;/p&gt;
+
+&lt;p&gt;It is also worth noting that the ecosystem contains lots of wonderful structures and implementations of these. Rust&amp;rsquo;s ecosystem is getting more mature by every day, and to this day, it even contains very niche structures for very specific purposes, and that&amp;rsquo;s really great since it means expansion of Rust&amp;rsquo;s domain.&lt;/p&gt;
 
 &lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
 
