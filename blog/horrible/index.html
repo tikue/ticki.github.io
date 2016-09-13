@@ -89,6 +89,8 @@
 
 <h2 id="concurrent-data-structures">Concurrent data structures</h2>
 
+<p><img src="https://1.bp.blogspot.com/-Y4vduXfiQZw/UD6BvqIjHyI/AAAAAAAAA60/52ni7To498E/s1600/Java_program_map_perf_compare.png" alt="How it compares" /></p>
+
 <p>The whole standard library contains exactly two concurrent data structures (note that data structures are different from containers), namely the MPSC-queues (the blocking queue with a limited buffer and the non-blocking with an unlimited buffer). These are used for cross-thread message passing and the alike.</p>
 
 <p>But where are all the other concurrent primitives?</p>
@@ -105,6 +107,8 @@
 
 <h2 id="keyed-priority-queues">Keyed priority queues</h2>
 
+<p><img src="http://www.csit.parkland.edu/~mvanmoer/CSC220/2014/images/heap-9.2.f.jpg" alt="An example of a keyed heap" /></p>
+
 <p>Keyed priority queues is the structure everyone ask about and looks for, but no one can name it (here&rsquo;s an exercise: go on Google and try to vaguely describe this structure, you will for sure find at least one thread asking for exactly that description, and often no one is able to answer the question or misguidedly proposes binary heaps instead).</p>
 
 <p>Say you have an ordered list of elements, each of which has a priority. Now, you want to be able to retrieve the element with the highest or the lowest priority, with a reasonable performance. Note that mere heaps are not sufficient, since they are not arbitrarily ordered, in the sense that you cannot index them without traversing all elements.</p>
@@ -119,11 +123,15 @@
 
 <h2 id="treaps">Treaps</h2>
 
+<p><img src="http://bluehawk.monmouth.edu/rclayton/web-pages/s10-305-503/treapsf4.png" alt="Insertion in treaps" /></p>
+
 <p>Treaps are generally faster than other self-balanced trees (on the average), but the really killer feature is the bulk operations. These are highly efficient algorithms for union, intersections, and set differences.</p>
 
 <p>When the programmer is manipulating sets like this (union, intersections, and so on) and iterators aren&rsquo;t sufficient (i.e., it is for storage, not iteration), these can be incredibly useful as a high-performance data structure.</p>
 
 <h2 id="skip-lists">Skip lists</h2>
+
+<p><img src="http://igoro.com/wordpress/wp-content/uploads/2008/07/skiplist.png" alt="An illustration of skip lists" /></p>
 
 <p>Skip lists are more niche than the structures described above, but they have excellent performance characteristics.</p>
 
@@ -141,6 +149,8 @@
 
 <h2 id="self-balancing-trees">Self-balancing trees</h2>
 
+<p><img src="https://mohanradhakrishnan.files.wordpress.com/2014/06/screen-shot-2014-06-02-at-9-50-41-am.png" alt="An example of a left-leaning red-black tree" /></p>
+
 <p>As mentioned, Rust&rsquo;s standard library already has an excellent implementation of B-trees, a popular form of self-balancing trees.</p>
 
 <p>The other popular self-balancing trees are good candidates as well (AVL and LLRB/Red-black). While they do essentially the same, they can have very different performance characteristics, and switching can influence the program&rsquo;s performance vastly.</p>
@@ -148,6 +158,8 @@
 <p>Having a diverse set of such structures can be good, especially if the documentation details which one to use based on your use case.</p>
 
 <h2 id="slobs-aka-pointer-lists-memory-pools-typed-arenas-etc">SLOBs (aka. pointer lists, memory pools, typed arenas, etc.)</h2>
+
+<p><img src="http://www.codeproject.com/KB/cpp/MemoryPool/MemoryPool_Step5.png" alt="An example SLOB" /></p>
 
 <p>This is a very simple, and yet very powerful, data structure. In fact, they are nothing but a glorified singly linked list of pointers to some type. The dealbreaker is the fact that it requires no storage aside from the data it holds.</p>
 
@@ -165,6 +177,8 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 <h1 id="criticizing-the-structures-it-do-have">Criticizing the structures it do have</h1>
 
 <h2 id="hashmap"><code>HashMap</code></h2>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Hash_table_5_0_1_1_1_1_0_SP.svg/380px-Hash_table_5_0_1_1_1_1_0_SP.svg.png" alt="Open addressing" /></p>
 
 <p>Rust&rsquo;s hash table implementation is perhaps the criticized part, not because it is a bad implementation, but because it is a very performance-critical component, and yet has its rough edges (including a, for some, odd choice of hash functions).</p>
 
@@ -205,6 +219,8 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 <p>I personally think that having a constant factor is a bad idea. I think it should be some function of the number of elements in the table, such that the factor is lower for small tables (where memory isn&rsquo;t a concern). This way you get memory efficiency when it matters.</p>
 
 <h3 id="sip-hasher">Sip-hasher</h3>
+
+<p><img src="https://idea.popcount.org/2013-10-09-visualising-siphash/siproundarx.png" alt="A round of Sip" /></p>
 
 <p>Sip-hasher is a cryptographic hash function, and as with most cryptographic hash functions, it is slower than the non-cryptographic counterpart.</p>
 
