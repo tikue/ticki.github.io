@@ -10,7 +10,7 @@
     <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Rust&#39;s `std::collections` is absolutely horrible</title>
+      <title>A Critique of Rust&#39;s `std::collections`</title>
       <link>/blog/horrible/</link>
       <pubDate>Mon, 12 Sep 2016 22:50:08 +0200</pubDate>
       
