@@ -68,17 +68,19 @@
 
 &lt;p&gt;I&amp;rsquo;ve already mentioned this, but singly linked list are often useful.&lt;/p&gt;
 
-&lt;h2 id=&#34;priority-queues&#34;&gt;Priority queues&lt;/h2&gt;
+&lt;h2 id=&#34;keyed-priority-queues&#34;&gt;Keyed priority queues&lt;/h2&gt;
 
-&lt;p&gt;Priority queues is the structure everyone ask about and looks for, but no one can name it (here&amp;rsquo;s an exercise: go on Google and try to vaguely describe this structure, you will for sure find at least one thread asking for exactly that description, and often no one is able to answer the question or misguidedly proposes binary heaps instead).&lt;/p&gt;
+&lt;p&gt;Keyed priority queues is the structure everyone ask about and looks for, but no one can name it (here&amp;rsquo;s an exercise: go on Google and try to vaguely describe this structure, you will for sure find at least one thread asking for exactly that description, and often no one is able to answer the question or misguidedly proposes binary heaps instead).&lt;/p&gt;
 
-&lt;p&gt;Say you have an ordered list of elements, each of which has a priority. Now, you want to be able to retrieve the element with the highest or the lowest priority, with a reasonable performance. Note that mere heaps are not sufficient, since they are not arbitrarily ordered.&lt;/p&gt;
+&lt;p&gt;Say you have an ordered list of elements, each of which has a priority. Now, you want to be able to retrieve the element with the highest or the lowest priority, with a reasonable performance. Note that mere heaps are not sufficient, since they are not arbitrarily ordered, in the sense that you cannot index them without traversing all elements.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: People think I&amp;rsquo;m talking about binary heaps, but they&amp;rsquo;re fundamentally very different. A priority queue is some arbitrarily ordered list (or map) such that elements with high or low priority can be retrieved quickly. Binary heaps are not associative arrays or lists, they do not allow ordering of the elements, and are thus conceptually simpler than priority queues. Note that priority queues are almost always implemented with binary heaps as the backbone.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: People think I&amp;rsquo;m talking about binary heaps, but they&amp;rsquo;re fundamentally very different. A keyed priority queue is some arbitrarily ordered list (or map) such that elements with high or low priority can be retrieved quickly. Binary heaps are not associative arrays or lists, they do not allow ordering of the elements, and are thus conceptually simpler than priority queues. Note that keyed priority queues are almost always implemented with binary heaps as the backbone. See [this paper]() for an in-depth description of a general-purpose priority queue&lt;/p&gt;
 
-&lt;p&gt;Priority queues are used everywhere from cache level regulation to efficient scheduling, and are in my opinion one of the most useful data structures of all.&lt;/p&gt;
+&lt;p&gt;Keyed priority queues are used everywhere from cache level regulation to efficient scheduling, and are in my opinion one of the most useful data structures of all.&lt;/p&gt;
 
 &lt;p&gt;It is hard to find out exactly how much it is used in the Rust community, given its many names and reimplementations. Only 83 occurrences of the name &amp;ldquo;PriorityQueue&amp;rdquo; in Rust code can be found on GitHub, but I suspect the real number to be much higher.&lt;/p&gt;
+
+&lt;p&gt;The most famous form of keyed priority queues are Fibonacci heaps, which are used in most major database systems, as well as the Linux scheduler, and many memory allocators.&lt;/p&gt;
 
 &lt;h2 id=&#34;treaps&#34;&gt;Treaps&lt;/h2&gt;
 
@@ -202,7 +204,7 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 
 &lt;h2 id=&#34;btreemap&#34;&gt;&lt;code&gt;BTreeMap&lt;/code&gt;&lt;/h2&gt;
 
-&lt;p&gt;&lt;code&gt;BTreeMap&lt;/code&gt; and &lt;code&gt;BTreeSet&lt;/code&gt; are generally a good implementation. My only criticism has to do with cache efficiency, which is notoriously bad. In fact, around 60% of the links followed leads to cache misses. For a map 1000 elements, a lookup would result in approximately 6 cache misses. For 10000, the number is 8.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;BTreeMap&lt;/code&gt; and &lt;code&gt;BTreeSet&lt;/code&gt; are generally a good implementation. My only criticism has to do with cache efficiency, which is relatively bad when compared to other implementations (Java, mainly). In fact, around 60% (&lt;strong&gt;update&lt;/strong&gt;: Some have obtained other results, ranging from 10%-60%.) of the links followed leads to cache misses. For a map 1000 elements, a lookup would result in approximately 6 cache misses. For 10000, the number is 8.&lt;/p&gt;
 
 &lt;p&gt;These can be quite expensive. A solution is proposed in the section about &amp;ldquo;Cache-efficient structures&amp;rdquo;.&lt;/p&gt;
 
@@ -253,6 +255,14 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 &lt;h1 id=&#34;the-good-parts&#34;&gt;The good parts&lt;/h1&gt;
 
 &lt;p&gt;The implementations them self are really good and well-tested. Nothing&amp;rsquo;s wrong there. It is more the implementation and API choices, which are &amp;ldquo;horrible&amp;rdquo;.&lt;/p&gt;
+
+&lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Rust&amp;rsquo;s &amp;ldquo;collection of collections&amp;rdquo; has quite a few short-fallings. Fortunately, Most of the problems described above are not inherent, and can be fixed. The first step through fixing a problem is diagnosing it, and I hope that this post is able to initiate some critical discussion around the implementation, API, and choice of collections for the standard library.&lt;/p&gt;
+
+&lt;p&gt;There are already many different proposals floating around in the community, as well as implementations and so on. I hope we can look into lifting these or replacing them in libstd.&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&#34;https://github.com/contain-rs&#34;&gt;contain-rs&lt;/a&gt; GitHub organization does a great job at providing a collection of various data structures, most of which are incredibly well-written. It would be interesting to see some of those in the standard library.&lt;/p&gt;
 </description>
     </item>
     

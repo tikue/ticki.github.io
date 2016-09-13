@@ -103,17 +103,19 @@
 
 <p>I&rsquo;ve already mentioned this, but singly linked list are often useful.</p>
 
-<h2 id="priority-queues">Priority queues</h2>
+<h2 id="keyed-priority-queues">Keyed priority queues</h2>
 
-<p>Priority queues is the structure everyone ask about and looks for, but no one can name it (here&rsquo;s an exercise: go on Google and try to vaguely describe this structure, you will for sure find at least one thread asking for exactly that description, and often no one is able to answer the question or misguidedly proposes binary heaps instead).</p>
+<p>Keyed priority queues is the structure everyone ask about and looks for, but no one can name it (here&rsquo;s an exercise: go on Google and try to vaguely describe this structure, you will for sure find at least one thread asking for exactly that description, and often no one is able to answer the question or misguidedly proposes binary heaps instead).</p>
 
-<p>Say you have an ordered list of elements, each of which has a priority. Now, you want to be able to retrieve the element with the highest or the lowest priority, with a reasonable performance. Note that mere heaps are not sufficient, since they are not arbitrarily ordered.</p>
+<p>Say you have an ordered list of elements, each of which has a priority. Now, you want to be able to retrieve the element with the highest or the lowest priority, with a reasonable performance. Note that mere heaps are not sufficient, since they are not arbitrarily ordered, in the sense that you cannot index them without traversing all elements.</p>
 
-<p><strong>Update</strong>: People think I&rsquo;m talking about binary heaps, but they&rsquo;re fundamentally very different. A priority queue is some arbitrarily ordered list (or map) such that elements with high or low priority can be retrieved quickly. Binary heaps are not associative arrays or lists, they do not allow ordering of the elements, and are thus conceptually simpler than priority queues. Note that priority queues are almost always implemented with binary heaps as the backbone.</p>
+<p><strong>Update</strong>: People think I&rsquo;m talking about binary heaps, but they&rsquo;re fundamentally very different. A keyed priority queue is some arbitrarily ordered list (or map) such that elements with high or low priority can be retrieved quickly. Binary heaps are not associative arrays or lists, they do not allow ordering of the elements, and are thus conceptually simpler than priority queues. Note that keyed priority queues are almost always implemented with binary heaps as the backbone. See [this paper]() for an in-depth description of a general-purpose priority queue</p>
 
-<p>Priority queues are used everywhere from cache level regulation to efficient scheduling, and are in my opinion one of the most useful data structures of all.</p>
+<p>Keyed priority queues are used everywhere from cache level regulation to efficient scheduling, and are in my opinion one of the most useful data structures of all.</p>
 
 <p>It is hard to find out exactly how much it is used in the Rust community, given its many names and reimplementations. Only 83 occurrences of the name &ldquo;PriorityQueue&rdquo; in Rust code can be found on GitHub, but I suspect the real number to be much higher.</p>
+
+<p>The most famous form of keyed priority queues are Fibonacci heaps, which are used in most major database systems, as well as the Linux scheduler, and many memory allocators.</p>
 
 <h2 id="treaps">Treaps</h2>
 
@@ -237,7 +239,7 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 
 <h2 id="btreemap"><code>BTreeMap</code></h2>
 
-<p><code>BTreeMap</code> and <code>BTreeSet</code> are generally a good implementation. My only criticism has to do with cache efficiency, which is notoriously bad. In fact, around 60% of the links followed leads to cache misses. For a map 1000 elements, a lookup would result in approximately 6 cache misses. For 10000, the number is 8.</p>
+<p><code>BTreeMap</code> and <code>BTreeSet</code> are generally a good implementation. My only criticism has to do with cache efficiency, which is relatively bad when compared to other implementations (Java, mainly). In fact, around 60% (<strong>update</strong>: Some have obtained other results, ranging from 10%-60%.) of the links followed leads to cache misses. For a map 1000 elements, a lookup would result in approximately 6 cache misses. For 10000, the number is 8.</p>
 
 <p>These can be quite expensive. A solution is proposed in the section about &ldquo;Cache-efficient structures&rdquo;.</p>
 
@@ -288,6 +290,14 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 <h1 id="the-good-parts">The good parts</h1>
 
 <p>The implementations them self are really good and well-tested. Nothing&rsquo;s wrong there. It is more the implementation and API choices, which are &ldquo;horrible&rdquo;.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Rust&rsquo;s &ldquo;collection of collections&rdquo; has quite a few short-fallings. Fortunately, Most of the problems described above are not inherent, and can be fixed. The first step through fixing a problem is diagnosing it, and I hope that this post is able to initiate some critical discussion around the implementation, API, and choice of collections for the standard library.</p>
+
+<p>There are already many different proposals floating around in the community, as well as implementations and so on. I hope we can look into lifting these or replacing them in libstd.</p>
+
+<p>The <a href="https://github.com/contain-rs">contain-rs</a> GitHub organization does a great job at providing a collection of various data structures, most of which are incredibly well-written. It would be interesting to see some of those in the standard library.</p>
 
     </div>
   </article>
