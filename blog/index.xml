@@ -17,9 +17,9 @@
       <guid>/blog/horrible/</guid>
       <description>
 
-&lt;p&gt;Rust is by far my favorite language, and I am very familiar with it, but there is one aspect that annoys me a lot: &lt;code&gt;std::collections&lt;/code&gt;, a part of the opt-out standard library.&lt;/p&gt;
+&lt;p&gt;Rust is by far my favorite language, and I am very familiar with it, but there is one aspect that annoys me at times: &lt;code&gt;std::collections&lt;/code&gt;, a part of the opt-out standard library.&lt;/p&gt;
 
-&lt;p&gt;This post (with a rather edgy title) will go through the short-fallings of the API and implementation of &lt;code&gt;std::collections&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;This post will go through the short-fallings of the API and implementation of &lt;code&gt;std::collections&lt;/code&gt;. I&amp;rsquo;ll try to present alternatives and way to improve it.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: The title was previously &amp;ldquo;Why &lt;code&gt;std::collections&lt;/code&gt; is absolutely horrible&amp;rdquo;. It was in the hope to spark critical discussion, however people were rather annoyed by this title (and I understand why), so I changed it to something less provocative.&lt;/p&gt;
 
@@ -44,7 +44,7 @@
 
 &lt;p&gt;Looking through these, approximately 50 of these are tests of &lt;code&gt;BinaryHeap&lt;/code&gt; itself. Another 50 are reimplementations of it. Around 100 of them are duplicates of other codes (e.g. downloaded libraries). This leaves us with around 250 usages, and that&amp;rsquo;s only slightly more than the incredibly useful &lt;code&gt;VecMap&lt;/code&gt;, which isn&amp;rsquo;t even in the standard library!&lt;/p&gt;
 
-&lt;p&gt;If minimalism really is a goal (which I am going to criticise in a minute), it seems rather weird to have a collection which is barely used more than a non-libstd collection.&lt;/p&gt;
+&lt;p&gt;If minimalism really is a goal (which I am going to criticize in a minute), it seems rather weird to have a collection which is barely used more than a non-libstd collection.&lt;/p&gt;
 
 &lt;p&gt;Let&amp;rsquo;s move on to doubly-linked list. Searching on GitHub gives you 534 results. I was unable to find &lt;em&gt;a single place where it was used in a manner that could not be replaced by singly-linked lists&lt;/em&gt;. Chances are that there are some, but they&amp;rsquo;re incredibly rare, and it is odd given that there are no singly-linked list structures in the standard libraries.&lt;/p&gt;
 
@@ -74,7 +74,7 @@
 
 &lt;p&gt;Say you have an ordered list of elements, each of which has a priority. Now, you want to be able to retrieve the element with the highest or the lowest priority, with a reasonable performance. Note that mere heaps are not sufficient, since they are not arbitrarily ordered, in the sense that you cannot index them without traversing all elements.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: People think I&amp;rsquo;m talking about binary heaps, but they&amp;rsquo;re fundamentally very different. A keyed priority queue is some arbitrarily ordered list (or map) such that elements with high or low priority can be retrieved quickly. Binary heaps are not associative arrays or lists, they do not allow ordering of the elements, and are thus conceptually simpler than priority queues. Note that keyed priority queues are almost always implemented with binary heaps as the backbone. See [this paper]() for an in-depth description of a general-purpose priority queue&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: People think I&amp;rsquo;m talking about binary heaps, but they&amp;rsquo;re fundamentally very different. A keyed priority queue is some arbitrarily ordered list (or map) such that elements with high or low priority can be retrieved quickly. Binary heaps are not associative arrays or lists, they do not allow ordering of the elements, and are thus conceptually simpler than keyed priority queues. Note that keyed priority queues are almost always implemented with binary heaps as the backbone. See [this paper]() for an in-depth description of a general-purpose keyed priority queue&lt;/p&gt;
 
 &lt;p&gt;Keyed priority queues are used everywhere from cache level regulation to efficient scheduling, and are in my opinion one of the most useful data structures of all.&lt;/p&gt;
 
@@ -97,12 +97,12 @@
 &lt;p&gt;The reason a good implementation outperforms a good implementation of classical binary search trees has to do with two reasons:&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;&lt;p&gt;On average, 50% of the links followed under a search are cache local, whereas B-trees, for example, are around 0% cache local.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;On average, 50% of the links followed under a search are cache local, whereas B-trees, for example, are around 20% (&lt;strong&gt;update&lt;/strong&gt;: The original number said 0%, turns out my tests were wrong) cache local.&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;No tree rotations or equivalent operations are needed during insertion.&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;The downside is that they are not as rigidly balanced, making them slower in some cases.&lt;/p&gt;
+&lt;p&gt;Skip lists has its use cases, and a &lt;em&gt;good implementation&lt;/em&gt; (flat array, SLOBs, and unrolled lists) can easily outperform B-trees. For really big sets, however, skip lists tends to be slower due to not being as rigidly balanced.&lt;/p&gt;
 
 &lt;h2 id=&#34;self-balancing-trees&#34;&gt;Self-balancing trees&lt;/h2&gt;
 
@@ -125,13 +125,15 @@
 &lt;p&gt;A common talking point is that we can simply outsource it to external libraries. Unfortunately, they cannot provide an essential property of the standard library: standardization. Standard libraries serves for making sure t
 he ecosystem is uniform. If something is crucial for keeping the ecosystem together, it deserves a place in the standard library. These are severely underused due to the stigma around adding new dependencies.&lt;/p&gt;
 
-&lt;p&gt;Standardization is absolutely crucial for adaptation.&lt;/p&gt;
+&lt;p&gt;Standardization is absolutely crucial for adoptation.&lt;/p&gt;
 
 &lt;h1 id=&#34;criticizing-the-structures-it-do-have&#34;&gt;Criticizing the structures it do have&lt;/h1&gt;
 
 &lt;h2 id=&#34;hashmap&#34;&gt;&lt;code&gt;HashMap&lt;/code&gt;&lt;/h2&gt;
 
-&lt;p&gt;Rust&amp;rsquo;s hash table implementation is perhaps the worst part, not because it is particularly bad in context, but because it is a very performance-critical component, and yet has serious flaws.&lt;/p&gt;
+&lt;p&gt;Rust&amp;rsquo;s hash table implementation is perhaps the criticized part, not because it is a bad implementation, but because it is a very performance-critical component, and yet has its rough edges (including a, for some, odd choice of hash functions).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: The code is very well-written. The best way to study it is reading it. I recommend doing that.&lt;/p&gt;
 
 &lt;p&gt;A quick overview of the Rust &lt;code&gt;HashMap&lt;/code&gt;/&lt;code&gt;HashSet&lt;/code&gt; implementation is:&lt;/p&gt;
 
@@ -157,17 +159,21 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 
 &lt;p&gt;There&amp;rsquo;s no reason to have strong opinions on this subject. The difference is rather small, but interesting nonetheless.&lt;/p&gt;
 
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: As people pointed out, this section contains the error of confusing Rust&amp;rsquo;s implementation of Robin Hood hashing with the original paper. In fact, it is very different: Rust&amp;rsquo;s implementation doesn&amp;rsquo;t rehash, but instead linearly probes, that simply makes the difference even smaller, and it makes it a pretty good choice. I don&amp;rsquo;t know enough to be able to judge if it is better or worse than quadratic probing.&lt;/p&gt;
+
 &lt;h3 id=&#34;a-high-reallocation-threshold&#34;&gt;A high reallocation threshold&lt;/h3&gt;
 
-&lt;p&gt;This mostly comes down to a trade-off between between memory and CPU. If you think about it, 1:9 empty slots is a pretty dense table with an average probe length of 6 rehashes. Potentially (for very large tables) that can lead to 6 cache misses for just a single lookup.&lt;/p&gt;
+&lt;p&gt;This mostly comes down to a trade-off between between memory and CPU. If you think about it, 1:9 empty slots is a pretty dense table with an average probe length of 6 rehashes. Potentially (for very large tables) that can lead to 3-6 (avg. 3 or 4, depending on which test) cache misses for just a single lookup.&lt;/p&gt;
 
 &lt;p&gt;The advantage is that it is relatively memory efficient, but that should really only be a concern for really big tables. For most tables, this is way too high, and it trades CPU cycles for memory (which is almost unimportant these days).&lt;/p&gt;
 
 &lt;p&gt;I personally think that having a constant factor is a bad idea. I think it should be some function of the number of elements in the table, such that the factor is lower for small tables (where memory isn&amp;rsquo;t a concern). This way you get memory efficiency when it matters.&lt;/p&gt;
 
-&lt;h3 id=&#34;sip-hasher&#34;&gt;Sip-hasher?!?&lt;/h3&gt;
+&lt;h3 id=&#34;sip-hasher&#34;&gt;Sip-hasher&lt;/h3&gt;
 
 &lt;p&gt;Sip-hasher is a cryptographic hash function, and as with most cryptographic hash functions, it is slower than the non-cryptographic counterpart.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: Some people have pointed out that it is in fact not a cryptographic hash functions, but rather an efficient and yet sufficiently secure hash keyed function. In contrary to DJB2 or xxHash, it is not easy to invert/generate a preimage, which has the consequence of being hard to generate collisions on purpose, a property that can be important for publicly exposed structures (such as databases, KV stores for servers, etc.).&lt;/p&gt;
 
 &lt;p&gt;And it doesn&amp;rsquo;t even have a measurable better quality. I tried giving three different hash functions various data sets. Collision-wise they did equally on every data set, with exception of the English dictionary (as seen below). In every single test, my home-made hash function &amp;ldquo;long hasher&amp;rdquo; beats sip-hasher on performance &lt;em&gt;by a significant factor&lt;/em&gt; (around 30%)&amp;hellip;&lt;/p&gt;
 
@@ -265,6 +271,10 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 &lt;p&gt;There are already many different proposals floating around in the community, as well as implementations and so on. I hope we can look into lifting these or replacing them in libstd.&lt;/p&gt;
 
 &lt;p&gt;The &lt;a href=&#34;https://github.com/contain-rs&#34;&gt;contain-rs&lt;/a&gt; GitHub organization does a great job at providing a collection of various data structures, most of which are incredibly well-written. It would be interesting to see some of those in the standard library.&lt;/p&gt;
+
+&lt;h1 id=&#34;an-apology&#34;&gt;An apology&lt;/h1&gt;
+
+&lt;p&gt;The original title was exaggerated and inflammatory. To clarify, I don&amp;rsquo;t think it is horrible, nor even bad, rather I&amp;rsquo;d want a discussion/critical examination of the module and ways to improve it. I do realize that many people have spend a lot of time on implementing all these, and I admire it, calling it horrible (even if it is only in the title) is not fair, and it will likely distract the reader from the message of the post instead of inciting discussion. The mistake was entirely mine, and I should have given it a better title. Sorry.&lt;/p&gt;
 </description>
     </item>
     
