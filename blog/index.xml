@@ -21,6 +21,8 @@
 
 &lt;p&gt;This post (with a rather edgy title) will go through the short-fallings of the API and implementation of &lt;code&gt;std::collections&lt;/code&gt;.&lt;/p&gt;
 
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: The title was previously &amp;ldquo;Why &lt;code&gt;std::collections&lt;/code&gt; is absolutely horrible&amp;rdquo;. It was in the hope to spark critical discussion, however people were rather annoyed by this title (and I understand why), so I changed it to something less provocative.&lt;/p&gt;
+
 &lt;h1 id=&#34;what-it-contains&#34;&gt;What it contains&lt;/h1&gt;
 
 &lt;p&gt;&lt;code&gt;std::collections&lt;/code&gt; has a rather small set of collections (which is a legitimate choice to make to preserve minimality), the catch being that it&amp;rsquo;s an odd choice of collections:&lt;/p&gt;
@@ -46,6 +48,8 @@
 
 &lt;p&gt;Let&amp;rsquo;s move on to doubly-linked list. Searching on GitHub gives you 534 results. I was unable to find &lt;em&gt;a single place where it was used in a manner that could not be replaced by singly-linked lists&lt;/em&gt;. Chances are that there are some, but they&amp;rsquo;re incredibly rare, and it is odd given that there are no singly-linked list structures in the standard libraries.&lt;/p&gt;
 
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: To clarify here. I&amp;rsquo;m not arguing that the primitives I propose later deserves a place above these, rather that for a minimal set of collections, the choice is rather odd, given that some collections are even more common than some of these.&lt;/p&gt;
+
 &lt;h1 id=&#34;what-it-doesn-t-contain&#34;&gt;What it doesn&amp;rsquo;t contain&lt;/h1&gt;
 
 &lt;h2 id=&#34;concurrent-data-structures&#34;&gt;Concurrent data structures&lt;/h2&gt;
@@ -69,6 +73,8 @@
 &lt;p&gt;Priority queues is the structure everyone ask about and looks for, but no one can name it (here&amp;rsquo;s an exercise: go on Google and try to vaguely describe this structure, you will for sure find at least one thread asking for exactly that description, and often no one is able to answer the question or misguidedly proposes binary heaps instead).&lt;/p&gt;
 
 &lt;p&gt;Say you have an ordered list of elements, each of which has a priority. Now, you want to be able to retrieve the element with the highest or the lowest priority, with a reasonable performance. Note that mere heaps are not sufficient, since they are not arbitrarily ordered.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: People think I&amp;rsquo;m talking about binary heaps, but they&amp;rsquo;re fundamentally very different. A priority queue is some arbitrarily ordered list (or map) such that elements with high or low priority can be retrieved quickly. Binary heaps are not associative arrays or lists, they do not allow ordering of the elements, and are thus conceptually simpler than priority queues. Note that priority queues are almost always implemented with binary heaps as the backbone.&lt;/p&gt;
 
 &lt;p&gt;Priority queues are used everywhere from cache level regulation to efficient scheduling, and are in my opinion one of the most useful data structures of all.&lt;/p&gt;
 
