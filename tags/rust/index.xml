@@ -66,7 +66,7 @@
 &lt;p&gt;There are two main differences from &lt;code&gt;malloc&lt;/code&gt;:&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;&lt;p&gt;The programmer provides the size. Instead of doing &lt;code&gt;free(pointer)&lt;/code&gt;, you do &lt;code&gt;free(pointer, size)&lt;/code&gt;. That might seem like a minor change (and maybe even annoying), but the motivation is pretty clear: Due to the limitations of the libc &lt;code&gt;malloc&lt;/code&gt; API, most allocators add a the size to the block metadata of the allocation. This ranges from 2-8 bytes, but if you think about it, that&amp;rsquo;s quite a lot for small allocations (say you allocate 8 bytes, then you get a 2x memory burden). The information is redundant, because the user almost always know the size of the buffer. For example, &lt;code&gt;Vec&lt;/code&gt; would only have to provide its capacity, etc.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The programmer provides the size. Instead of doing &lt;code&gt;free(pointer)&lt;/code&gt;, you do &lt;code&gt;free(pointer, size)&lt;/code&gt;. That might seem like a minor change (and maybe even annoying), but the motivation is pretty clear: Due to the limitations of the libc &lt;code&gt;malloc&lt;/code&gt; API, most allocators add a the size to the block metadata of the allocation. This ranges from 2-8 bytes¹, but if you think about it, that&amp;rsquo;s quite a lot for small allocations (say you allocate 8 bytes, then you get a 2x memory burden). The information is redundant, because the user almost always know the size of the buffer. For example, &lt;code&gt;Vec&lt;/code&gt; would only have to provide its capacity, etc.&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;You can force inplace allocations (buffer extensions). In the libc API, there is no way to reallocate inplace, if possible. You have to go through &lt;code&gt;realloc&lt;/code&gt;, which might call &lt;code&gt;memcpy&lt;/code&gt;. Considering that inplace reallocation is a lot faster, there are scenarios where you&amp;rsquo;d like a reallocation, but it is not important enough for you to pay the &lt;code&gt;memcpy&lt;/code&gt;. Take &lt;code&gt;Vec&lt;/code&gt; for example, if it is &amp;ldquo;almost at capacity&amp;rdquo;, you&amp;rsquo;d like an extension, because waiting until it is filled up might mean that said memory is already taken. On the other hand, doing an early reallocation is bad style, since it provides no real benefit over doing it when the capacity is full.&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -74,6 +74,8 @@
 &lt;p&gt;It is more complex than libc&amp;rsquo;s &lt;code&gt;malloc&lt;/code&gt; API, but Rust programmers rarely use these symbols directly. Rather, it is abstracted away under safe primitives. The implementations of such primitives might exploit it for performance.&lt;/p&gt;
 
 &lt;p&gt;Now, this is only an API, and Rust currently uses Jemalloc, so not all of these features are supported. I&amp;rsquo;ll take the liberty to shamelessly plug &lt;a href=&#34;https://github.com/redox-os/ralloc&#34;&gt;ralloc&lt;/a&gt;, a pure Rust memory allocator making full use of the Rust allocation API.&lt;/p&gt;
+
+&lt;p&gt;¹ Please note that various optimizations (such as seperated segments and specialized bookkeeping for small blocks) can be done (especially for small allocations), but you ultimatively cannot remove the cost without changing the API.&lt;/p&gt;
 
 &lt;h1 id=&#34;hashmap&#34;&gt;&lt;code&gt;HashMap&lt;/code&gt;&lt;/h1&gt;
 
