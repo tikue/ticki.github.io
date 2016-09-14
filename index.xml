@@ -91,7 +91,7 @@
 
 &lt;p&gt;Now, this is only an API, and Rust currently uses Jemalloc, so not all of these features are supported. I&amp;rsquo;ll take the liberty to shamelessly plug &lt;a href=&#34;https://github.com/redox-os/ralloc&#34;&gt;ralloc&lt;/a&gt;, a pure Rust memory allocator making full use of the Rust allocation API.&lt;/p&gt;
 
-&lt;p&gt;¹ Please note that various optimizations (such as seperated segments and specialized bookkeeping for small blocks) can be done (especially for small allocations), but you ultimatively cannot remove the cost without changing the API.&lt;/p&gt;
+&lt;p&gt;¹ Note that various optimizations (such as seperated segments and specialized bookkeeping for small blocks) can be done (especially for small allocations), but you ultimatively cannot remove the cost without changing the API.&lt;/p&gt;
 
 &lt;h1 id=&#34;hashmap&#34;&gt;&lt;code&gt;HashMap&lt;/code&gt;&lt;/h1&gt;
 
