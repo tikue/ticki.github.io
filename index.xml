@@ -257,7 +257,7 @@
 
 &lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
 
-&lt;p&gt;We&amp;rsquo;ve seen a few insights and techniques used, as well as the reasoning behind it and ways to improve it. It&amp;rsquo;s not horrible (or even bad). It has its rough edges, but it&amp;rsquo;s in constant improvement and has many great primitives.&lt;/p&gt;
+&lt;p&gt;We&amp;rsquo;ve seen a few insights and techniques used, as well as the reasoning behind it and ways to improve it. It&amp;rsquo;s not horrible (or even bad) as a whole. It has its rough edges (some of which were pointed out in the last post), but it&amp;rsquo;s in constant improvement and has many great primitives.&lt;/p&gt;
 
 &lt;p&gt;I&amp;rsquo;d like to thank all the people who&amp;rsquo;ve implemented these collections, as well as the on going out-of-tree implementations of collections.&lt;/p&gt;
 </description>
