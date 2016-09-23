@@ -54,7 +54,7 @@
 
 &lt;h2 id=&#34;concurrent-data-structures&#34;&gt;Concurrent data structures&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://1.bp.blogspot.com/-Y4vduXfiQZw/UD6BvqIjHyI/AAAAAAAAA60/52ni7To498E/s1600/Java_program_map_perf_compare.png&#34; alt=&#34;How it compares&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/GmoylkC.png&#34; alt=&#34;How it compares&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The whole standard library contains exactly two concurrent data structures (note that data structures are different from containers), namely the MPSC-queues (the blocking queue with a limited buffer and the non-blocking with an unlimited buffer). These are used for cross-thread message passing and the alike.&lt;/p&gt;
 
@@ -114,7 +114,7 @@
 
 &lt;h2 id=&#34;self-balancing-trees&#34;&gt;Self-balancing trees&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://mohanradhakrishnan.files.wordpress.com/2014/06/screen-shot-2014-06-02-at-9-50-41-am.png&#34; alt=&#34;An example of a left-leaning red-black tree&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/x4QQlZp.png&#34; alt=&#34;An example of a left-leaning red-black tree&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;As mentioned, Rust&amp;rsquo;s standard library already has an excellent implementation of B-trees, a popular form of self-balancing trees.&lt;/p&gt;
 
@@ -124,7 +124,7 @@
 
 &lt;h2 id=&#34;slobs-aka-pointer-lists-memory-pools-typed-arenas-etc&#34;&gt;SLOBs (aka. pointer lists, memory pools, typed arenas, etc.)&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://www.codeproject.com/KB/cpp/MemoryPool/MemoryPool_Step5.png&#34; alt=&#34;An example SLOB&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/MoaaFPc.png&#34; alt=&#34;An example SLOB&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This is a very simple, and yet very powerful, data structure. In fact, they are nothing but a glorified singly linked list of pointers to some type. The dealbreaker is the fact that it requires no storage aside from the data it holds.&lt;/p&gt;
 
@@ -185,7 +185,7 @@ he ecosystem is uniform. If something is crucial for keeping the ecosystem toget
 
 &lt;h3 id=&#34;sip-hasher&#34;&gt;Sip-hasher&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://idea.popcount.org/2013-10-09-visualising-siphash/siproundarx.png&#34; alt=&#34;A round of Sip&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/smjww32.png&#34; alt=&#34;A round of Sip&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Sip-hasher is a cryptographic hash function, and as with most cryptographic hash functions, it is slower than the non-cryptographic counterpart.&lt;/p&gt;
 

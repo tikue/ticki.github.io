@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en-us">
 
@@ -6,18 +7,35 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <meta property="og:title" content=" Blogs &middot;  Ticki" />
+        <meta property="og:title" content=" skip lists a good implementation &middot;  Ticki" />
         <meta property="og:site_name" content="Ticki" />
-        <meta property="og:url" content="/blog/" />
+        <meta property="og:url" content="/blog/post-title/" />
 
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
+        <meta property="og:article:published_time" content="2016-09-17T13:46:49&#43;02:00" />
+        <meta property="og:article:tag" content="tag1" />
+        <meta property="og:article:tag" content="tag2" />
+        
+
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@" />
+        <meta name="twitter:creator" content="@" />
+        <meta name="twitter:title" content="skip lists a good implementation" />
+        <meta name="twitter:description" content="Skip lists are a wonderful data structure, but it is hard to get\
+right. This blog post presents various techniques to optimize and\
+improve the implementation of skip lists.
+" />
+        <meta name="twitter:url" content="/blog/post-title/" />
     
 
-        <title> Blogs &middot;  Ticki</title>
+        <title> skip lists a good implementation &middot;  Ticki</title>
 
     
-        <meta name="description" content="Howdy, this is my blog!" />
+        <meta name="description" content="Skip lists are a wonderful data structure, but it is hard to get\
+right. This blog post presents various techniques to optimize and\
+improve the implementation of skip lists.
+" />
     
 
         <meta name="p:domain_verify" content="fc173d84e3a4de948ed4bda2908afd3e"/>
@@ -33,10 +51,35 @@
     
 
     
-        <link href="/blog/index.xml" rel="alternate" type="application/rss+xml" title="Blogs &middot; Ticki" />
-    
-        <link rel="canonical" href="/blog/" />
+        <link rel="canonical" href="/blog/post-title/" />
 
+    
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "skip lists a good implementation",
+        "author": {
+            "@type": "Person",
+            "name": "http://profiles.google.com/?rel=author"
+        },
+        "datePublished": "2016-09-17",
+        "description": "Skip lists are a wonderful data structure, but it is hard to get\\\nright. This blog post presents various techniques to optimize and\\\nimprove the implementation of skip lists.\n",
+        "wordCount":  0 
+    }
+
+    </script>
+
+    <script type="text/javascript">
+    
+    
+      var disqus_shortname = 'http-ticki-github-io';
+      var disqus_identifier = '\/blog\/post-title\/';
+      var disqus_title = 'skip lists a good implementation';
+      var disqus_url = '\/blog\/post-title\/';
+    
+
+    </script>
     
 
     <style>
@@ -59,9 +102,11 @@
 			  	    
             </div>
             <div class="nav-menu">
-              <a class="rss" href="/blog/index.xml">
+              <a class="rss" href="">
                 <i class="icon-rss"></i>
               </a>
+                
+                <a class="menu" data-action="toc" data-target="toc"><i class="icon-location"></i></a>
                 
                 
                 <a class="menu" data-action="menu" data-target="menu"><i class="icon-menu"></i></a>
@@ -70,141 +115,78 @@
           </nav>
 
 
-<header id="header" class="header">
-	<div class="inner">
-		<a class="header-title" href="/">
-			<h1 class="header-name">Blogs</h1>
-		</a>
-	</div>
-	
-</header>
+<main class="content" role="main">
+	<article class="post">
+		<div class="inner">
 
-	<div id="post-index" class="container">
+			<div id="push">
 
-		<main class="content" role="main">
+  			<header class="post-header">
+  				<span class="post-meta">
+						<span class="post-date">17 Sep 2016</span> <span class="reading-time">| <span class="estimated-reading-time">0 min.</span> (<span class="word-count">0</span> words)</span></span>
+  				</span>
+  				<div class="clear"></div>
+  				<h1 class="post-title">skip lists a good implementation</h1>
+  			</header>
 
-			<div class="post-list">
-				<div id="push">
+  			<section class="post-content">
+  				
+  			</section>
 
-			
+  			<footer class="post-footer">
+  				<div class="post-tags">
+            
+            
+                <a href="//tags/tag1/">tag1</a>
+            
+                <a href="//tags/tag2/">tag2</a>
+            
+            
+  				</div>
+  				<div class="post-share">
+  					<a class="icon-twitter" href="https://twitter.com/share?text=skip%20lists%20a%20good%20implementation&url=%2fblog%2fpost-title%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+  						<span>Twitter</span>
+  					</a>
+  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=%2fblog%2fpost-title%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+  						<span>Facebook</span>
+  					</a>
+  					<a class="icon-gplus" href="https://plus.google.com/share?url=%2fblog%2fpost-title%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+  						<span>Google+</span>
+  					</a>
+  				</div>
+  			</footer>
 
-			
-			  
-<article class="blog">
+  			<aside class="post-comments">
+    
+    
+    <div id="disqus_thread"></div>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    
+    
+</aside>
 
-	<div class="inner">
-		<a class="post-link" href="/blog/skip-lists-done-right/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">17 Sep 2016</span>
-		</span>
-		<h2 class="post-title"><a href="/blog/skip-lists-done-right/">Skip Lists: Done Right</a></h2>
-		<p class="post-excerpt">    Skip lists are a wonderful data structure, but it is hard to get\
-    right. This blog post presents various techniques to optimize and\
-    improve the implementation of skip lists.
-&hellip;</p>
-		<span class="post-more"><a href="/blog/skip-lists-done-right/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
 
-			
-			  
-<article class="blog featured">
-
-	<div class="inner">
-		<a class="post-link" href="/blog/fantastic/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">14 Sep 2016</span>
-		</span>
-		<h2 class="post-title"><a href="/blog/fantastic/">Why Rust&#39;s `std::collections` is absolutely fantastic</a></h2>
-		<p class="post-excerpt">Now that we&#39;ve seen the bad stuff of `std::collections`, we&#39;re going to look into all the good stuff and various techniques used to optimize and improve the collections&hellip;</p>
-		<span class="post-more"><a href="/blog/fantastic/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
-
-			
-			  
-<article class="blog featured">
-
-	<div class="inner">
-		<a class="post-link" href="/blog/horrible/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">12 Sep 2016</span>
-		</span>
-		<h2 class="post-title"><a href="/blog/horrible/">A Critique of Rust&#39;s `std::collections`</a></h2>
-		<p class="post-excerpt">This is an in-depth critique of the bad parts of Rust&#39;s collection primitves.&hellip;</p>
-		<span class="post-more"><a href="/blog/horrible/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
-
-			
-			  
-<article class="blog">
-
-	<div class="inner">
-		<a class="post-link" href="/blog/lambda_crabs_3/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">8 Jun 2016</span>
-		</span>
-		<h2 class="post-title"><a href="/blog/lambda_crabs_3/">Lambda crabs (part 3): Region-based alias analysis</a></h2>
-		<p class="post-excerpt">In this post, we show how you can analyse alias properties through region data.&hellip;</p>
-		<span class="post-more"><a href="/blog/lambda_crabs_3/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
-
-			
-			  
-<article class="blog">
-
-	<div class="inner">
-		<a class="post-link" href="/blog/lambda_crabs_2/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">6 Jun 2016</span>
-		</span>
-		<h2 class="post-title"><a href="/blog/lambda_crabs_2/">Lambda crabs (part 2): Region inference is (not) magic.</a></h2>
-		<p class="post-excerpt">I go through the solution to our optimization problem presented in last post. This provides an full algorithm for inference of regions.&hellip;</p>
-		<span class="post-more"><a href="/blog/lambda_crabs_2/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
-
-			
-			  
-<article class="blog">
-
-	<div class="inner">
-		<a class="post-link" href="/blog/lambda_crabs_1/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">6 Jun 2016</span>
-		</span>
-		<h2 class="post-title"><a href="/blog/lambda_crabs_1/">Lambda crabs (part 1): A mathematical introduction to lifetimes and regions</a></h2>
-		<p class="post-excerpt">In this post, I go through the theoretical foundation of region-based memory management.&hellip;</p>
-		<span class="post-more"><a href="/blog/lambda_crabs_1/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
-
-			
-
-				</div>
 			</div>
 
-			<nav id="pagination" class="pagination" role="pagination">
-	<div class="inner">
-	
-		<span class="pagination-info">Page 1 of 1</span>
-	
-		<div class="clear"></div>
-	</div>
-</nav>
+			<nav class="post-nav">
+				
+				
+					<a class="post-nav-item post-nav-prev" href="/blog/fantastic/">
+						<section class="post-nav-teaser">
+							<span class="post-nav-icon"><i class="icon-arrow-right"></i></span>
+							<span class="post-nav-info">
+								<h4 class="post-nav-title">Why Rust&#39;s `std::collections` is absolutely fantastic</h4>
+								<p class="post-nav-excerpt">Now that we&#39;ve seen the bad stuff of `std::collections`, we&#39;re going to look into all the good stuff and various techniques used to optimize and improve the collections&hellip;</p>
+							</span>
+						</section>
+					</a>
+				
+				<div class="clear"></div>
+			</nav>
 
-
-		</main>
-
-	</div>
+		</div>
+	</article>
+</main>
 
 				<div id="body-class" style="display: none;"></div>
 				<footer id="footer">
@@ -239,6 +221,16 @@
 </div>
 
 				
+<div id="tocMenu" data-target="toc">
+    <div class="menu-header">
+        <span class="menu-label">Menu</span>
+        <a class="menu-close" data-action="toc" data-target="toc"></a>
+    </div>
+    <div id="toc" class="menu-list">
+        
+    </div>
+</div>
+
 
 				<div class="overlay"></div>
 			</div>

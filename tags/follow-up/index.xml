@@ -47,7 +47,7 @@
 
 &lt;h1 id=&#34;vec-t&#34;&gt;&lt;code&gt;Vec&amp;lt;T&amp;gt;&lt;/code&gt;&lt;/h1&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://www.strchr.com/media/dynamic_arrays2.png&#34; alt=&#34;Vector growth&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/UDeQOFK.png&#34; alt=&#34;Vector growth&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Most programmers are familiar with vectors, the growable contiguous array with random-access property. Indeed, it is a very simple and well-defined structure. It is not a particularly elegant structure, but it is practical, simple, and fast.&lt;/p&gt;
 
@@ -163,7 +163,7 @@
 
 &lt;h1 id=&#34;b-trees&#34;&gt;B-trees&lt;/h1&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://www.brpreiss.com/books/opus5/html/img1342.gif&#34; alt=&#34;An example B-tree.&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/tUmeDcr.png&#34; alt=&#34;An example B-tree.&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;B-trees are one of those structures that people always implement wrongly in one way or another. Fortunately, Rust&amp;rsquo;s standard library gets this one right.&lt;/p&gt;
 
