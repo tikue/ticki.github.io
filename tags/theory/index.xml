@@ -98,22 +98,9 @@ a += 2;
 
 &lt;h3 id=&#34;weakening-conditions&#34;&gt;Weakening conditions&lt;/h3&gt;
 
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\frac{P_1 \to P_2,\quad \{P_1\}\ S\ \{Q_1\},\quad Q_1 \to Q_2}{\{P_2\}\ S\ \{Q_2\}}\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\frac{P_1 \to P_2,\quad \{P_2\}\ S\ \{Q_2\},\quad Q_2 \to Q_1}{\{P_1\}\ S\ \{Q_1\}}\]&lt;/span&gt;&lt;/p&gt;
 
-&lt;p&gt;So, what&#39;s going on here? Well, &lt;span  class=&#34;math&#34;&gt;\(P_1\)&lt;/span&gt; implies &lt;span  class=&#34;math&#34;&gt;\(P_2\)&lt;/span&gt;, so we can replace the precondition by a weaker (implied) version. Applying the same to the postcondition yields the axiom.&lt;/p&gt;
-
-&lt;p&gt;Take our previous example, and apply the rule with &lt;span  class=&#34;math&#34;&gt;\(P_2\)&lt;/span&gt; being &lt;span  class=&#34;math&#34;&gt;\(a &lt; 5\)&lt;/span&gt; and &lt;span  class=&#34;math&#34;&gt;\(Q_2\)&lt;/span&gt; being &lt;span  class=&#34;math&#34;&gt;\(a &gt; 5\)&lt;/span&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\frac{a = 4 \implies a &lt; 5,\quad \{a = 4\}\ a \gets a + 2\ \{a = 6\},\quad a = 6 \implies a &gt; 5}{\{a &lt; 5\}\ a \gets a + 2\ \{a &gt; 5\}}\]&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;That looks scary, let&#39;s break it down:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;If &lt;span  class=&#34;math&#34;&gt;\(a = 4\)&lt;/span&gt;, then obviously &lt;span  class=&#34;math&#34;&gt;\(a &lt; 5\)&lt;/span&gt;.&lt;/li&gt;
-&lt;li&gt;If &lt;span  class=&#34;math&#34;&gt;\(a = 6\)&lt;/span&gt;, then obviously &lt;span  class=&#34;math&#34;&gt;\(a &gt; 5\)&lt;/span&gt;.&lt;/li&gt;
-&lt;li&gt;If &lt;span  class=&#34;math&#34;&gt;\(a = 4\)&lt;/span&gt; before assigning &lt;span  class=&#34;math&#34;&gt;\(a \gets a + 2\)&lt;/span&gt;, &lt;span  class=&#34;math&#34;&gt;\(a\)&lt;/span&gt; is &lt;span  class=&#34;math&#34;&gt;\(6\)&lt;/span&gt; afterwards.&lt;/li&gt;
-&lt;li&gt;As a result, we can weaken the condition to say: If &lt;span  class=&#34;math&#34;&gt;\(a &lt; 5\)&lt;/span&gt; before assigning &lt;span  class=&#34;math&#34;&gt;\(a \gets a + 2\)&lt;/span&gt;, then &lt;span  class=&#34;math&#34;&gt;\(a &gt; 5\)&lt;/span&gt; afterwards.&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;So, what&#39;s going on here? Well, &lt;span  class=&#34;math&#34;&gt;\(P_1\)&lt;/span&gt; implies &lt;span  class=&#34;math&#34;&gt;\(P_2\)&lt;/span&gt;, so we can replace the precondition by a weaker (implied) version. The same cannot be applied to postcondition, because the weakened precondition might not yield the postcondition after the statement. We can however replace it by a stronger postcondition (i.e. one which is implied by original postcondition).&lt;/p&gt;
 
 &lt;p&gt;It is left as an exercise for the reader to verify the correctness of the rule above.&lt;/p&gt;
 
@@ -256,7 +243,7 @@ while y &amp;lt; 100 {
 
 &lt;p&gt;Conditional gotos are interesting in that it allows us to reason about both while-loops and if-statements in only run rule.&lt;/p&gt;
 
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\frac{\{P\}\ b_1\ \{Q \land C\},\quad \{P\}\ b_2\ \{Q \land \neg C\}}{\{P\}\ \textbf{if}_C(b_1, b_2)\ \{Q\}}\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\frac{\{P \land C\}\ b_1\ \{Q\},\quad \{P \land \neg C\}\ b_2\ \{Q\}}{\{P\}\ \textbf{if}_C(b_1, b_2)\ \{Q\}}\]&lt;/span&gt;&lt;/p&gt;
 
 &lt;p&gt;It is the non-structural equivalent of the conditional rule, we described earlier.&lt;/p&gt;
 

@@ -63,7 +63,7 @@
         },
         "datePublished": "2016-09-24",
         "description": "In this post, I introduce a Hoare logic specifically for the Rust MIR.",
-        "wordCount":  3425 
+        "wordCount":  3367 
     }
 
     </script>
@@ -121,7 +121,7 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">24 Sep 2016</span> <span class="reading-time">| <span class="estimated-reading-time">17 min.</span> (<span class="word-count">3425</span> words)</span></span>
+						<span class="post-date">24 Sep 2016</span> <span class="reading-time">| <span class="estimated-reading-time">16 min.</span> (<span class="word-count">3367</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
   				<h1 class="post-title">A Hoare Logic for Rust</h1>
@@ -211,22 +211,9 @@ a += 2;
 
 <h3 id="weakening-conditions">Weakening conditions</h3>
 
-<p><span  class="math">\[\frac{P_1 \to P_2,\quad \{P_1\}\ S\ \{Q_1\},\quad Q_1 \to Q_2}{\{P_2\}\ S\ \{Q_2\}}\]</span></p>
+<p><span  class="math">\[\frac{P_1 \to P_2,\quad \{P_2\}\ S\ \{Q_2\},\quad Q_2 \to Q_1}{\{P_1\}\ S\ \{Q_1\}}\]</span></p>
 
-<p>So, what's going on here? Well, <span  class="math">\(P_1\)</span> implies <span  class="math">\(P_2\)</span>, so we can replace the precondition by a weaker (implied) version. Applying the same to the postcondition yields the axiom.</p>
-
-<p>Take our previous example, and apply the rule with <span  class="math">\(P_2\)</span> being <span  class="math">\(a < 5\)</span> and <span  class="math">\(Q_2\)</span> being <span  class="math">\(a > 5\)</span>:</p>
-
-<p><span  class="math">\[\frac{a = 4 \implies a < 5,\quad \{a = 4\}\ a \gets a + 2\ \{a = 6\},\quad a = 6 \implies a > 5}{\{a < 5\}\ a \gets a + 2\ \{a > 5\}}\]</span></p>
-
-<p>That looks scary, let's break it down:</p>
-
-<ol>
-<li>If <span  class="math">\(a = 4\)</span>, then obviously <span  class="math">\(a < 5\)</span>.</li>
-<li>If <span  class="math">\(a = 6\)</span>, then obviously <span  class="math">\(a > 5\)</span>.</li>
-<li>If <span  class="math">\(a = 4\)</span> before assigning <span  class="math">\(a \gets a + 2\)</span>, <span  class="math">\(a\)</span> is <span  class="math">\(6\)</span> afterwards.</li>
-<li>As a result, we can weaken the condition to say: If <span  class="math">\(a < 5\)</span> before assigning <span  class="math">\(a \gets a + 2\)</span>, then <span  class="math">\(a > 5\)</span> afterwards.</li>
-</ol>
+<p>So, what's going on here? Well, <span  class="math">\(P_1\)</span> implies <span  class="math">\(P_2\)</span>, so we can replace the precondition by a weaker (implied) version. The same cannot be applied to postcondition, because the weakened precondition might not yield the postcondition after the statement. We can however replace it by a stronger postcondition (i.e. one which is implied by original postcondition).</p>
 
 <p>It is left as an exercise for the reader to verify the correctness of the rule above.</p>
 
@@ -369,7 +356,7 @@ while y &lt; 100 {
 
 <p>Conditional gotos are interesting in that it allows us to reason about both while-loops and if-statements in only run rule.</p>
 
-<p><span  class="math">\[\frac{\{P\}\ b_1\ \{Q \land C\},\quad \{P\}\ b_2\ \{Q \land \neg C\}}{\{P\}\ \textbf{if}_C(b_1, b_2)\ \{Q\}}\]</span></p>
+<p><span  class="math">\[\frac{\{P \land C\}\ b_1\ \{Q\},\quad \{P \land \neg C\}\ b_2\ \{Q\}}{\{P\}\ \textbf{if}_C(b_1, b_2)\ \{Q\}}\]</span></p>
 
 <p>It is the non-structural equivalent of the conditional rule, we described earlier.</p>
 
