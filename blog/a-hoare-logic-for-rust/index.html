@@ -168,6 +168,8 @@
 
 <p><span  class="math">\[\frac{\forall \sigma.P(\sigma) \to Q(f(\sigma))}{\{P\}\ f\ \{Q\}} \qquad \frac{\{P\}\ f\ \{Q\}}{\forall \sigma.P(\sigma) \to Q(f(\sigma))}\]</span></p>
 
+<p>(on a side note, this notation should be understood as: what is below the line is true if what is above is true)</p>
+
 <h2 id="an-example">An example</h2>
 
 <p>Suppose we have the program,</p>
@@ -190,8 +192,6 @@ a += 2;
 <p>The empty statement rule states that: Let <span  class="math">\(S\)</span> be any statement which carries no side-effect, then <span  class="math">\(\{P\} \ S \ \{P\}\)</span>, or in inference line notation:</p>
 
 <p><span  class="math">\[\frac{S \text{ is pure}}{\{P\} \ S \ \{P\}}\]</span></p>
-
-<p>(on a side note, this notation should be understood as: what is below the line is true if what is above is true)</p>
 
 <p>This rule is relatively simple: If the state is not changed, the invariants are neither. Note that this is only true for effect-less statements, since the statement could otherwise change variables or in other ways invalidate the postcondition.</p>
 

@@ -55,6 +55,8 @@
 
 &lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\frac{\forall \sigma.P(\sigma) \to Q(f(\sigma))}{\{P\}\ f\ \{Q\}} \qquad \frac{\{P\}\ f\ \{Q\}}{\forall \sigma.P(\sigma) \to Q(f(\sigma))}\]&lt;/span&gt;&lt;/p&gt;
 
+&lt;p&gt;(on a side note, this notation should be understood as: what is below the line is true if what is above is true)&lt;/p&gt;
+
 &lt;h2 id=&#34;an-example&#34;&gt;An example&lt;/h2&gt;
 
 &lt;p&gt;Suppose we have the program,&lt;/p&gt;
@@ -77,8 +79,6 @@ a += 2;
 &lt;p&gt;The empty statement rule states that: Let &lt;span  class=&#34;math&#34;&gt;\(S\)&lt;/span&gt; be any statement which carries no side-effect, then &lt;span  class=&#34;math&#34;&gt;\(\{P\} \ S \ \{P\}\)&lt;/span&gt;, or in inference line notation:&lt;/p&gt;
 
 &lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\frac{S \text{ is pure}}{\{P\} \ S \ \{P\}}\]&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;(on a side note, this notation should be understood as: what is below the line is true if what is above is true)&lt;/p&gt;
 
 &lt;p&gt;This rule is relatively simple: If the state is not changed, the invariants are neither. Note that this is only true for effect-less statements, since the statement could otherwise change variables or in other ways invalidate the postcondition.&lt;/p&gt;
 
