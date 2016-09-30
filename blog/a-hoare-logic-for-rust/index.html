@@ -63,7 +63,7 @@
         },
         "datePublished": "2016-09-24",
         "description": "In this post, I introduce a Hoare logic specifically for the Rust MIR.",
-        "wordCount":  3374 
+        "wordCount":  3397 
     }
 
     </script>
@@ -121,7 +121,7 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">24 Sep 2016</span> <span class="reading-time">| <span class="estimated-reading-time">16 min.</span> (<span class="word-count">3374</span> words)</span></span>
+						<span class="post-date">24 Sep 2016</span> <span class="reading-time">| <span class="estimated-reading-time">16 min.</span> (<span class="word-count">3397</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
   				<h1 class="post-title">A Hoare Logic for Rust</h1>
@@ -214,6 +214,8 @@ a += 2;
 <p><span  class="math">\[\frac{P_1 \to P_2,\quad \{P_2\}\ S\ \{Q_2\},\quad Q_2 \to Q_1}{\{P_1\}\ S\ \{Q_1\}}\]</span></p>
 
 <p>So, what's going on here? Well, <span  class="math">\(P_1\)</span> implies <span  class="math">\(P_2\)</span>, so we can replace the precondition by a stronger version which implies the old one. The same cannot be applied to postcondition, because the strengthened precondition might not yield the strengthened postcondition after the statement. We can however replace it by a weaker postcondition (i.e. one which is implied by original postcondition).</p>
+
+<p>We can always weaken guarantees, but never assumptions, since the assumption is what the guarantee relies on. Assumptions can be made stronger, however.</p>
 
 <p>It is left as an exercise for the reader to verify the correctness of the rule above.</p>
 

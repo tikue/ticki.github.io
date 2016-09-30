@@ -102,6 +102,8 @@ a += 2;
 
 &lt;p&gt;So, what&#39;s going on here? Well, &lt;span  class=&#34;math&#34;&gt;\(P_1\)&lt;/span&gt; implies &lt;span  class=&#34;math&#34;&gt;\(P_2\)&lt;/span&gt;, so we can replace the precondition by a stronger version which implies the old one. The same cannot be applied to postcondition, because the strengthened precondition might not yield the strengthened postcondition after the statement. We can however replace it by a weaker postcondition (i.e. one which is implied by original postcondition).&lt;/p&gt;
 
+&lt;p&gt;We can always weaken guarantees, but never assumptions, since the assumption is what the guarantee relies on. Assumptions can be made stronger, however.&lt;/p&gt;
+
 &lt;p&gt;It is left as an exercise for the reader to verify the correctness of the rule above.&lt;/p&gt;
 
 &lt;h3 id=&#34;the-assignment-axiom&#34;&gt;The assignment axiom&lt;/h3&gt;
