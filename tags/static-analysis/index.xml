@@ -96,11 +96,11 @@ a += 2;
 
 &lt;p&gt;It is left as an exercise for the reader to verify the correctness of the rule above.&lt;/p&gt;
 
-&lt;h3 id=&#34;weakening-conditions&#34;&gt;Weakening conditions&lt;/h3&gt;
+&lt;h3 id=&#34;strengthening-and-weakening-conditions&#34;&gt;Strengthening and weakening conditions&lt;/h3&gt;
 
 &lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\frac{P_1 \to P_2,\quad \{P_2\}\ S\ \{Q_2\},\quad Q_2 \to Q_1}{\{P_1\}\ S\ \{Q_1\}}\]&lt;/span&gt;&lt;/p&gt;
 
-&lt;p&gt;So, what&#39;s going on here? Well, &lt;span  class=&#34;math&#34;&gt;\(P_1\)&lt;/span&gt; implies &lt;span  class=&#34;math&#34;&gt;\(P_2\)&lt;/span&gt;, so we can replace the precondition by a weaker (implied) version. The same cannot be applied to postcondition, because the weakened precondition might not yield the postcondition after the statement. We can however replace it by a stronger postcondition (i.e. one which is implied by original postcondition).&lt;/p&gt;
+&lt;p&gt;So, what&#39;s going on here? Well, &lt;span  class=&#34;math&#34;&gt;\(P_1\)&lt;/span&gt; implies &lt;span  class=&#34;math&#34;&gt;\(P_2\)&lt;/span&gt;, so we can replace the precondition by a stronger version which implies the old one. The same cannot be applied to postcondition, because the strengthened precondition might not yield the strengthened postcondition after the statement. We can however replace it by a weaker postcondition (i.e. one which is implied by original postcondition).&lt;/p&gt;
 
 &lt;p&gt;It is left as an exercise for the reader to verify the correctness of the rule above.&lt;/p&gt;
 
