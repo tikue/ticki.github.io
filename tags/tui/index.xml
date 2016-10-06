@@ -17,7 +17,7 @@
       <guid>/blog/making-terminal-applications-in-rust-with-termion/</guid>
       <description>
 
-&lt;p&gt;This post will walk through the basics of implementing a terminal (TTY) application for experienced and new beginners to Rust.&lt;/p&gt;
+&lt;p&gt;This post will walk through the basics of implementing a terminal (TTY) application for both new beginners and experienced users of Rust.&lt;/p&gt;
 
 &lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 
@@ -349,6 +349,10 @@ fn main() {
 &lt;h2 id=&#34;bypassing-piped-input&#34;&gt;Bypassing piped input&lt;/h2&gt;
 
 &lt;p&gt;Sometimes you might want to pipe some input to your program while controling the TTY. This is actually not that hard. With &lt;a href=&#34;https://docs.rs/termion/1.1.1/termion/fn.get_tty.html&#34;&gt;&lt;code&gt;termion::get_tty()&lt;/code&gt;&lt;/a&gt;, you can read and write from the TTY, while still being able to read or write to stdin/stdout via &lt;code&gt;std::io&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;truecolor&#34;&gt;Truecolor&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://docs.rs/termion/1.1.1/termion/color/struct.Rgb.html&#34;&gt;&lt;code&gt;termion::color::Rgb(r, g, b)&lt;/code&gt;&lt;/a&gt; allows you to use full 24-bit truecolor.&lt;/p&gt;
 
 &lt;h1 id=&#34;trying-all-this-out-yourself&#34;&gt;Trying all this out yourself&lt;/h1&gt;
 
