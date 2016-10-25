@@ -67,7 +67,7 @@
         },
         "datePublished": "2016-10-23",
         "description": "Some notes and ideas on block-based rolling compression.",
-        "wordCount":  536 
+        "wordCount":  801 
     }
 
     </script>
@@ -125,7 +125,7 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">23 Oct 2016</span> <span class="reading-time">| <span class="estimated-reading-time">3 min.</span> (<span class="word-count">536</span> words)</span></span>
+						<span class="post-date">23 Oct 2016</span> <span class="reading-time">| <span class="estimated-reading-time">4 min.</span> (<span class="word-count">801</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
   				<h1 class="post-title">On Random-Access Compression</h1>
@@ -164,9 +164,13 @@
 
 <p>A physical cluster can contain up to 8 virtual clusters. A pointer to a virtual cluster starts with 3 bits defining the index into the physical cluster, which is defined by the rest of the pointer.</p>
 
-<p>The allocated physical cluster contains 8 bitflags, defining which of the 8 virtual clusters in the physical cluster are free. This allows us to know how many virtual clusters we need to go over before we get the target decompressed cluster.</p>
+<p>The allocated physical cluster contains 8 bitflags, defining which of the 8 virtual clusters in the physical cluster are used. This allows us to know how many virtual clusters we need to go over before we get the target decompressed cluster.</p>
 
 <p>When the integer hits zero (i.e. all the virtual clusters are freed), the physical cluster is freed.</p>
+
+<p>Since an active cluster will never have the state zero, we use this blind state to represent an uncompressed physical cluster. This means we maximally have one byte in space overhead for uncompressible clusters.</p>
+
+<p><figure><img src="/img/virtual_physical_random_access_compression_diagram.svg" alt="A diagram"></figure></p>
 
 <h1 id="the-physical-cluster-allocator">The physical cluster allocator</h1>
 
@@ -174,15 +178,41 @@
 
 <p>This method is called SLOB (Simple List Of Objects) and has the advantage of being complete zero-cost in that there is no wasted space.</p>
 
+<p><figure><img src="/img/slob_allocation_diagram.svg" alt="Physical allocation is simply linked list of free objects."></figure></p>
+
 <h1 id="the-virtual-cluster-allocator">The virtual cluster allocator</h1>
 
 <p>Now we hit the meat of the matter.</p>
 
-<p>When virtual cluster is allocated, we read from the physical cluster list. The first thing we will check is if we can fit in our virtual cluster into the cluster before the head of the list.</p>
+<p>When virtual cluster is allocated, we read from the physical cluster list. The first thing we will check is if we can fit in our virtual cluster into the cluster next to the head of the list (we wrap if we reach the end).</p>
 
-<p>If we can fit it in <em>and</em> we have less than 8 virtual clusters in this physical cluster, we will append it to the compressed physical cluster (and then set the respective bitflag).</p>
+<p>If we can fit it in <em>and</em> we have less than 8 virtual clusters in this physical cluster, we will put it into the compressed physical cluster at the first free virtual slot (and then set the respective bitflag):</p>
 
-<p>If we cannot, we pop the list and use the fully-free physical cluster to store etablish a new stack of virtual clusters.</p>
+<p><figure><img src="/img/allocating_compressed_virtual_page_into_next_diagram.svg" alt="We try to fit it into the next cluster."></figure></p>
+
+<p>If we cannot, we pop the list and use the fully-free physical cluster to store etablish a new stack of virtual clusters. It starts as uncompressed:</p>
+
+<p><figure><img src="/img/pop_and_create_new_uncompressed_cluster_diagram.svg" alt="We pop the list and put the virtual cluster in the physical uncompressed slot."></figure></p>
+
+<h1 id="properties-of-this-approach">Properties of this approach</h1>
+
+<p>This approach to writable random-access compression has some very nice properties.</p>
+
+<h2 id="compression-miss">Compression miss</h2>
+
+<p>We call it a compression miss when we need to pop from the freelist (i.e. we cannot fit it into the cluster next to the head). When you allocate you can maximally have one compression miss, and therefore allocation is constant-time.</p>
+
+<h2 id="every-cluster-has-a-sister-cluster">Every cluster has a sister cluster</h2>
+
+<p>Because the &quot;next cluster or wrap&quot; function is bijective, we're sure that we try to insert a virtual cluster to every cluster at least once. This wouldn't be true if we used a hash function or something else.</p>
+
+<p>This has the interesting consequence that filled clusters won't be tried to allocate in multiple times.</p>
+
+<h1 id="limitations">Limitations</h1>
+
+<p>A number of limitations are in this algorithms. The first and most obvious one is the limitation on the compression ratio. This is a minor one: it limits the ratio to maxmially slightly less than 1:8.</p>
+
+<p>A more important limitation is fragmentation. If I allocate many clusters and then deallocate some of them such that many adjacent physical clusters only contain one virtual cluster, this row will have a compression ratio of 1:1 until they're deallocated. Note that it is very rare that this happens, and will only marginally affect the global compression ratio.</p>
 
   			</section>
 
