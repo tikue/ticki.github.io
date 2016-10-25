@@ -19,7 +19,7 @@
   src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
 &lt;/script&gt;
 
-&lt;p&gt;This post will contains some of my unstructured thoughts and ideas on rolling compression, I&#39;m going to use in &lt;a href=&#34;https://github.com/ticki/tfs&#34;&gt;TFS&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This post will contains an algorithm I came up with, doing efficient rolling compression. It&#39;s going to be used in &lt;a href=&#34;https://github.com/ticki/tfs&#34;&gt;TFS&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h1 id=&#34;what-is-rolling-compression&#34;&gt;What is rolling compression?&lt;/h1&gt;
 
