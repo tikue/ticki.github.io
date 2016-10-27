@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en-us">
 
@@ -6,18 +7,33 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <meta property="og:title" content=" Algorithms &middot;  Ticki" />
+        <meta property="og:title" content=" How LZ4 works &middot;  Ticki" />
         <meta property="og:site_name" content="Ticki" />
-        <meta property="og:url" content="/tags/algorithms/" />
+        <meta property="og:url" content="/blog/how-lz4-works/" />
 
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
+        <meta property="og:article:published_time" content="2016-10-23T23:25:15&#43;02:00" />
+        <meta property="og:article:tag" content="compression" />
+        <meta property="og:article:tag" content="lz4" />
+        <meta property="og:article:tag" content="algorithms" />
+        <meta property="og:article:tag" content="notes" />
+        <meta property="og:article:tag" content="explanation" />
+        <meta property="og:article:tag" content="data" />
+        
+
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@" />
+        <meta name="twitter:creator" content="@" />
+        <meta name="twitter:title" content="How LZ4 works" />
+        <meta name="twitter:description" content="LZ4 is an exciting algorithm, but unfortunately there is no good explanation on how it works. This blog post tries to explain it in terms that everybody can understand." />
+        <meta name="twitter:url" content="/blog/how-lz4-works/" />
     
 
-        <title> Algorithms &middot;  Ticki</title>
+        <title> How LZ4 works &middot;  Ticki</title>
 
     
-        <meta name="description" content="Howdy, this is my blog!" />
+        <meta name="description" content="LZ4 is an exciting algorithm, but unfortunately there is no good explanation on how it works. This blog post tries to explain it in terms that everybody can understand." />
     
 
         <meta name="p:domain_verify" content="fc173d84e3a4de948ed4bda2908afd3e"/>
@@ -33,10 +49,35 @@
     
 
     
-        <link href="/tags/algorithms/index.xml" rel="alternate" type="application/rss+xml" title="Algorithms &middot; Ticki" />
-    
-        <link rel="canonical" href="/tags/algorithms/" />
+        <link rel="canonical" href="/blog/how-lz4-works/" />
 
+    
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "How LZ4 works",
+        "author": {
+            "@type": "Person",
+            "name": "http://profiles.google.com/?rel=author"
+        },
+        "datePublished": "2016-10-23",
+        "description": "LZ4 is an exciting algorithm, but unfortunately there is no good explanation on how it works. This blog post tries to explain it in terms that everybody can understand.",
+        "wordCount":  1073 
+    }
+
+    </script>
+
+    <script type="text/javascript">
+    
+    
+      var disqus_shortname = 'http-ticki-github-io';
+      var disqus_identifier = '\/blog\/how-lz4-works\/';
+      var disqus_title = 'How LZ4 works';
+      var disqus_url = '\/blog\/how-lz4-works\/';
+    
+
+    </script>
     
 
     <style>
@@ -59,9 +100,11 @@
 			  	    
             </div>
             <div class="nav-menu">
-              <a class="rss" href="/tags/algorithms/index.xml">
+              <a class="rss" href="">
                 <i class="icon-rss"></i>
               </a>
+                
+                <a class="menu" data-action="toc" data-target="toc"><i class="icon-location"></i></a>
                 
                 
                 <a class="menu" data-action="menu" data-target="menu"><i class="icon-menu"></i></a>
@@ -70,93 +113,194 @@
           </nav>
 
 
-<header id="header" class="header">
-	<div class="inner">
-		<a class="header-title" href="/">
-			<h1 class="header-name">Algorithms</h1>
-		</a>
-	</div>
-	
-</header>
+<main class="content" role="main">
+	<article class="post">
+		<div class="inner">
 
-	<div id="post-index" class="container">
+			<div id="push">
 
-		<main class="content" role="main">
+  			<header class="post-header">
+  				<span class="post-meta">
+						<span class="post-date">23 Oct 2016</span> <span class="reading-time">| <span class="estimated-reading-time">6 min.</span> (<span class="word-count">1073</span> words)</span></span>
+  				</span>
+  				<div class="clear"></div>
+  				<h1 class="post-title">How LZ4 works</h1>
+  			</header>
 
-			<div class="post-list">
-				<div id="push">
+  			<section class="post-content">
+  				<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
-			
+<p>LZ4 is a really fast compression algorithm with a reasonable compression ratio, but unfortunately there is limited documentation on how it works. The only explanation (not spec, explanation) <a href="https://fastcompression.blogspot.com/2011/05/lz4-explained.html">can be found</a> on the author's blog, but I think it is less of an explanation and more of an informal specification.</p>
 
-			
-			  
-<article class="blog">
+<p>This blog post tries to explain it such that anybody (even new beginners) can understand and implement it.</p>
 
-	<div class="inner">
-		<a class="post-link" href="/blog/how-lz4-works/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">23 Oct 2016</span>
-		</span>
-		<h2 class="post-title"><a href="/blog/how-lz4-works/">How LZ4 works</a></h2>
-		<p class="post-excerpt">LZ4 is an exciting algorithm, but unfortunately there is no good explanation on how it works. This blog post tries to explain it in terms that everybody can understand.&hellip;</p>
-		<span class="post-more"><a href="/blog/how-lz4-works/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<h1 id="linear-smallinteger-code-lsic">Linear small-integer code (LSIC)</h1>
 
-			
-			  
-<article class="blog">
+<p>The first part of LZ4 we need to explain is a smart but simple integer encoder. It is very space efficient for 0-255, and then grows linearly, based on the assumption that the integers used with this encoding rarely exceeds this limit, as such it is only used for small integers in the standard.</p>
 
-	<div class="inner">
-		<a class="post-link" href="/blog/on-random-access-compression/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">23 Oct 2016</span>
-		</span>
-		<h2 class="post-title"><a href="/blog/on-random-access-compression/">On Random-Access Compression</a></h2>
-		<p class="post-excerpt">Some notes and ideas on block-based rolling compression.&hellip;</p>
-		<span class="post-more"><a href="/blog/on-random-access-compression/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>It is a form of addition code, in which we read a byte. If this byte is the maximal value (255), another byte is read and added to the sum. This process is repeated until a byte below 255 is reached, which will be added to the sum, and the sequence will then end.</p>
 
-			
-			  
-<article class="blog">
+<p><figure><img src="/img/lz4_int_encoding_flowchart.svg" alt="We try to fit it into the next cluster."></figure></p>
 
-	<div class="inner">
-		<a class="post-link" href="/blog/skip-lists-done-right/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">17 Sep 2016</span>
-		</span>
-		<h2 class="post-title"><a href="/blog/skip-lists-done-right/">Skip Lists: Done Right</a></h2>
-		<p class="post-excerpt">    Skip lists are a wonderful data structure, but it is hard to get\
-    right. This blog post presents various techniques to optimize and\
-    improve the implementation of skip lists.
-&hellip;</p>
-		<span class="post-more"><a href="/blog/skip-lists-done-right/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>In short, we just keep adding bytes and stop when we hit a non-0xFF byte.</p>
 
-			
+<p>We'll use the name &quot;LSIC&quot; for convinience.</p>
 
-				</div>
+<h1 id="block">Block</h1>
+
+<p>An LZ4 stream is divided into segments called &quot;blocks&quot;. Blocks contains a literal which is to be copied directly to the output stream, and then a back reference, which tells us to copy some number of bytes from the already decompressed stream.</p>
+
+<p>This is really were the compression is going on. Copying from the old stream allows deduplication and runs-length encoding.</p>
+
+<h2 id="overview">Overview</h2>
+
+<p>A block looks like:</p>
+
+<p><span  class="math">\[\overbrace{\underbrace{t_1}_\text{4 bits}\  \underbrace{t_2}_\text{4 bits}}^\text{Token} \quad \underbrace{\overbrace{e_1}^\texttt{LISC}}_\text{If $t_1 = 15$} \quad \underbrace{\overbrace{L}^\text{Literal}}_{t_1 + e\text{ bytes }} \quad \overbrace{\underbrace{O}_\text{2 bytes}}^\text{Little endian} \quad \underbrace{\overbrace{e_2}^\texttt{LISC}}_\text{If $t_2 = 15$}\]</span></p>
+
+<p>And decodes to the <span  class="math">\(L\)</span> segment, followed by a <span  class="math">\(t_2 + e_2 + 4\)</span> bytes sequence copied from position <span  class="math">\(l - O\)</span> from the output buffer (where <span  class="math">\(l\)</span> is the length of the output buffer).</p>
+
+<p>We will explain all of these in the next sections.</p>
+
+<h2 id="token">Token</h2>
+
+<p>Any block starts with a 1 byte token, which is divided into two 4-bit fields.</p>
+
+<h2 id="literals">Literals</h2>
+
+<p>The first (highest) field in the token is used to define the literal. This obviously takes a value 0-15.</p>
+
+<p>Since we might want to encode higher integer, as such we make use of LSIC encoding: If the field is 15 (the meximal value), we read an integer with LSIC and add it to the original value (15) to obtain the literals length.</p>
+
+<p>Call the final value <span  class="math">\(L\)</span>.</p>
+
+<p>Then we forward the next <span  class="math">\(L\)</span> bytes from the input stream to the output stream.</p>
+
+<p><figure><img src="/img/lz4_literals_copy_diagram.svg" alt="We copy from the buffer directly."></figure></p>
+
+<h2 id="deduplication">Deduplication</h2>
+
+<p>The next few bytes are used to define some segment in the already decoded buffer, which is going to be appended to the output buffer.</p>
+
+<p>This allows us to transmit a position and a length to read from in the already decoded buffer instead of transmitting the literals themself.</p>
+
+<p>To start with, we read a 16-bit little endian integer. This defines the so called offset, <span  class="math">\(O\)</span>. It is important to understand that the offset is not the starting position of the copied buffer. This starting point is calculated by <span  class="math">\(l - O\)</span> with <span  class="math">\(l\)</span> being the number of bytes already decoded.</p>
+
+<p>Secondly, similarly to the literals length, if <span  class="math">\(t_2\)</span> is 15 (the maximal value), we use LSIC to &quot;extend&quot; this value and we add the result. This plus 4 yields the number of bytes we will copy from the output buffer. The reason we add 4 is because copying less than 4 bytes would result in a negative expansion of the compressed buffer.</p>
+
+<p>Now that we know the start position and the length, we can append the segment to the buffer itself:</p>
+
+<p><figure><img src="/img/lz4_deduplicating_diagram.svg" alt="Copying in action."></figure></p>
+
+<p>It is important to understand that the end of the segment might not be initializied before the rest of the segment is appended, because overlaps are allowed. This allows a neat trick, namely &quot;runs-length encoding&quot;, where you repeat some sequence a given number of times:</p>
+
+<p><figure><img src="/img/lz4_runs_encoding_diagram.svg" alt="We repeat the last byte."></figure></p>
+
+<h1 id="compression">Compression</h1>
+
+<p>Until now, we have only considered decoding, not the reverse process.</p>
+
+<p>A dozen of approaches to compression exists. They have the aspects that they need to be able to find duplicates in the already input buffer.</p>
+
+<p>In general, there are two classes of such compression algorithms:</p>
+
+<ol>
+<li>HC: High-compression ratio algorithms, these are often very complex, and might include steps like backtracking, removing repeatation, non-greediy.</li>
+<li>FC: Fast compression, these are simpler and faster, but provides a slightly worse compression ratio.</li>
+</ol>
+
+<p>We will focuse on the FC-class algorithms.</p>
+
+<p>Binary Search Trees (often B-trees) are often used for searching for duplicates. In particular, every byte iterated over will add a pointer to the rest of the buffer to a B-tree, we call the &quot;duplicate tree&quot;. Now, B-trees allows us to retrieve the largest element smaller than or equal to some key. In lexiographic ordering, this is equivalent to asking the element sharing the largest number of bytes as prefix.</p>
+
+<p>For example, consider the table:</p>
+
+<pre><code>abcdddd =&gt; 0
+bcdddd  =&gt; 1
+cdddd   =&gt; 2
+dddd    =&gt; 3
+</code></pre>
+
+<p>If we search for <code>cddda</code>, we'll get a partial match, namely <code>cdddd =&gt; 2</code>. So we can quickly find out how many bytes they have in common as prefix. In this case, it is 4 bytes.</p>
+
+<p>What if we found no match or a bad match (a match that shares less than some threshold)? Well, then we write it as literal until a good match is found.</p>
+
+<p>As you may notice, the dictionary grows linearly. As such, it is important that you reduce memory once in a while, by trimming it. Note that just trimming the first (or last) <span  class="math">\(N\)</span> entries is inefficient, because some might be used often. Instead, a <a href="https://en.wikipedia.org/wiki/Cache_Replacement_Policies">cache replacement policy</a> should be used. If the dictionary is filled, the cache replacement policy should determine which match should be replaced. I've found PLRU a good choice of CRP for LZ4 compression.</p>
+
+<p>Note that you should add additional rules like being addressible (within <span  class="math">\(2^{16} + 4\)</span> bytes of the cursor, which is required because <span  class="math">\(O\)</span> is 16-bit) and being above some length (smaller keys have worse block-level compression ratio).</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>LZ4 is a reasonably simple algorithm with reasonably good compression ratio. It is the type of algorithm that you can implement on an afternoon without much complication.</p>
+
+<p>If you need a portable and efficient compression algorithm which can be implement in only a few hundreds of lines, LZ4 would be my go-to.</p>
+
+  			</section>
+
+  			<footer class="post-footer">
+  				<div class="post-tags">
+            
+            
+                <a href="//tags/compression/">compression</a>
+            
+                <a href="//tags/lz4/">lz4</a>
+            
+                <a href="//tags/algorithms/">algorithms</a>
+            
+                <a href="//tags/notes/">notes</a>
+            
+                <a href="//tags/explanation/">explanation</a>
+            
+                <a href="//tags/data/">data</a>
+            
+            
+  				</div>
+  				<div class="post-share">
+  					<a class="icon-twitter" href="https://twitter.com/share?text=How%20LZ4%20works&url=%2fblog%2fhow-lz4-works%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+  						<span>Twitter</span>
+  					</a>
+  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=%2fblog%2fhow-lz4-works%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+  						<span>Facebook</span>
+  					</a>
+  					<a class="icon-gplus" href="https://plus.google.com/share?url=%2fblog%2fhow-lz4-works%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+  						<span>Google+</span>
+  					</a>
+  				</div>
+  			</footer>
+
+  			<aside class="post-comments">
+    
+    
+    <div id="disqus_thread"></div>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    
+    
+</aside>
+
+
 			</div>
 
-			<nav id="pagination" class="pagination" role="pagination">
-	<div class="inner">
-	
-		<span class="pagination-info">Page 1 of 1</span>
-	
-		<div class="clear"></div>
-	</div>
-</nav>
+			<nav class="post-nav">
+				
+				
+					<a class="post-nav-item post-nav-prev" href="/blog/on-random-access-compression/">
+						<section class="post-nav-teaser">
+							<span class="post-nav-icon"><i class="icon-arrow-right"></i></span>
+							<span class="post-nav-info">
+								<h4 class="post-nav-title">On Random-Access Compression</h4>
+								<p class="post-nav-excerpt">Some notes and ideas on block-based rolling compression.&hellip;</p>
+							</span>
+						</section>
+					</a>
+				
+				<div class="clear"></div>
+			</nav>
 
-
-		</main>
-
-	</div>
+		</div>
+	</article>
+</main>
 
 				<div id="body-class" style="display: none;"></div>
 				<footer id="footer">
@@ -191,6 +335,16 @@
 </div>
 
 				
+<div id="tocMenu" data-target="toc">
+    <div class="menu-header">
+        <span class="menu-label">Menu</span>
+        <a class="menu-close" data-action="toc" data-target="toc"></a>
+    </div>
+    <div id="toc" class="menu-list">
+        
+    </div>
+</div>
+
 
 				<div class="overlay"></div>
 			</div>
