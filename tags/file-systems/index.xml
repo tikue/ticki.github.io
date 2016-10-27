@@ -96,6 +96,16 @@
 &lt;p&gt;A number of limitations are in this algorithms. The first and most obvious one is the limitation on the compression ratio. This is a minor one: it limits the ratio to maxmially slightly less than 1:8.&lt;/p&gt;
 
 &lt;p&gt;A more important limitation is fragmentation. If I allocate many clusters and then deallocate some of them such that many adjacent physical clusters only contain one virtual cluster, this row will have a compression ratio of 1:1 until they&#39;re deallocated. Note that it is very rare that this happens, and will only marginally affect the global compression ratio.&lt;/p&gt;
+
+&lt;h1 id=&#34;-update&#34;&gt;(!) Update&lt;/h1&gt;
+
+&lt;p&gt;A simple trick can greatly improve performance. Instead of compressing all the virtual clusters in a physical cluster together, you should compress each virtual cluster seperately and place them sequentially (with some delimiter) in the physical cluster.&lt;/p&gt;
+
+&lt;p&gt;If your compression algorithm is streaming, you can much faster iterate to the right delimiter, and then only decompress that virtual cluster.&lt;/p&gt;
+
+&lt;p&gt;This has the downside of making the compression ratio worse. One solution is to have an initial dictionary (if using a dictionary-based compression algorithm).&lt;/p&gt;
+
+&lt;p&gt;Another idea is to eliminate the cluster state and replace it by repeated delimiters. I need to investigate this some more with benchmarks and so on in order to tell if this is actually superior to having a centralized cluster state.&lt;/p&gt;
 </description>
     </item>
     
