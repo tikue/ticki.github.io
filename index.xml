@@ -85,6 +85,8 @@
 
 &lt;p&gt;&lt;figure&gt;&lt;img src=&#34;/img/lz4_runs_encoding_diagram.svg&#34; alt=&#34;We repeat the last byte.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
 
+&lt;p&gt;Note that the duplicate section is not required if you&#39;re in the end of the stream, i.e. if there&#39;s no more compressed bytes to read.&lt;/p&gt;
+
 &lt;h1 id=&#34;compression&#34;&gt;Compression&lt;/h1&gt;
 
 &lt;p&gt;Until now, we have only considered decoding, not the reverse process.&lt;/p&gt;
@@ -98,7 +100,7 @@
 &lt;li&gt;FC: Fast compression, these are simpler and faster, but provides a slightly worse compression ratio.&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;We will focuse on the FC-class algorithms.&lt;/p&gt;
+&lt;p&gt;We will focus on the FC-class algorithms.&lt;/p&gt;
 
 &lt;p&gt;Binary Search Trees (often B-trees) are often used for searching for duplicates. In particular, every byte iterated over will add a pointer to the rest of the buffer to a B-tree, we call the &amp;quot;duplicate tree&amp;quot;. Now, B-trees allows us to retrieve the largest element smaller than or equal to some key. In lexiographic ordering, this is equivalent to asking the element sharing the largest number of bytes as prefix.&lt;/p&gt;
 
@@ -117,6 +119,8 @@ dddd    =&amp;gt; 3
 &lt;p&gt;As you may notice, the dictionary grows linearly. As such, it is important that you reduce memory once in a while, by trimming it. Note that just trimming the first (or last) &lt;span  class=&#34;math&#34;&gt;\(N\)&lt;/span&gt; entries is inefficient, because some might be used often. Instead, a &lt;a href=&#34;https://en.wikipedia.org/wiki/Cache_Replacement_Policies&#34;&gt;cache replacement policy&lt;/a&gt; should be used. If the dictionary is filled, the cache replacement policy should determine which match should be replaced. I&#39;ve found PLRU a good choice of CRP for LZ4 compression.&lt;/p&gt;
 
 &lt;p&gt;Note that you should add additional rules like being addressible (within &lt;span  class=&#34;math&#34;&gt;\(2^{16} + 4\)&lt;/span&gt; bytes of the cursor, which is required because &lt;span  class=&#34;math&#34;&gt;\(O\)&lt;/span&gt; is 16-bit) and being above some length (smaller keys have worse block-level compression ratio).&lt;/p&gt;
+
+&lt;p&gt;Another faster but worse (compression-wise) approach is hashing every four bytes and placing them in a table. This means that you can only look up the latest sequence given some 4-byte prefix. Looking up allows you to progress and see how long the duplicate sequence match. When you can&#39;t go any longer, you encode the literals section until another duplicate 4-byte is found.&lt;/p&gt;
 
 &lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
 
@@ -214,9 +218,9 @@ dddd    =&amp;gt; 3
 
 &lt;p&gt;A more important limitation is fragmentation. If I allocate many clusters and then deallocate some of them such that many adjacent physical clusters only contain one virtual cluster, this row will have a compression ratio of 1:1 until they&#39;re deallocated. Note that it is very rare that this happens, and will only marginally affect the global compression ratio.&lt;/p&gt;
 
-&lt;h1 id=&#34;-update&#34;&gt;(!) Update&lt;/h1&gt;
+&lt;h1 id=&#34;update-an-idea&#34;&gt;Update: An idea&lt;/h1&gt;
 
-&lt;p&gt;A simple trick can greatly improve performance. Instead of compressing all the virtual clusters in a physical cluster together, you should compress each virtual cluster seperately and place them sequentially (with some delimiter) in the physical cluster.&lt;/p&gt;
+&lt;p&gt;A simple trick can improve performance in some cases. Instead of compressing all the virtual clusters in a physical cluster together, you should compress each virtual cluster seperately and place them sequentially (with some delimiter) in the physical cluster.&lt;/p&gt;
 
 &lt;p&gt;If your compression algorithm is streaming, you can much faster iterate to the right delimiter, and then only decompress that virtual cluster.&lt;/p&gt;
 

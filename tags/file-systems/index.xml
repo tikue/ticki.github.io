@@ -97,9 +97,9 @@
 
 &lt;p&gt;A more important limitation is fragmentation. If I allocate many clusters and then deallocate some of them such that many adjacent physical clusters only contain one virtual cluster, this row will have a compression ratio of 1:1 until they&#39;re deallocated. Note that it is very rare that this happens, and will only marginally affect the global compression ratio.&lt;/p&gt;
 
-&lt;h1 id=&#34;-update&#34;&gt;(!) Update&lt;/h1&gt;
+&lt;h1 id=&#34;update-an-idea&#34;&gt;Update: An idea&lt;/h1&gt;
 
-&lt;p&gt;A simple trick can greatly improve performance. Instead of compressing all the virtual clusters in a physical cluster together, you should compress each virtual cluster seperately and place them sequentially (with some delimiter) in the physical cluster.&lt;/p&gt;
+&lt;p&gt;A simple trick can improve performance in some cases. Instead of compressing all the virtual clusters in a physical cluster together, you should compress each virtual cluster seperately and place them sequentially (with some delimiter) in the physical cluster.&lt;/p&gt;
 
 &lt;p&gt;If your compression algorithm is streaming, you can much faster iterate to the right delimiter, and then only decompress that virtual cluster.&lt;/p&gt;
 

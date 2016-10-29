@@ -63,7 +63,7 @@
         },
         "datePublished": "2016-10-23",
         "description": "LZ4 is an exciting algorithm, but unfortunately there is no good explanation on how it works. This blog post tries to explain it in terms that everybody can understand.",
-        "wordCount":  1073 
+        "wordCount":  1161 
     }
 
     </script>
@@ -121,7 +121,7 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">23 Oct 2016</span> <span class="reading-time">| <span class="estimated-reading-time">6 min.</span> (<span class="word-count">1073</span> words)</span></span>
+						<span class="post-date">23 Oct 2016</span> <span class="reading-time">| <span class="estimated-reading-time">6 min.</span> (<span class="word-count">1161</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
   				<h1 class="post-title">How LZ4 works</h1>
@@ -198,6 +198,8 @@
 
 <p><figure><img src="/img/lz4_runs_encoding_diagram.svg" alt="We repeat the last byte."></figure></p>
 
+<p>Note that the duplicate section is not required if you're in the end of the stream, i.e. if there's no more compressed bytes to read.</p>
+
 <h1 id="compression">Compression</h1>
 
 <p>Until now, we have only considered decoding, not the reverse process.</p>
@@ -211,7 +213,7 @@
 <li>FC: Fast compression, these are simpler and faster, but provides a slightly worse compression ratio.</li>
 </ol>
 
-<p>We will focuse on the FC-class algorithms.</p>
+<p>We will focus on the FC-class algorithms.</p>
 
 <p>Binary Search Trees (often B-trees) are often used for searching for duplicates. In particular, every byte iterated over will add a pointer to the rest of the buffer to a B-tree, we call the &quot;duplicate tree&quot;. Now, B-trees allows us to retrieve the largest element smaller than or equal to some key. In lexiographic ordering, this is equivalent to asking the element sharing the largest number of bytes as prefix.</p>
 
@@ -230,6 +232,8 @@ dddd    =&gt; 3
 <p>As you may notice, the dictionary grows linearly. As such, it is important that you reduce memory once in a while, by trimming it. Note that just trimming the first (or last) <span  class="math">\(N\)</span> entries is inefficient, because some might be used often. Instead, a <a href="https://en.wikipedia.org/wiki/Cache_Replacement_Policies">cache replacement policy</a> should be used. If the dictionary is filled, the cache replacement policy should determine which match should be replaced. I've found PLRU a good choice of CRP for LZ4 compression.</p>
 
 <p>Note that you should add additional rules like being addressible (within <span  class="math">\(2^{16} + 4\)</span> bytes of the cursor, which is required because <span  class="math">\(O\)</span> is 16-bit) and being above some length (smaller keys have worse block-level compression ratio).</p>
+
+<p>Another faster but worse (compression-wise) approach is hashing every four bytes and placing them in a table. This means that you can only look up the latest sequence given some 4-byte prefix. Looking up allows you to progress and see how long the duplicate sequence match. When you can't go any longer, you encode the literals section until another duplicate 4-byte is found.</p>
 
 <h1 id="conclusion">Conclusion</h1>
 

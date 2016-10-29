@@ -67,7 +67,7 @@
         },
         "datePublished": "2016-10-23",
         "description": "Some notes and ideas on block-based rolling compression.",
-        "wordCount":  928 
+        "wordCount":  931 
     }
 
     </script>
@@ -125,7 +125,7 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">23 Oct 2016</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">928</span> words)</span></span>
+						<span class="post-date">23 Oct 2016</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">931</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
   				<h1 class="post-title">On Random-Access Compression</h1>
@@ -214,9 +214,9 @@
 
 <p>A more important limitation is fragmentation. If I allocate many clusters and then deallocate some of them such that many adjacent physical clusters only contain one virtual cluster, this row will have a compression ratio of 1:1 until they're deallocated. Note that it is very rare that this happens, and will only marginally affect the global compression ratio.</p>
 
-<h1 id="-update">(!) Update</h1>
+<h1 id="update-an-idea">Update: An idea</h1>
 
-<p>A simple trick can greatly improve performance. Instead of compressing all the virtual clusters in a physical cluster together, you should compress each virtual cluster seperately and place them sequentially (with some delimiter) in the physical cluster.</p>
+<p>A simple trick can improve performance in some cases. Instead of compressing all the virtual clusters in a physical cluster together, you should compress each virtual cluster seperately and place them sequentially (with some delimiter) in the physical cluster.</p>
 
 <p>If your compression algorithm is streaming, you can much faster iterate to the right delimiter, and then only decompress that virtual cluster.</p>
 
