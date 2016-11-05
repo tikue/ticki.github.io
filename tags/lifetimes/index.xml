@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Lifetimes on Ticki</title>
-    <link>/tags/lifetimes/</link>
-    <description>Recent content in Lifetimes on Ticki</description>
+    <title>Lifetimes on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/lifetimes/</link>
+    <description>Recent content in Lifetimes on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 06 Jun 2016 09:12:56 +0200</lastBuildDate>
-    <atom:link href="/tags/lifetimes/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://ticki.github.io/tags/lifetimes/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Lambda crabs (part 1): A mathematical introduction to lifetimes and regions</title>
-      <link>/blog/lambda_crabs_1/</link>
+      <link>http://ticki.github.io/blog/lambda_crabs_1/</link>
       <pubDate>Mon, 06 Jun 2016 09:12:56 +0200</pubDate>
       
-      <guid>/blog/lambda_crabs_1/</guid>
+      <guid>http://ticki.github.io/blog/lambda_crabs_1/</guid>
       <description>
 
 &lt;p&gt;This post will cover lifetimes and regions in depth, with a focus on the mathematical background of regions. That is, what is a region? What rules do they follow? How does the compiler handle them? And how are they inferred?&lt;/p&gt;

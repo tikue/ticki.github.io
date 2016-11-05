@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Data on Ticki</title>
-    <link>/tags/data/</link>
-    <description>Recent content in Data on Ticki</description>
+    <title>Data on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/data/</link>
+    <description>Recent content in Data on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 25 Oct 2016 23:25:15 +0200</lastBuildDate>
-    <atom:link href="/tags/data/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://ticki.github.io/tags/data/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>How LZ4 works</title>
-      <link>/blog/how-lz4-works/</link>
+      <link>http://ticki.github.io/blog/how-lz4-works/</link>
       <pubDate>Tue, 25 Oct 2016 23:25:15 +0200</pubDate>
       
-      <guid>/blog/how-lz4-works/</guid>
+      <guid>http://ticki.github.io/blog/how-lz4-works/</guid>
       <description>&lt;script type=&#34;text/javascript&#34;
   src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
 &lt;/script&gt;
@@ -29,7 +29,7 @@
 
 &lt;p&gt;It is a form of addition code, in which we read a byte. If this byte is the maximal value (255), another byte is read and added to the sum. This process is repeated until a byte below 255 is reached, which will be added to the sum, and the sequence will then end.&lt;/p&gt;
 
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;/img/lz4_int_encoding_flowchart.svg&#34; alt=&#34;We try to fit it into the next cluster.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/lz4_int_encoding_flowchart.svg&#34; alt=&#34;We try to fit it into the next cluster.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
 
 &lt;p&gt;In short, we just keep adding bytes and stop when we hit a non-0xFF byte.&lt;/p&gt;
 
@@ -65,7 +65,7 @@
 
 &lt;p&gt;Then we forward the next &lt;span  class=&#34;math&#34;&gt;\(L\)&lt;/span&gt; bytes from the input stream to the output stream.&lt;/p&gt;
 
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;/img/lz4_literals_copy_diagram.svg&#34; alt=&#34;We copy from the buffer directly.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/lz4_literals_copy_diagram.svg&#34; alt=&#34;We copy from the buffer directly.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;deduplication&#34;&gt;Deduplication&lt;/h2&gt;
 
@@ -79,11 +79,11 @@
 
 &lt;p&gt;Now that we know the start position and the length, we can append the segment to the buffer itself:&lt;/p&gt;
 
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;/img/lz4_deduplicating_diagram.svg&#34; alt=&#34;Copying in action.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/lz4_deduplicating_diagram.svg&#34; alt=&#34;Copying in action.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
 
 &lt;p&gt;It is important to understand that the end of the segment might not be initializied before the rest of the segment is appended, because overlaps are allowed. This allows a neat trick, namely &amp;quot;runs-length encoding&amp;quot;, where you repeat some sequence a given number of times:&lt;/p&gt;
 
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;/img/lz4_runs_encoding_diagram.svg&#34; alt=&#34;We repeat the last byte.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/lz4_runs_encoding_diagram.svg&#34; alt=&#34;We repeat the last byte.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
 
 &lt;p&gt;Note that the duplicate section is not required if you&#39;re in the end of the stream, i.e. if there&#39;s no more compressed bytes to read.&lt;/p&gt;
 
@@ -132,10 +132,10 @@ dddd    =&amp;gt; 3
     
     <item>
       <title>On Random-Access Compression</title>
-      <link>/blog/on-random-access-compression/</link>
+      <link>http://ticki.github.io/blog/on-random-access-compression/</link>
       <pubDate>Sun, 23 Oct 2016 23:25:15 +0200</pubDate>
       
-      <guid>/blog/on-random-access-compression/</guid>
+      <guid>http://ticki.github.io/blog/on-random-access-compression/</guid>
       <description>&lt;script type=&#34;text/javascript&#34;
   src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
 &lt;/script&gt;
@@ -174,7 +174,7 @@ dddd    =&amp;gt; 3
 
 &lt;p&gt;Since an active cluster will never have the state zero, we use this blind state to represent an uncompressed physical cluster. This means we maximally have one byte in space overhead for uncompressible clusters.&lt;/p&gt;
 
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;/img/virtual_physical_random_access_compression_diagram.svg&#34; alt=&#34;A diagram&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/virtual_physical_random_access_compression_diagram.svg&#34; alt=&#34;A diagram&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;the-physical-cluster-allocator&#34;&gt;The physical cluster allocator&lt;/h1&gt;
 
@@ -182,7 +182,7 @@ dddd    =&amp;gt; 3
 
 &lt;p&gt;This method is called SLOB (Simple List Of Objects) and has the advantage of being complete zero-cost in that there is no wasted space.&lt;/p&gt;
 
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;/img/slob_allocation_diagram.svg&#34; alt=&#34;Physical allocation is simply linked list of free objects.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/slob_allocation_diagram.svg&#34; alt=&#34;Physical allocation is simply linked list of free objects.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;the-virtual-cluster-allocator&#34;&gt;The virtual cluster allocator&lt;/h1&gt;
 
@@ -192,11 +192,11 @@ dddd    =&amp;gt; 3
 
 &lt;p&gt;If we can fit it in &lt;em&gt;and&lt;/em&gt; we have less than 8 virtual clusters in this physical cluster, we will put it into the compressed physical cluster at the first free virtual slot (and then set the respective bitflag):&lt;/p&gt;
 
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;/img/allocating_compressed_virtual_page_into_next_diagram.svg&#34; alt=&#34;We try to fit it into the next cluster.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/allocating_compressed_virtual_page_into_next_diagram.svg&#34; alt=&#34;We try to fit it into the next cluster.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
 
 &lt;p&gt;If we cannot, we pop the list and use the fully-free physical cluster to store etablish a new stack of virtual clusters. It starts as uncompressed:&lt;/p&gt;
 
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;/img/pop_and_create_new_uncompressed_cluster_diagram.svg&#34; alt=&#34;We pop the list and put the virtual cluster in the physical uncompressed slot.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/pop_and_create_new_uncompressed_cluster_diagram.svg&#34; alt=&#34;We pop the list and put the virtual cluster in the physical uncompressed slot.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;properties-of-this-approach&#34;&gt;Properties of this approach&lt;/h1&gt;
 

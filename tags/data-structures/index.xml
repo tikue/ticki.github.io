@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Data Structures on Ticki</title>
-    <link>/tags/data-structures/</link>
-    <description>Recent content in Data Structures on Ticki</description>
+    <title>Data Structures on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/data-structures/</link>
+    <description>Recent content in Data Structures on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 17 Sep 2016 13:46:49 +0200</lastBuildDate>
-    <atom:link href="/tags/data-structures/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://ticki.github.io/tags/data-structures/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Skip Lists: Done Right</title>
-      <link>/blog/skip-lists-done-right/</link>
+      <link>http://ticki.github.io/blog/skip-lists-done-right/</link>
       <pubDate>Sat, 17 Sep 2016 13:46:49 +0200</pubDate>
       
-      <guid>/blog/skip-lists-done-right/</guid>
+      <guid>http://ticki.github.io/blog/skip-lists-done-right/</guid>
       <description>
 
 &lt;p&gt;&lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css&#34;&gt;&lt;/p&gt;
@@ -241,10 +241,10 @@ define insert(elem, root, height, level):
     
     <item>
       <title>Why Rust&#39;s `std::collections` is absolutely fantastic</title>
-      <link>/blog/fantastic/</link>
+      <link>http://ticki.github.io/blog/fantastic/</link>
       <pubDate>Wed, 14 Sep 2016 16:07:34 +0200</pubDate>
       
-      <guid>/blog/fantastic/</guid>
+      <guid>http://ticki.github.io/blog/fantastic/</guid>
       <description>
 
 &lt;p&gt;My &lt;a href=&#34;http://ticki.github.io/blog/horrible/&#34;&gt;last blog post&lt;/a&gt; was about all the short-fallings and problems &lt;code&gt;std::collections&lt;/code&gt; has. This post will be about the opposite: all the good things about &lt;code&gt;std::collections&lt;/code&gt; and what other languages can learn from Rust.&lt;/p&gt;
@@ -481,10 +481,10 @@ define insert(elem, root, height, level):
     
     <item>
       <title>A Critique of Rust&#39;s `std::collections`</title>
-      <link>/blog/horrible/</link>
+      <link>http://ticki.github.io/blog/horrible/</link>
       <pubDate>Mon, 12 Sep 2016 22:50:08 +0200</pubDate>
       
-      <guid>/blog/horrible/</guid>
+      <guid>http://ticki.github.io/blog/horrible/</guid>
       <description>
 
 &lt;p&gt;Rust is by far my favorite language, and I am very familiar with it, but there is one aspect that annoys me at times: &lt;code&gt;std::collections&lt;/code&gt;, a part of the opt-out standard library.&lt;/p&gt;

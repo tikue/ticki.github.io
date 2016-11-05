@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Static Analysis on Ticki</title>
-    <link>/tags/static-analysis/</link>
-    <description>Recent content in Static Analysis on Ticki</description>
+    <title>Static Analysis on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/static-analysis/</link>
+    <description>Recent content in Static Analysis on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 24 Sep 2016 22:16:00 +0200</lastBuildDate>
-    <atom:link href="/tags/static-analysis/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 24 Sep 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://ticki.github.io/tags/static-analysis/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>A Hoare Logic for Rust</title>
-      <link>/blog/a-hoare-logic-for-rust/</link>
-      <pubDate>Sat, 24 Sep 2016 22:16:00 +0200</pubDate>
+      <link>http://ticki.github.io/blog/a-hoare-logic-for-rust/</link>
+      <pubDate>Sat, 24 Sep 2016 00:00:00 +0000</pubDate>
       
-      <guid>/blog/a-hoare-logic-for-rust/</guid>
+      <guid>http://ticki.github.io/blog/a-hoare-logic-for-rust/</guid>
       <description>&lt;script type=&#34;text/javascript&#34;
   src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
 &lt;/script&gt;

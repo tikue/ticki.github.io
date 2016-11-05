@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Rant on Ticki</title>
-    <link>/tags/rant/</link>
-    <description>Recent content in Rant on Ticki</description>
+    <title>Rant on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/rant/</link>
+    <description>Recent content in Rant on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 12 Sep 2016 22:50:08 +0200</lastBuildDate>
-    <atom:link href="/tags/rant/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://ticki.github.io/tags/rant/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>A Critique of Rust&#39;s `std::collections`</title>
-      <link>/blog/horrible/</link>
+      <link>http://ticki.github.io/blog/horrible/</link>
       <pubDate>Mon, 12 Sep 2016 22:50:08 +0200</pubDate>
       
-      <guid>/blog/horrible/</guid>
+      <guid>http://ticki.github.io/blog/horrible/</guid>
       <description>
 
 &lt;p&gt;Rust is by far my favorite language, and I am very familiar with it, but there is one aspect that annoys me at times: &lt;code&gt;std::collections&lt;/code&gt;, a part of the opt-out standard library.&lt;/p&gt;

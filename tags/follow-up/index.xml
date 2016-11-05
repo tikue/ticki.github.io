@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Follow Up on Ticki</title>
-    <link>/tags/follow-up/</link>
-    <description>Recent content in Follow Up on Ticki</description>
+    <title>Follow Up on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/follow-up/</link>
+    <description>Recent content in Follow Up on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 14 Sep 2016 16:07:34 +0200</lastBuildDate>
-    <atom:link href="/tags/follow-up/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://ticki.github.io/tags/follow-up/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Why Rust&#39;s `std::collections` is absolutely fantastic</title>
-      <link>/blog/fantastic/</link>
+      <link>http://ticki.github.io/blog/fantastic/</link>
       <pubDate>Wed, 14 Sep 2016 16:07:34 +0200</pubDate>
       
-      <guid>/blog/fantastic/</guid>
+      <guid>http://ticki.github.io/blog/fantastic/</guid>
       <description>
 
 &lt;p&gt;My &lt;a href=&#34;http://ticki.github.io/blog/horrible/&#34;&gt;last blog post&lt;/a&gt; was about all the short-fallings and problems &lt;code&gt;std::collections&lt;/code&gt; has. This post will be about the opposite: all the good things about &lt;code&gt;std::collections&lt;/code&gt; and what other languages can learn from Rust.&lt;/p&gt;

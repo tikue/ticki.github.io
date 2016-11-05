@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Type Systems on Ticki</title>
-    <link>/tags/type-systems/</link>
-    <description>Recent content in Type Systems on Ticki</description>
+    <title>Type Systems on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/type-systems/</link>
+    <description>Recent content in Type Systems on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 06 Jun 2016 11:06:21 +0200</lastBuildDate>
-    <atom:link href="/tags/type-systems/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://ticki.github.io/tags/type-systems/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Lambda crabs (part 2): Region inference is (not) magic.</title>
-      <link>/blog/lambda_crabs_2/</link>
+      <link>http://ticki.github.io/blog/lambda_crabs_2/</link>
       <pubDate>Mon, 06 Jun 2016 11:06:21 +0200</pubDate>
       
-      <guid>/blog/lambda_crabs_2/</guid>
+      <guid>http://ticki.github.io/blog/lambda_crabs_2/</guid>
       <description>
 
 &lt;p&gt;This post will cover region (lifetime) inference with a mathematical and type
@@ -27,7 +27,7 @@ types, which is a major pain point in languages, that lacks of type inference.&l
 
 &lt;p&gt;Now, we want such an inference scheme for regions as well.&lt;/p&gt;
 
-&lt;p&gt;We described the problem of region inference in &lt;a href=&#34;/blog/lambda_crabs_1/&#34;&gt;last post&lt;/a&gt; as:&lt;/p&gt;
+&lt;p&gt;We described the problem of region inference in &lt;a href=&#34;http://ticki.github.io/blog/lambda_crabs_1/&#34;&gt;last post&lt;/a&gt; as:&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;So, this is just a classical optimization problem:&lt;/p&gt;

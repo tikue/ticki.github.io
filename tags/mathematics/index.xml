@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics on Ticki</title>
-    <link>/tags/mathematics/</link>
-    <description>Recent content in Mathematics on Ticki</description>
+    <title>Mathematics on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/mathematics/</link>
+    <description>Recent content in Mathematics on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 24 Sep 2016 22:16:00 +0200</lastBuildDate>
-    <atom:link href="/tags/mathematics/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 24 Sep 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://ticki.github.io/tags/mathematics/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>A Hoare Logic for Rust</title>
-      <link>/blog/a-hoare-logic-for-rust/</link>
-      <pubDate>Sat, 24 Sep 2016 22:16:00 +0200</pubDate>
+      <link>http://ticki.github.io/blog/a-hoare-logic-for-rust/</link>
+      <pubDate>Sat, 24 Sep 2016 00:00:00 +0000</pubDate>
       
-      <guid>/blog/a-hoare-logic-for-rust/</guid>
+      <guid>http://ticki.github.io/blog/a-hoare-logic-for-rust/</guid>
       <description>&lt;script type=&#34;text/javascript&#34;
   src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
 &lt;/script&gt;
@@ -448,10 +448,10 @@ Q((a, b), r) &amp;= [r \leq a]
     
     <item>
       <title>Lambda crabs (part 3): Region-based alias analysis</title>
-      <link>/blog/lambda_crabs_3/</link>
+      <link>http://ticki.github.io/blog/lambda_crabs_3/</link>
       <pubDate>Wed, 08 Jun 2016 11:24:24 +0200</pubDate>
       
-      <guid>/blog/lambda_crabs_3/</guid>
+      <guid>http://ticki.github.io/blog/lambda_crabs_3/</guid>
       <description>
 
 &lt;p&gt;In the &lt;a href=&#34;http://ticki.github.io/blog/lambda_crabs_2/&#34;&gt;last post&lt;/a&gt;, we saw how to
@@ -635,10 +635,10 @@ despite being associated with a different region class.&lt;/p&gt;
     
     <item>
       <title>Lambda crabs (part 2): Region inference is (not) magic.</title>
-      <link>/blog/lambda_crabs_2/</link>
+      <link>http://ticki.github.io/blog/lambda_crabs_2/</link>
       <pubDate>Mon, 06 Jun 2016 11:06:21 +0200</pubDate>
       
-      <guid>/blog/lambda_crabs_2/</guid>
+      <guid>http://ticki.github.io/blog/lambda_crabs_2/</guid>
       <description>
 
 &lt;p&gt;This post will cover region (lifetime) inference with a mathematical and type
@@ -651,7 +651,7 @@ types, which is a major pain point in languages, that lacks of type inference.&l
 
 &lt;p&gt;Now, we want such an inference scheme for regions as well.&lt;/p&gt;
 
-&lt;p&gt;We described the problem of region inference in &lt;a href=&#34;/blog/lambda_crabs_1/&#34;&gt;last post&lt;/a&gt; as:&lt;/p&gt;
+&lt;p&gt;We described the problem of region inference in &lt;a href=&#34;http://ticki.github.io/blog/lambda_crabs_1/&#34;&gt;last post&lt;/a&gt; as:&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;So, this is just a classical optimization problem:&lt;/p&gt;
@@ -819,10 +819,10 @@ in only a 100-200 lines.&lt;/p&gt;
     
     <item>
       <title>Lambda crabs (part 1): A mathematical introduction to lifetimes and regions</title>
-      <link>/blog/lambda_crabs_1/</link>
+      <link>http://ticki.github.io/blog/lambda_crabs_1/</link>
       <pubDate>Mon, 06 Jun 2016 09:12:56 +0200</pubDate>
       
-      <guid>/blog/lambda_crabs_1/</guid>
+      <guid>http://ticki.github.io/blog/lambda_crabs_1/</guid>
       <description>
 
 &lt;p&gt;This post will cover lifetimes and regions in depth, with a focus on the mathematical background of regions. That is, what is a region? What rules do they follow? How does the compiler handle them? And how are they inferred?&lt;/p&gt;
