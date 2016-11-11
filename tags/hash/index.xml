@@ -100,7 +100,7 @@
 
 &lt;h3 id=&#34;zerosensitivity&#34;&gt;Zero-sensitivity&lt;/h3&gt;
 
-&lt;p&gt;If your diffusion isn&#39;t zero-sensitive (i.e., &lt;span  class=&#34;math&#34;&gt;\(f(x) = \{0, 1\}\)&lt;/span&gt;), you should &lt;del&gt;panic&lt;/del&gt; come up with something better. In particular, make sure your diffusion contains at least one zero-sensitive subdiffusion as component.&lt;/p&gt;
+&lt;p&gt;If your diffusion isn&#39;t zero-sensitive (i.e., &lt;span  class=&#34;math&#34;&gt;\(f(0) = \{0, 1\}\)&lt;/span&gt;), you should &lt;del&gt;panic&lt;/del&gt; come up with something better. In particular, make sure your diffusion contains at least one zero-sensitive subdiffusion as component.&lt;/p&gt;
 
 &lt;h3 id=&#34;avalanche-diagrams&#34;&gt;Avalanche diagrams&lt;/h3&gt;
 

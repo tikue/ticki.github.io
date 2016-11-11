@@ -6,8 +6,226 @@
     <description>Recent content in Posts on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 09 Nov 2016 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 11 Nov 2016 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://ticki.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Ternary as a prediction residue code</title>
+      <link>http://ticki.github.io/blog/ternary-as-a-prediction-residue-code/</link>
+      <pubDate>Fri, 11 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/blog/ternary-as-a-prediction-residue-code/</guid>
+      <description>&lt;script type=&#34;text/javascript&#34;
+  src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
+&lt;/script&gt;
+
+&lt;p&gt;If we look at how most lossless image compression formats works, they don&#39;t use deduplication compression (like LZ-class algorithms), because that&#39;s simply far from the nature of images. The same goes for audio and video. Instead, you have two maps:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;The approximative map (&lt;span  class=&#34;math&#34;&gt;\(a(\vec{v})\)&lt;/span&gt;): This should give a rough outline of the medium, that is, it is should predict predict the medium based on a small sequence of bytes (defined by the encoding). This could be a polynomial, linear map, bilinear map, Bézier curve, Fourier decomposition, or any class of functions which can be represented compactly.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The prediction residue (&lt;span  class=&#34;math&#34;&gt;\(p(\vec{v})\)&lt;/span&gt;): This map &amp;quot;corrects&amp;quot; &lt;span  class=&#34;math&#34;&gt;\(a(\vec{v})\)&lt;/span&gt; such that the combination of the two maps gives an exact result.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;sup&gt;Note that this is massively simplified, and a lot of additional steps are done in popular media compression algorithms.&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;The final function is then defined as&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[f(\vec{v}) = a(\vec{v}) + k p(\vec{v})\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;The question just remains: how can we efficiently represent the prediction residue? Well, we know a crucial thing. &lt;span  class=&#34;math&#34;&gt;\(p(\vec{v})\)&lt;/span&gt; tends to be small, because much of it is accounted for in &lt;span  class=&#34;math&#34;&gt;\(a(\vec{v})\)&lt;/span&gt;, so here&#39;s where coding theory comes in.&lt;/p&gt;
+
+&lt;p&gt;In fact, we can reconsider the problem in terms of coding:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Create a prefix code such that lower bytes have smaller representation than higher bytes.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;It is then natural to ask:&lt;/p&gt;
+
+&lt;h1 id=&#34;why-not-just-stick-with-a-huffman-tree&#34;&gt;Why not just stick with a Huffman tree?&lt;/h1&gt;
+
+&lt;p&gt;Well, we could, but because we often need live encoding and decoding, we need something faster. Huffman trees are slow because they involve cache misses and forward scans.&lt;/p&gt;
+
+&lt;p&gt;The gain of using Huffman trees in this case is really small, because the basic distribution is known in advance.&lt;/p&gt;
+
+&lt;p&gt;We want a code defined by a small set of rules which can be encoded and decoded with extreme performance, so we want to avoid Huffman codes for these reasons.&lt;/p&gt;
+
+&lt;h1 id=&#34;candidate-rice-coding&#34;&gt;Candidate: Rice coding&lt;/h1&gt;
+
+&lt;p&gt;Rice coding is a special case of Golomb coding. It is often used in Audio codecs, where it works fine.&lt;/p&gt;
+
+&lt;p&gt;Here&#39;s how it works:&lt;/p&gt;
+&lt;figure role=&#34;group&#34;&gt;
+&lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;p&gt;To encode a byte &lt;span  class=&#34;math&#34;&gt;\(b\)&lt;/span&gt;, do the following:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Write &lt;span  class=&#34;math&#34;&gt;\(b \ll n\)&lt;/span&gt; 1 bits.&lt;/li&gt;
+&lt;li&gt;Write a 0 bit.&lt;/li&gt;
+&lt;li&gt;Write &lt;span  class=&#34;math&#34;&gt;\(b % n\)&lt;/span&gt; in base two (&lt;span  class=&#34;math&#34;&gt;\(b\)&lt;/span&gt; bits).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;But it has multiple shortfalls:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Often there is no fitting constants, because of the trade-off. You need to choose between low minimum and high maximum or high minimum and low maximum. There&#39;s little middle-ground.&lt;/li&gt;
+&lt;li&gt;It is slow to encode and decode, because reading new bits requires you to branch to see if a new byte is needed (in particular, the atomic units are not aligned with the byte).&lt;/li&gt;
+&lt;li&gt;It encodes arbitrarily high numbers, meaning that some redundancy exists when coding bytes-only.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;It is used in certain MPEG variants as well as FLAC and lossless JPEG.&lt;/p&gt;
+
+&lt;h1 id=&#34;an-alternative-approach-base-3-in-base-4&#34;&gt;An alternative approach: Base 3 in base 4.&lt;/h1&gt;
+
+&lt;p&gt;So, what if we encode everything in base 3?&lt;/p&gt;
+
+&lt;p&gt;First of all, why would we do that?&lt;/p&gt;
+
+&lt;p&gt;Well, for it to be a prefix code, you need a way to determine if the token is over, i.e. a terminator, so you really need 4 different symbols (0, 1, 2, T). Enumerating these symbols is trivial to do in binary: It&#39;s just two bits!&lt;/p&gt;
+
+&lt;p&gt;This means that we positively know that every byte contains exactly 4 symbols, greatly improving decoding/encoding performance.&lt;/p&gt;
+
+&lt;h1 id=&#34;eliminating-redundancy&#34;&gt;Eliminating redundancy&lt;/h1&gt;
+
+&lt;p&gt;There is a redundancy in this system, though. It is not a bijection. &lt;code&gt;01T&lt;/code&gt; and &lt;code&gt;1T&lt;/code&gt; gives the same (1), but a simple trick can eliminate this.&lt;/p&gt;
+
+&lt;p&gt;In particular, we can say that if the two first bits in the token are 0 (which is redundant), the final value produced is 0, but then &lt;code&gt;00T&lt;/code&gt; would be equivalent to &lt;code&gt;0&lt;/code&gt;. Fortunately, this redundancy can easily be solved by adding 1 to the decoded result, and hence making 0 impossible unless the first symbol is &lt;code&gt;0&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;overflows&#34;&gt;Overflows&lt;/h2&gt;
+
+&lt;p&gt;Since we cannot encode above 255, there is a class of trap values, where it overflows. Fortunately, there is a nice solution to it: just skip the terminator and go to the next token.&lt;/p&gt;
+
+&lt;h1 id=&#34;table&#34;&gt;Table&lt;/h1&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;N&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Ternary representation&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Binary representation&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Reduction (of original size)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;0&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;00&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;11&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;1T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;0111&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;50%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;2T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;1011&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;50%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;10T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;010011&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;75%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;11T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;010111&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;75%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;12T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;011011&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;75%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;20T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;100011&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;75%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;21T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;100111&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;75%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;22T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;101011&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;75%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;100T&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;10000011&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100%&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;...&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;...&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;...&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;255&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;100110&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;&lt;code&gt;010000010100&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;150%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;As you may notice, ten is the splitting point where it goes from less than 100% to 100%, which means that if there is a significant number of bytes above or equals to 10, it expands.&lt;/p&gt;
+
+&lt;h1 id=&#34;moving-the-tipping-point&#34;&gt;Moving the tipping point&lt;/h1&gt;
+
+&lt;p&gt;10 is a bit too low for many purposes, so it is natural to ask if we can modify the code to expand it. In fact, a technique similar to Rice coding can be used: Encode the &lt;span  class=&#34;math&#34;&gt;\(k\)&lt;/span&gt; last bits seperately than the first ones.&lt;/p&gt;
+
+&lt;p&gt;In particular, we split the byte into two and then encode the first part through the described technique, and the second part through usual little-endian encoding.&lt;/p&gt;
+
+&lt;p&gt;Put &lt;span  class=&#34;math&#34;&gt;\(k=2\)&lt;/span&gt;, and the tipping point moved to 40. &lt;span  class=&#34;math&#34;&gt;\(k=4\)&lt;/span&gt;, and the tipping point is 160.&lt;/p&gt;
+
+&lt;h1 id=&#34;usecases&#34;&gt;Usecases&lt;/h1&gt;
+
+&lt;p&gt;Well, really, it depends on the nature of the data you compress. The best way to find out if it fits is to experiment with it.&lt;/p&gt;
+
+&lt;p&gt;Rice code tends to be better if a lot of the bytes are low and outliers are relatively rare, but when there are outliers, it tends to hurt in terms of efficiency.&lt;/p&gt;
+
+&lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Assuming you approximative function is precise enough, this type coding would give a fairly good ratio. If it is imprecise or doesn&#39;t follow the right distribution, you might end up expanding the size.&lt;/p&gt;
+
+&lt;p&gt;In the end, it depends on what you&#39;re compressing, and you should consider all the various possiblities. Often Rice coding is fitting, but sometimes more complex codes (like the one presented here) are needed.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>What we learned from the election results</title>
@@ -228,7 +446,7 @@
 
 &lt;h3 id=&#34;zerosensitivity&#34;&gt;Zero-sensitivity&lt;/h3&gt;
 
-&lt;p&gt;If your diffusion isn&#39;t zero-sensitive (i.e., &lt;span  class=&#34;math&#34;&gt;\(f(x) = \{0, 1\}\)&lt;/span&gt;), you should &lt;del&gt;panic&lt;/del&gt; come up with something better. In particular, make sure your diffusion contains at least one zero-sensitive subdiffusion as component.&lt;/p&gt;
+&lt;p&gt;If your diffusion isn&#39;t zero-sensitive (i.e., &lt;span  class=&#34;math&#34;&gt;\(f(0) = \{0, 1\}\)&lt;/span&gt;), you should &lt;del&gt;panic&lt;/del&gt; come up with something better. In particular, make sure your diffusion contains at least one zero-sensitive subdiffusion as component.&lt;/p&gt;
 
 &lt;h3 id=&#34;avalanche-diagrams&#34;&gt;Avalanche diagrams&lt;/h3&gt;
 

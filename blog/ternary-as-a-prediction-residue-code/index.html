@@ -7,33 +7,29 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <meta property="og:title" content=" Lambda crabs (part 2): Region inference is (not) magic. &middot;  Ticki&#39;s blog" />
+        <meta property="og:title" content=" Ternary as a prediction residue code &middot;  Ticki&#39;s blog" />
         <meta property="og:site_name" content="Ticki&#39;s blog" />
-        <meta property="og:url" content="http://ticki.github.io/blog/lambda_crabs_2/" />
+        <meta property="og:url" content="http://ticki.github.io/blog/ternary-as-a-prediction-residue-code/" />
 
     
         <meta property="og:type" content="article" />
-        <meta property="og:article:published_time" content="2016-06-06T11:06:21&#43;02:00" />
-        <meta property="og:article:tag" content="lambda-crabs" />
-        <meta property="og:article:tag" content="rust" />
-        <meta property="og:article:tag" content="mathematics" />
-        <meta property="og:article:tag" content="regions" />
-        <meta property="og:article:tag" content="type-inference" />
-        <meta property="og:article:tag" content="type-systems" />
+        <meta property="og:article:published_time" content="2016-11-11T00:00:00Z" />
+        <meta property="og:article:tag" content="coding-theory" />
+        <meta property="og:article:tag" content="compression" />
         
 
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@ticki_" />
         <meta name="twitter:creator" content="@ticki_" />
-        <meta name="twitter:title" content="Lambda crabs (part 2): Region inference is (not) magic." />
-        <meta name="twitter:description" content="I go through the solution to our optimization problem presented in last post. This provides an full algorithm for inference of regions." />
-        <meta name="twitter:url" content="http://ticki.github.io/blog/lambda_crabs_2/" />
+        <meta name="twitter:title" content="Ternary as a prediction residue code" />
+        <meta name="twitter:description" content="I present a new low-byte code based on base 3." />
+        <meta name="twitter:url" content="http://ticki.github.io/blog/ternary-as-a-prediction-residue-code/" />
     
 
-        <title> Lambda crabs (part 2): Region inference is (not) magic. &middot;  Ticki&#39;s blog</title>
+        <title> Ternary as a prediction residue code &middot;  Ticki&#39;s blog</title>
 
     
-        <meta name="description" content="I go through the solution to our optimization problem presented in last post. This provides an full algorithm for inference of regions." />
+        <meta name="description" content="I present a new low-byte code based on base 3." />
     
 
         <meta name="p:domain_verify" content="fc173d84e3a4de948ed4bda2908afd3e"/>
@@ -49,21 +45,21 @@
     
 
     
-        <link rel="canonical" href="http://ticki.github.io/blog/lambda_crabs_2/" />
+        <link rel="canonical" href="http://ticki.github.io/blog/ternary-as-a-prediction-residue-code/" />
 
     
     <script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "Article",
-        "headline": "Lambda crabs (part 2): Region inference is (not) magic.",
+        "headline": "Ternary as a prediction residue code",
         "author": {
             "@type": "Person",
             "name": "http://profiles.google.com/?rel=author"
         },
-        "datePublished": "2016-06-06",
-        "description": "I go through the solution to our optimization problem presented in last post. This provides an full algorithm for inference of regions.",
-        "wordCount":  922 
+        "datePublished": "2016-11-11",
+        "description": "I present a new low-byte code based on base 3.",
+        "wordCount":  979 
     }
 
     </script>
@@ -72,9 +68,9 @@
     
     
       var disqus_shortname = 'http-ticki-github-io';
-      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/lambda_crabs_2\/';
-      var disqus_title = 'Lambda crabs (part 2): Region inference is (not) magic.';
-      var disqus_url = 'http:\/\/ticki.github.io\/blog\/lambda_crabs_2\/';
+      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/ternary-as-a-prediction-residue-code\/';
+      var disqus_title = 'Ternary as a prediction residue code';
+      var disqus_url = 'http:\/\/ticki.github.io\/blog\/ternary-as-a-prediction-residue-code\/';
     
 
     </script>
@@ -121,188 +117,222 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">6 Jun 2016</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">922</span> words)</span></span>
+						<span class="post-date">11 Nov 2016</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">979</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
-  				<h1 class="post-title">Lambda crabs (part 2): Region inference is (not) magic.</h1>
+  				<h1 class="post-title">Ternary as a prediction residue code</h1>
   			</header>
 
   			<section class="post-content">
-  				
+  				<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
-<p>This post will cover region (lifetime) inference with a mathematical and type
-theoretical focus.</p>
+<p>If we look at how most lossless image compression formats works, they don't use deduplication compression (like LZ-class algorithms), because that's simply far from the nature of images. The same goes for audio and video. Instead, you have two maps:</p>
 
-<h2 id="the-problem">The problem</h2>
+<ol>
+<li><p>The approximative map (<span  class="math">\(a(\vec{v})\)</span>): This should give a rough outline of the medium, that is, it is should predict predict the medium based on a small sequence of bytes (defined by the encoding). This could be a polynomial, linear map, bilinear map, Bézier curve, Fourier decomposition, or any class of functions which can be represented compactly.</p></li>
 
-<p>Inference is a very handy concept. We no longer have to annotate redundant
-types, which is a major pain point in languages, that lacks of type inference.</p>
+<li><p>The prediction residue (<span  class="math">\(p(\vec{v})\)</span>): This map &quot;corrects&quot; <span  class="math">\(a(\vec{v})\)</span> such that the combination of the two maps gives an exact result.</p></li>
+</ol>
 
-<p>Now, we want such an inference scheme for regions as well.</p>
+<p><sup>Note that this is massively simplified, and a lot of additional steps are done in popular media compression algorithms.</sup></p>
 
-<p>We described the problem of region inference in <a href="/blog/lambda_crabs_1/">last post</a> as:</p>
+<p>The final function is then defined as</p>
+
+<p><span  class="math">\[f(\vec{v}) = a(\vec{v}) + k p(\vec{v})\]</span></p>
+
+<p>The question just remains: how can we efficiently represent the prediction residue? Well, we know a crucial thing. <span  class="math">\(p(\vec{v})\)</span> tends to be small, because much of it is accounted for in <span  class="math">\(a(\vec{v})\)</span>, so here's where coding theory comes in.</p>
+
+<p>In fact, we can reconsider the problem in terms of coding:</p>
 
 <blockquote>
-<p>So, this is just a classical optimization problem:</p>
+<p>Create a prefix code such that lower bytes have smaller representation than higher bytes.</p>
 </blockquote>
 
-<pre><code>  minimize    'a
-  subject to  A, B, C...
+<p>It is then natural to ask:</p>
 
-  A, B, C… are outlives relations. ‘a may or may not be free in those.
-</code></pre>
+<h1 id="why-not-just-stick-with-a-huffman-tree">Why not just stick with a Huffman tree?</h1>
 
-<p>Namely, we want to minimize some lifetimes, while holding some conditions.</p>
+<p>Well, we could, but because we often need live encoding and decoding, we need something faster. Huffman trees are slow because they involve cache misses and forward scans.</p>
 
-<h2 id="adding-regions">&ldquo;Adding&rdquo; regions</h2>
+<p>The gain of using Huffman trees in this case is really small, because the basic distribution is known in advance.</p>
 
-<p>One thing we will use throughout the region inference algorithm is the notion of &ldquo;adding&rdquo; regions.</p>
+<p>We want a code defined by a small set of rules which can be encoded and decoded with extreme performance, so we want to avoid Huffman codes for these reasons.</p>
 
-<p>You may have seen <code>'a + 'b</code> before. Intuitively, <code>'a: 'b + 'c</code> is equivalent to
-<code>'a: 'b, 'a: 'c</code>, but we can go further and use <code>'a + 'b</code> as a way to construct
-new regions:</p>
+<h1 id="candidate-rice-coding">Candidate: Rice coding</h1>
 
-<p>Define <code>'a + 'b</code> as the smallest region that outlives both <code>'a</code> and <code>'b</code>.</p>
+<p>Rice coding is a special case of Golomb coding. It is often used in Audio codecs, where it works fine.</p>
 
-<p>In a sense, you &ldquo;widen&rdquo; the region until it covers both regions:</p>
-
-<pre><code>'a:       I---------I
-'b:            I------------I
-'a + 'b:  I-----------------I
-</code></pre>
-
-<h2 id="funky-but-useless-regions-under-addition-as-an-abelian-semigroup">Funky but useless: Regions under addition as an abelian semigroup</h2>
-
-<p>A semigroup is an algebraic structure satisfying two properties:</p>
+<p>Here's how it works:</p>
+<figure role="group">
+<figcaption></figcaption>
+<p>To encode a byte <span  class="math">\(b\)</span>, do the following:</p>
 
 <ol>
-<li>Closure, for any a, b in S, a + b is contained in S.</li>
-<li>Associativity, for any a, b, and c in S, (a + b) + c = a + (b + c).</li>
+<li>Write <span  class="math">\(b \ll n\)</span> 1 bits.</li>
+<li>Write a 0 bit.</li>
+<li>Write <span  class="math">\(b % n\)</span> in base two (<span  class="math">\(b\)</span> bits).</li>
 </ol>
+</figure>
 
-<p>But in contrary to monoids, there is no identity element.</p>
-
-<p>&ldquo;Abelian&rdquo; means commutative. That is, a + b = b + a.</p>
-
-<p>And, in fact, regions follows all these rules, making it an abelian semigroup.</p>
-
-<p>We know two additional facts about our operator:</p>
+<p>But it has multiple shortfalls:</p>
 
 <ol>
-<li>It follows from the fact <code>'a: 'a</code>, that a + a = a</li>
-<li>It follows from the fact <code>'static: 'a</code> for all <code>'a</code>, that <code>∃s∈L  ∀a∈L  s + a = s</code>.</li>
+<li>Often there is no fitting constants, because of the trade-off. You need to choose between low minimum and high maximum or high minimum and low maximum. There's little middle-ground.</li>
+<li>It is slow to encode and decode, because reading new bits requires you to branch to see if a new byte is needed (in particular, the atomic units are not aligned with the byte).</li>
+<li>It encodes arbitrarily high numbers, meaning that some redundancy exists when coding bytes-only.</li>
 </ol>
 
-<h2 id="regions-as-a-lattice">Regions as a lattice</h2>
+<p>It is used in certain MPEG variants as well as FLAC and lossless JPEG.</p>
 
-<p>It makes much more sense to think of regions as a lattice. A lattice is a poset
-with two operators defined on it:</p>
+<h1 id="an-alternative-approach-base-3-in-base-4">An alternative approach: Base 3 in base 4.</h1>
 
-<ol>
-<li><p>Join, an unique supremum (that is, least upper-bound). This is our <code>+</code>
-operator.</p></li>
+<p>So, what if we encode everything in base 3?</p>
 
-<li><p>Meet, an unique infimum (that is, greatest lower-bound). This isn&rsquo;t very
-useful for the matter of regions, but it is still defined on them.</p></li>
-</ol>
+<p>First of all, why would we do that?</p>
 
-<p>which follows a set of laws:</p>
+<p>Well, for it to be a prefix code, you need a way to determine if the token is over, i.e. a terminator, so you really need 4 different symbols (0, 1, 2, T). Enumerating these symbols is trivial to do in binary: It's just two bits!</p>
 
-<ol>
-<li><p>The law of commutativity: Both meet and join are commutative operators.</p></li>
+<p>This means that we positively know that every byte contains exactly 4 symbols, greatly improving decoding/encoding performance.</p>
 
-<li><p>The law of associativity: Both meet and join are associative operators.</p></li>
+<h1 id="eliminating-redundancy">Eliminating redundancy</h1>
 
-<li><p>The law of absorption: Meet(a, Meet(a, b)) = Meet(a, b) and Join(a, Join(a, b)) = Join(a, b).</p></li>
-</ol>
+<p>There is a redundancy in this system, though. It is not a bijection. <code>01T</code> and <code>1T</code> gives the same (1), but a simple trick can eliminate this.</p>
 
-<p>In fact, this describes our structure perfectly. In particular, L is an
-<em>upper-bounded lattice</em>, i.e. we have a maximal element (<code>'static</code>).</p>
+<p>In particular, we can say that if the two first bits in the token are 0 (which is redundant), the final value produced is 0, but then <code>00T</code> would be equivalent to <code>0</code>. Fortunately, this redundancy can easily be solved by adding 1 to the decoded result, and hence making 0 impossible unless the first symbol is <code>0</code>.</p>
 
-<p>Lattice theory, which we will cover in-depth in a later post is perfect for
-studying subtyping relations.</p>
+<h2 id="overflows">Overflows</h2>
 
-<h2 id="directed-acyclic-graphs">Directed Acyclic Graphs</h2>
+<p>Since we cannot encode above 255, there is a class of trap values, where it overflows. Fortunately, there is a nice solution to it: just skip the terminator and go to the next token.</p>
 
-<p>A directed acyclic graph is a finite directed graph with no directed cycles.
-That is, any arbitrary directed walk in the graph will &ldquo;end&rdquo; at some point.</p>
+<h1 id="table">Table</h1>
 
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/6/61/Polytree.svg" alt="" /></p>
+<table>
+<thead>
+<tr>
+<th>N</th>
+<th align="right">Ternary representation</th>
+<th align="right">Binary representation</th>
+<th align="right">Reduction (of original size)</th>
+</tr>
+</thead>
 
-<p>Let&rsquo;s forget the <code>'a: 'a</code> case for a moment. As such, the regions under our
-<em>strict</em> outlive relation, <em>&lt;</em>, forms a directed acyclic graph (DAG).</p>
+<tbody>
+<tr>
+<td>0</td>
+<td align="right"><code>0</code></td>
+<td align="right"><code>00</code></td>
+<td align="right">25%</td>
+</tr>
 
-<p>In particular, if two node are connected, with a directed edge A → B, A
-represents a region, which <em>outlives</em> B.</p>
+<tr>
+<td>1</td>
+<td align="right"><code>T</code></td>
+<td align="right"><code>11</code></td>
+<td align="right">25%</td>
+</tr>
 
-<p>Consider we take a reference <code>&amp;'b T</code> where <code>T: 'a</code></p>
+<tr>
+<td>2</td>
+<td align="right"><code>1T</code></td>
+<td align="right"><code>0111</code></td>
+<td align="right">50%</td>
+</tr>
 
-<pre><code> 'static
- |
- v
-'a &lt;---------\
- |           |
- |           |
- |           |
- v           |
-'b &lt;------- 'a + 'b
-</code></pre>
+<tr>
+<td>3</td>
+<td align="right"><code>2T</code></td>
+<td align="right"><code>1011</code></td>
+<td align="right">50%</td>
+</tr>
 
-<h2 id="handling-cycles">Handling cycles</h2>
+<tr>
+<td>4</td>
+<td align="right"><code>10T</code></td>
+<td align="right"><code>010011</code></td>
+<td align="right">75%</td>
+</tr>
 
-<p>Every lifetime outlives itself, as explained in the last post. So our outlives
-relation doesn&rsquo;t form a DAG, due to these cycles.</p>
+<tr>
+<td>5</td>
+<td align="right"><code>11T</code></td>
+<td align="right"><code>010111</code></td>
+<td align="right">75%</td>
+</tr>
 
-<p>The solution is relatively simple, though.</p>
+<tr>
+<td>6</td>
+<td align="right"><code>12T</code></td>
+<td align="right"><code>011011</code></td>
+<td align="right">75%</td>
+</tr>
 
-<p>Let <code>{'a, 'b, 'c, ...}</code> be cycle such that <code>'a &lt; 'b &lt; 'c ... &lt; 'a</code>. Due to
-transitivity and antisymmetry, we can assume that <code>'a = 'b = 'c = ...</code>, thus we
-can, without loss of generality, collapse the cycle into a single node.</p>
+<tr>
+<td>7</td>
+<td align="right"><code>20T</code></td>
+<td align="right"><code>100011</code></td>
+<td align="right">75%</td>
+</tr>
 
-<p>This lets us interpret the graph, where edges represents outlives relations, as
-a DAG.</p>
+<tr>
+<td>8</td>
+<td align="right"><code>21T</code></td>
+<td align="right"><code>100111</code></td>
+<td align="right">75%</td>
+</tr>
 
-<h2 id="recursively-widening-the-regions">Recursively widening the regions</h2>
+<tr>
+<td>9</td>
+<td align="right"><code>22T</code></td>
+<td align="right"><code>101011</code></td>
+<td align="right">75%</td>
+</tr>
 
-<p>Say we want to infer the span of some node <code>'a</code>. Assume <code>'a</code> neighbors (outlives)
-<code>'b, 'c, 'd...</code></p>
+<tr>
+<td>10</td>
+<td align="right"><code>100T</code></td>
+<td align="right"><code>10000011</code></td>
+<td align="right">100%</td>
+</tr>
 
-<p>Since we know the bound, we can say <code>'a = 'b + 'c + 'd + ...</code>, since this is the
-smallest &lsquo;a subject to the outlives conditions.</p>
+<tr>
+<td>...</td>
+<td align="right">...</td>
+<td align="right">...</td>
+<td align="right">...</td>
+</tr>
 
-<p>Now, recursively do the same with <code>'b, 'c, 'd, ...</code> Since the graph is acyclic,
-this will terminate at some point.</p>
+<tr>
+<td>255</td>
+<td align="right"><code>100110</code></td>
+<td align="right"><code>010000010100</code></td>
+<td align="right">150%</td>
+</tr>
+</tbody>
+</table>
 
-<p>On an implementation note: you can optimize this process by 1. deduplicating
-the regions, 2. collapsing sums containing <code>'static</code> into <code>'static</code>, 3. caching the
-nodes to avoid redundant calculations.</p>
+<p>As you may notice, ten is the splitting point where it goes from less than 100% to 100%, which means that if there is a significant number of bytes above or equals to 10, it expands.</p>
 
-<h2 id="going-further-liveness">Going further: liveness</h2>
+<h1 id="moving-the-tipping-point">Moving the tipping point</h1>
 
-<p>Now that we have a closed form for inferring lifetimes, we can do lots of cool stuff.</p>
+<p>10 is a bit too low for many purposes, so it is natural to ask if we can modify the code to expand it. In fact, a technique similar to Rice coding can be used: Encode the <span  class="math">\(k\)</span> last bits seperately than the first ones.</p>
 
-<p>Liveness of a value is the span starting where the value is declared and ending
-where the last access to it is made. This is in contrary to the classical
-lexical approach, where the initial lifetimes are assigned as the scopes of the
-variables.</p>
+<p>In particular, we split the byte into two and then encode the first part through the described technique, and the second part through usual little-endian encoding.</p>
 
-<p>Let&rsquo;s start by defining <code>empty(x)</code> as the region spanning from x to x (that is,
-an empty region at x). Assign every value declared at x a region, <code>empty(x)</code>.</p>
+<p>Put <span  class="math">\(k=2\)</span>, and the tipping point moved to 40. <span  class="math">\(k=4\)</span>, and the tipping point is 160.</p>
 
-<p>Whenever a value of lifetime <code>'x</code> is used at some point y, we add a bound <code>'x:
-empty(y)</code>.</p>
+<h1 id="usecases">Usecases</h1>
 
-<p>So we essentially expand the region whenever used, effectively yielding the
-liveness of the value.</p>
+<p>Well, really, it depends on the nature of the data you compress. The best way to find out if it fits is to experiment with it.</p>
 
-<h2 id="a-happy-ending">A happy ending</h2>
+<p>Rice code tends to be better if a lot of the bytes are low and outliers are relatively rare, but when there are outliers, it tends to hurt in terms of efficiency.</p>
 
-<p>That&rsquo;s it&hellip; The algorithm is really that simple. In fact, you can implement it
-in only a 100-200 lines.</p>
+<h1 id="conclusion">Conclusion</h1>
 
-<h2 id="questions-and-errata">Questions and errata</h2>
+<p>Assuming you approximative function is precise enough, this type coding would give a fairly good ratio. If it is imprecise or doesn't follow the right distribution, you might end up expanding the size.</p>
 
-<p>Ping me at #rust in Mozilla IRC.</p>
+<p>In the end, it depends on what you're compressing, and you should consider all the various possiblities. Often Rice coding is fitting, but sometimes more complex codes (like the one presented here) are needed.</p>
 
   			</section>
 
@@ -310,28 +340,20 @@ in only a 100-200 lines.</p>
   				<div class="post-tags">
             
             
-                <a href="http://ticki.github.io//tags/lambda-crabs/">lambda-crabs</a>
+                <a href="http://ticki.github.io//tags/coding-theory/">coding-theory</a>
             
-                <a href="http://ticki.github.io//tags/rust/">rust</a>
-            
-                <a href="http://ticki.github.io//tags/mathematics/">mathematics</a>
-            
-                <a href="http://ticki.github.io//tags/regions/">regions</a>
-            
-                <a href="http://ticki.github.io//tags/type-inference/">type-inference</a>
-            
-                <a href="http://ticki.github.io//tags/type-systems/">type-systems</a>
+                <a href="http://ticki.github.io//tags/compression/">compression</a>
             
             
   				</div>
   				<div class="post-share">
-  					<a class="icon-twitter" href="https://twitter.com/share?text=Lambda%20crabs%20%28part%202%29%3a%20Region%20inference%20is%20%28not%29%20magic.&url=http%3a%2f%2fticki.github.io%2fblog%2flambda_crabs_2%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+  					<a class="icon-twitter" href="https://twitter.com/share?text=Ternary%20as%20a%20prediction%20residue%20code&url=http%3a%2f%2fticki.github.io%2fblog%2fternary-as-a-prediction-residue-code%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
   						<span>Twitter</span>
   					</a>
-  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2flambda_crabs_2%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fternary-as-a-prediction-residue-code%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
   						<span>Facebook</span>
   					</a>
-  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2flambda_crabs_2%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fternary-as-a-prediction-residue-code%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
   						<span>Google+</span>
   					</a>
   				</div>
@@ -351,23 +373,13 @@ in only a 100-200 lines.</p>
 
 			<nav class="post-nav">
 				
-					<a class="post-nav-item post-nav-next" href="http://ticki.github.io/blog/lambda_crabs_3/">
-						<section class="post-nav-teaser">
-							<span class="post-nav-icon"><i class="icon-arrow-left"></i></span>
-							<span class="post-nav-info">
-								<h4 class="post-nav-title">Lambda crabs (part 3): Region-based alias analysis</h4>
-								<p class="post-nav-excerpt">In this post, we show how you can analyse alias properties through region data.&hellip;</p>
-							</span>
-						</section>
-					</a>
 				
-				
-					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/lambda_crabs_1/">
+					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/what-we-have-learned-from-the-election-results/">
 						<section class="post-nav-teaser">
 							<span class="post-nav-icon"><i class="icon-arrow-right"></i></span>
 							<span class="post-nav-info">
-								<h4 class="post-nav-title">Lambda crabs (part 1): A mathematical introduction to lifetimes and regions</h4>
-								<p class="post-nav-excerpt">In this post, I go through the theoretical foundation of region-based memory management.&hellip;</p>
+								<h4 class="post-nav-title">What we learned from the election results</h4>
+								<p class="post-nav-excerpt">It was surprising victory, but why?&hellip;</p>
 							</span>
 						</section>
 					</a>
@@ -407,6 +419,12 @@ in only a 100-200 lines.</p>
             <a class="home current js-ajax-link" href="https://github.com/ticki">GitHub</a>
         </li>
         
+        
+        <li class="menu-list-item">
+            
+            <a class="home current js-ajax-link" href="https://twitter.com/ticki_">Twitter</a>
+        </li>
+        
     </div>
 
 </div>
@@ -418,23 +436,7 @@ in only a 100-200 lines.</p>
         <a class="menu-close" data-action="toc" data-target="toc"></a>
     </div>
     <div id="toc" class="menu-list">
-        <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#the-problem">The problem</a></li>
-<li><a href="#adding-regions">&ldquo;Adding&rdquo; regions</a></li>
-<li><a href="#funky-but-useless-regions-under-addition-as-an-abelian-semigroup">Funky but useless: Regions under addition as an abelian semigroup</a></li>
-<li><a href="#regions-as-a-lattice">Regions as a lattice</a></li>
-<li><a href="#directed-acyclic-graphs">Directed Acyclic Graphs</a></li>
-<li><a href="#handling-cycles">Handling cycles</a></li>
-<li><a href="#recursively-widening-the-regions">Recursively widening the regions</a></li>
-<li><a href="#going-further-liveness">Going further: liveness</a></li>
-<li><a href="#a-happy-ending">A happy ending</a></li>
-<li><a href="#questions-and-errata">Questions and errata</a></li>
-</ul></li>
-</ul>
-</nav>
+        
     </div>
 </div>
 
