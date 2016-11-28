@@ -45,7 +45,7 @@
 
 &lt;p&gt;A block looks like:&lt;/p&gt;
 
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\overbrace{\underbrace{t_1}_\text{4 bits}\  \underbrace{t_2}_\text{4 bits}}^\text{Token} \quad \underbrace{\overbrace{e_1}^\texttt{LISC}}_\text{If $t_1 = 15$} \quad \underbrace{\overbrace{L}^\text{Literal}}_{t_1 + e\text{ bytes }} \quad \overbrace{\underbrace{O}_\text{2 bytes}}^\text{Little endian} \quad \underbrace{\overbrace{e_2}^\texttt{LISC}}_\text{If $t_2 = 15$}\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\overbrace{\underbrace{t_1}_\text{4 bits}\  \underbrace{t_2}_\text{4 bits}}^\text{Token} \quad \underbrace{\overbrace{e_1}^\texttt{LISC}}_\text{If $t_1 = 15$} \quad \underbrace{\overbrace{L}^\text{Literal}}_{t_1 + e_1\text{ bytes }} \quad \overbrace{\underbrace{O}_\text{2 bytes}}^\text{Little endian} \quad \underbrace{\overbrace{e_2}^\texttt{LISC}}_\text{If $t_2 = 15$}\]&lt;/span&gt;&lt;/p&gt;
 
 &lt;p&gt;And decodes to the &lt;span  class=&#34;math&#34;&gt;\(L\)&lt;/span&gt; segment, followed by a &lt;span  class=&#34;math&#34;&gt;\(t_2 + e_2 + 4\)&lt;/span&gt; bytes sequence copied from position &lt;span  class=&#34;math&#34;&gt;\(l - O\)&lt;/span&gt; from the output buffer (where &lt;span  class=&#34;math&#34;&gt;\(l\)&lt;/span&gt; is the length of the output buffer).&lt;/p&gt;
 

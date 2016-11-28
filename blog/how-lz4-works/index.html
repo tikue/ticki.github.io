@@ -158,7 +158,7 @@
 
 <p>A block looks like:</p>
 
-<p><span  class="math">\[\overbrace{\underbrace{t_1}_\text{4 bits}\  \underbrace{t_2}_\text{4 bits}}^\text{Token} \quad \underbrace{\overbrace{e_1}^\texttt{LISC}}_\text{If $t_1 = 15$} \quad \underbrace{\overbrace{L}^\text{Literal}}_{t_1 + e\text{ bytes }} \quad \overbrace{\underbrace{O}_\text{2 bytes}}^\text{Little endian} \quad \underbrace{\overbrace{e_2}^\texttt{LISC}}_\text{If $t_2 = 15$}\]</span></p>
+<p><span  class="math">\[\overbrace{\underbrace{t_1}_\text{4 bits}\  \underbrace{t_2}_\text{4 bits}}^\text{Token} \quad \underbrace{\overbrace{e_1}^\texttt{LISC}}_\text{If $t_1 = 15$} \quad \underbrace{\overbrace{L}^\text{Literal}}_{t_1 + e_1\text{ bytes }} \quad \overbrace{\underbrace{O}_\text{2 bytes}}^\text{Little endian} \quad \underbrace{\overbrace{e_2}^\texttt{LISC}}_\text{If $t_2 = 15$}\]</span></p>
 
 <p>And decodes to the <span  class="math">\(L\)</span> segment, followed by a <span  class="math">\(t_2 + e_2 + 4\)</span> bytes sequence copied from position <span  class="math">\(l - O\)</span> from the output buffer (where <span  class="math">\(l\)</span> is the length of the output buffer).</p>
 
