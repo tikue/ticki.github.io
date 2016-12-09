@@ -59,7 +59,7 @@
 
 &lt;p&gt;The first (highest) field in the token is used to define the literal. This obviously takes a value 0-15.&lt;/p&gt;
 
-&lt;p&gt;Since we might want to encode higher integer, as such we make use of LSIC encoding: If the field is 15 (the meximal value), we read an integer with LSIC and add it to the original value (15) to obtain the literals length.&lt;/p&gt;
+&lt;p&gt;Since we might want to encode higher integer, as such we make use of LSIC encoding: If the field is 15 (the maximal value), we read an integer with LSIC and add it to the original value (15) to obtain the literals length.&lt;/p&gt;
 
 &lt;p&gt;Call the final value &lt;span  class=&#34;math&#34;&gt;\(L\)&lt;/span&gt;.&lt;/p&gt;
 

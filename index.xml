@@ -6,8 +6,118 @@
     <description>Recent content on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 16 Nov 2016 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 08 Dec 2016 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://ticki.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>SeaHash: Explained</title>
+      <link>http://ticki.github.io/blog/seahash-explained/</link>
+      <pubDate>Thu, 08 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/blog/seahash-explained/</guid>
+      <description>&lt;script type=&#34;text/javascript&#34;
+  src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
+&lt;/script&gt;
+
+&lt;p&gt;So, not so long ago, I designed &lt;a href=&#34;https://github.com/ticki/tfs/tree/master/seahash&#34;&gt;SeaHash&lt;/a&gt;, an alternative hash algorithm with performance better than most (all?) of the existing non-cryptographic hash functions available. I designed it for checksumming for a file system, I&#39;m working on, but I quickly found out it was sufficient for general hashing.&lt;/p&gt;
+
+&lt;p&gt;It blew up. I got a lot of cool feedback, and yesterday it was picked as &lt;a href=&#34;https://this-week-in-rust.org/blog/2016/12/06/this-week-in-rust-159/&#34;&gt;crate of the week&lt;/a&gt;. It shows that there is some interest in it, so I want to explain the ideas behind it.&lt;/p&gt;
+
+&lt;h1 id=&#34;hashing-an-introduction&#34;&gt;Hashing: an introduction&lt;/h1&gt;
+
+&lt;p&gt;The basic idea of hashing is to map data with patterns in it to pseudorandom values. It should be designed such that only few collisions happen.&lt;/p&gt;
+
+&lt;p&gt;Simply put, the hash function should behave like a pseudorandom function (PRF) producing a seemingly random stream from a non-random stream. It is similar to pseudorandom functions, in a sense, with difference that they must take variable input.&lt;/p&gt;
+
+&lt;p&gt;Formally, perfect PRFs are defined as follows:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\(f : \{0, 1\}^n \to \{0, 1\}^n\)&lt;/span&gt; is a perfect PRF if and only if given a distribution &lt;span  class=&#34;math&#34;&gt;\(d : \{0, 1\}^n \to \left[0,1\right]\)&lt;/span&gt;, &lt;span  class=&#34;math&#34;&gt;\(f\)&lt;/span&gt; maps inputs following the distribution &lt;span  class=&#34;math&#34;&gt;\(d\)&lt;/span&gt; to the uniform distribution.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h1 id=&#34;constructing-a-hash-function-from-a-prf&#34;&gt;Constructing a hash function from a PRF&lt;/h1&gt;
+
+&lt;p&gt;There are various ways to construct a variable-length hash function from a PRF. The most famous one is Merkle–Damgård construction. We will focus on this.&lt;/p&gt;
+
+&lt;p&gt;There are multiple ways to do Merkle–Damgård construction. The most famous one is the wide-pipe construction. It works by having a state, which combined with one block of the input data at a time. The final state will then be the hash value. This combining function is called a &amp;quot;compression function&amp;quot;. It takes two blocks of same length and maps it to one: &lt;span  class=&#34;math&#34;&gt;\(f : \{0, 1\}^n \times \{0, 1\}^n \to \{0, 1\}^n\)&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[h = f(f(f(\ldots, b_0), b_1), b_2)\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;It is important that this compression emits pseudorandom behavior, and that&#39;s where PRFs comes in. For general-purpose hash function where we don&#39;t care about security, the construction usually looks like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[f(a, b) = p(a \oplus b)\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;This of course is commutative, but that doesn&#39;t matter, because we don&#39;t need non-commutativity in the Merkle–Damgård construction.&lt;/p&gt;
+
+&lt;h1 id=&#34;choosing-a-prf&#34;&gt;Choosing a PRF&lt;/h1&gt;
+
+&lt;p&gt;The &lt;a href=&#34;http://www.pcg-random.org/&#34;&gt;PCG family of PRFs&lt;/a&gt; is my favorite PRF I&#39;ve seen so far:&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\begin{align*}
+x &amp;\gets p \otimes x \\
+x &amp;\gets x \oplus ((x \gg 32) \gg (x \gg 60)) \\
+x &amp;\gets p \otimes x
+\end{align*}\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;(&lt;span  class=&#34;math&#34;&gt;\(\otimes\)&lt;/span&gt; means modular multiplication)&lt;/p&gt;
+
+&lt;p&gt;The PCG paper goes into depth on why this. In particular, it is a quite uncommon to use these kinds of non-fixed shifts.&lt;/p&gt;
+
+&lt;p&gt;This is a bijective function, which means that we can&#39;t ever have less entropy than the input, which is a good property to have in a hash function.&lt;/p&gt;
+
+&lt;h1 id=&#34;parallelism&#34;&gt;Parallelism&lt;/h1&gt;
+
+&lt;p&gt;This construction of course relies on dependencies between the states, rendering it impossible to parallelize.&lt;/p&gt;
+
+&lt;p&gt;We need a way to be able to independently calculate multiple block updates. With a single state, this is simply not possible, but fear not, we can add multiple states.&lt;/p&gt;
+
+&lt;p&gt;Instruction-level parallelism means that we don&#39;t even need to fire up multiple threads (which would be quite expensive), but simply exploit CPU&#39;s instruction pipelines.&lt;/p&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/seahash_state_update_diagram.svg&#34; alt=&#34;A diagram of the new design.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;In the above diagram, you can see a 4-state design, where every state except the first is shifted down. The first state (&lt;span  class=&#34;math&#34;&gt;\(a\)&lt;/span&gt;) gets the last one (&lt;span  class=&#34;math&#34;&gt;\(d\)&lt;/span&gt;) after being combined with the input block (&lt;span  class=&#34;math&#34;&gt;\(D\)&lt;/span&gt;) through our PRF:&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\begin{align*}
+a&#39; &amp;= b \\
+b&#39; &amp;= c \\
+c&#39; &amp;= d \\
+d&#39; &amp;= f(a \oplus D) \\
+\end{align*}\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;It isn&#39;t obvious how this design allows parallelism, but it has to do with the fact that you can unroll the loop, such that the shifts aren&#39;t needed. In particular, after 4 rounds, everything is back at where it started:&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\begin{align*}
+a &amp;\gets f(a \oplus B_1) \\
+b &amp;\gets f(b \oplus B_2) \\
+c &amp;\gets f(c \oplus B_3) \\
+d &amp;\gets f(d \oplus B_4) \\
+\end{align*}\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;If we take 4 rounds every iteration, we get 4 independent state updates, which are run in parallel.&lt;/p&gt;
+
+&lt;p&gt;This is also called an &lt;em&gt;alternating 4-state Merkle–Damgård construction&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;finalizing-the-four-states&#34;&gt;Finalizing the four states&lt;/h2&gt;
+
+&lt;p&gt;Naively, we would just XOR the four states (which have difference initialization vectors, and hence would not commute).&lt;/p&gt;
+
+&lt;p&gt;There are some issues: What if the input doesn&#39;t divide our 4 blocks? Well, the simple solution is of course padding, but that gives us another issue: how do we distinguish between padding and normal zeros?&lt;/p&gt;
+
+&lt;p&gt;We XOR the length with the hash value. Unfortunately, this is obviously not discrete, since appending another zero would then only affect the value slightly, so we need to run it through our PRF:&lt;/p&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/seahash_finalization_diagram.svg&#34; alt=&#34;SeaHash finalization&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;putting-it-all-together&#34;&gt;Putting it all together&lt;/h1&gt;
+
+&lt;p&gt;We can finally put it all together:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://ticki.github.io/img/seahash_construction_diagram.svg&#34;&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/seahash_construction_diagram.svg&#34; alt=&#34;SeaHash construction&#34;&gt;&lt;/figure&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;(click to zoom)&lt;/p&gt;
+
+&lt;p&gt;You can see the code and benchmarks &lt;a href=&#34;https://github.com/ticki/tfs/tree/master/seahash&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>The Trump Effect</title>
@@ -772,7 +882,7 @@ x &amp;\gets x \oplus (x \gg z) \\
 
 &lt;p&gt;The first (highest) field in the token is used to define the literal. This obviously takes a value 0-15.&lt;/p&gt;
 
-&lt;p&gt;Since we might want to encode higher integer, as such we make use of LSIC encoding: If the field is 15 (the meximal value), we read an integer with LSIC and add it to the original value (15) to obtain the literals length.&lt;/p&gt;
+&lt;p&gt;Since we might want to encode higher integer, as such we make use of LSIC encoding: If the field is 15 (the maximal value), we read an integer with LSIC and add it to the original value (15) to obtain the literals length.&lt;/p&gt;
 
 &lt;p&gt;Call the final value &lt;span  class=&#34;math&#34;&gt;\(L\)&lt;/span&gt;.&lt;/p&gt;
 
@@ -2904,137 +3014,6 @@ in only a 100-200 lines.&lt;/p&gt;
 &lt;h2 id=&#34;questions-and-errata&#34;&gt;Questions and errata&lt;/h2&gt;
 
 &lt;p&gt;Ping me at #rust in Mozilla IRC.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Lambda crabs (part 1): A mathematical introduction to lifetimes and regions</title>
-      <link>http://ticki.github.io/blog/lambda-crabs-part-1-a-mathematical-introduction-to-lifetimes-and-regions/</link>
-      <pubDate>Mon, 06 Jun 2016 09:12:56 +0200</pubDate>
-      
-      <guid>http://ticki.github.io/blog/lambda-crabs-part-1-a-mathematical-introduction-to-lifetimes-and-regions/</guid>
-      <description>
-
-&lt;p&gt;This post will cover lifetimes and regions in depth, with a focus on the mathematical background of regions. That is, what is a region? What rules do they follow? How does the compiler handle them? And how are they inferred?&lt;/p&gt;
-
-&lt;h2 id=&#34;regions-and-their-ordering&#34;&gt;Regions and their ordering&lt;/h2&gt;
-
-&lt;p&gt;So, let&amp;rsquo;s briefly investigate what a region is. A region (or in Rust lingo, a lifetime) is a span of some form, e.g. the token stream. Regions have an outlive relation defined on them.&lt;/p&gt;
-
-&lt;p&gt;A region &lt;code&gt;&#39;a&lt;/code&gt; outlives &lt;code&gt;&#39;b&lt;/code&gt; if &lt;code&gt;&#39;b&lt;/code&gt;&amp;rsquo;s span is covered by &lt;code&gt;&#39;a&lt;/code&gt;. For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: I----------------I
-&#39;b: I---------I
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As you can see &lt;code&gt;&#39;a: &#39;b&lt;/code&gt; since the first span covers the second. But what is the nature of the outlives relation?&lt;/p&gt;
-
-&lt;h2 id=&#34;regions-a-poset&#34;&gt;Regions: a poset&lt;/h2&gt;
-
-&lt;p&gt;One could mistakenly believe that regions are ordered over their outlives relation. An totally ordered set A under ≤ means that any elements a, b ∈ A satisfy all of the following statements:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;If a ≤ b and b ≤ a are both satisfied, a = b.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;If a ≤ b and b ≤ c are both satisfied, a ≤ c.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;At least one of a ≤ b and b ≤ a is true.&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;To see why the outlives relation is not a total order over the set of regions, consider the case:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: I---------I
-&#39;b:    I------------I
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The third condition is not met here: neither &lt;code&gt;&#39;a: &#39;b&lt;/code&gt; or &lt;code&gt;&#39;b: &#39;a&lt;/code&gt; is true.&lt;/p&gt;
-
-&lt;p&gt;It turns out that weakening the last condition to only consider reflexivity gives us a structure, that L (the set of regions) classifies. Replace 3. by a ≤ a, and you get a partially ordered set, or a poset.&lt;/p&gt;
-
-&lt;h2 id=&#34;outlive-relation-as-a-partial-order&#34;&gt;Outlive relation as a partial order&lt;/h2&gt;
-
-&lt;p&gt;So, let&amp;rsquo;s briefly explain how the rules of outliving mirrors the rules of partial orders.&lt;/p&gt;
-
-&lt;p&gt;The first rule, the rule of antisymmetry, reads&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: &#39;b
-&#39;b: &#39;a
--------
-&#39;a = &#39;b
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;So if two regions (lifetimes, borrows, scopes, etc.) outlives each other symmetrically (&amp;lsquo;a: &amp;lsquo;b and &amp;lsquo;b: &amp;lsquo;a), they are, in fact, the same.&lt;/p&gt;
-
-&lt;p&gt;The second rule, the rule of transitivity, is crucial to understanding the semantics of regions:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: &#39;b
-&#39;b: &#39;c
-------
-&#39;a: &#39;c
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In other words, regions are hierarchical. It might seem very simple, but the implications are in fact very important: it allows us to conclude things from transitivity. Think of it like you can &amp;ldquo;inherit&amp;rdquo; bounds from outliving regions.&lt;/p&gt;
-
-&lt;p&gt;For example,&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: I--------------------I
-&#39;b:   I----------------I
-&#39;c:      I---------I
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Say we know that, &lt;code&gt;&#39;a: &#39;b&lt;/code&gt;, and &lt;code&gt;&#39;b: &#39;c&lt;/code&gt;. We can then conclude that &lt;code&gt;&#39;a: &#39;c&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;The last rule simply states that &amp;lsquo;a outlives itself. This might seem counterintuitive due to the odd terminology, but think of outlives as &amp;ldquo;outlives or equals to&amp;rdquo;.&lt;/p&gt;
-
-&lt;p&gt;In fact, there is only one more thing we know about regions: they have an unique maximal extrema, which outlives all other regions, &lt;code&gt;&#39;static&lt;/code&gt;. Namely, &lt;code&gt;&#39;static&lt;/code&gt; outlives any region, &lt;code&gt;&#39;a&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;And that&amp;rsquo;s all the &amp;ldquo;axioms&amp;rdquo; of lifetimes.&lt;/p&gt;
-
-&lt;h2 id=&#34;what-subtyping-is&#34;&gt;What subtyping is&lt;/h2&gt;
-
-&lt;p&gt;Before we go to next section, we will just have to briefly cover subtyping. τ is said to be a subtype of υ (denoted &lt;code&gt;τ &amp;lt;: υ&lt;/code&gt;), if a &lt;em&gt;type mismatch&lt;/em&gt;, such that τ is inferred to be of type υ, makes the value of type τ coerce into a value of type υ.&lt;/p&gt;
-
-&lt;p&gt;In other words, you can replace your subtype by a supertype (the parent type) without getting a type mismatch error.&lt;/p&gt;
-
-&lt;h2 id=&#34;regions-are-just-types-outlive-relation-as-a-subtyping-rule&#34;&gt;Regions are just types: Outlive relation as a subtyping rule&lt;/h2&gt;
-
-&lt;p&gt;If you think about it, you may notice that lifetimes are used in type positions &lt;em&gt;a lot&lt;/em&gt;. This is no coincidence, since &lt;em&gt;regions are just types with a subtyping relation&lt;/em&gt;, which is the very reason you are allowed to do e.g. &lt;code&gt;MyStruct&amp;lt;&#39;a&amp;gt;&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;In fact, the outlive relation defines a subtyping rule. That is, you can always &amp;ldquo;shrink&amp;rdquo; a region span. Let &lt;em&gt;c&lt;/em&gt; be a type constructor, &amp;lsquo;a → *, then &amp;lsquo;a: &amp;lsquo;b implies that &lt;code&gt;&#39;a &amp;lt;: &#39;b&lt;/code&gt;, that is &lt;code&gt;&#39;a&lt;/code&gt; can coerce into &lt;code&gt;&#39;b&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;For example, &lt;code&gt;&amp;amp;&#39;static str&lt;/code&gt; can coerce to any &lt;code&gt;&amp;amp;&#39;a str&lt;/code&gt;, since &lt;code&gt;&#39;static&lt;/code&gt; outlives any lifetime.&lt;/p&gt;
-
-&lt;p&gt;Due to the implementation, there are a few limits, though. You can for example not do &lt;code&gt;let a: &#39;a&lt;/code&gt; which would be useless anyways.&lt;/p&gt;
-
-&lt;p&gt;Syntactically, there is a confusion: lifetimes appears in certain trait places, especially in &lt;em&gt;trait bounds&lt;/em&gt;. But, in fact, that is only a syntactic sugar for an imaginary trait, let&amp;rsquo;s call it &lt;code&gt;Scope&lt;/code&gt;, which takes a lifetime.&lt;/p&gt;
-
-&lt;p&gt;This represents the scope of a type, so when writing &lt;code&gt;fn my_func::&amp;lt;T: &#39;static&amp;gt;()&lt;/code&gt; you can think of it as writing &lt;code&gt;fn my_func::&amp;lt;T: Scope&amp;lt;&#39;static&amp;gt;&amp;gt;&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Due to the coercion rules (which will be covered in a future post), this means that if &lt;code&gt;T: Scope&amp;lt;&#39;a&amp;gt;&lt;/code&gt; and &lt;code&gt;U: Scope&amp;lt;&#39;b&amp;gt;&lt;/code&gt; with &lt;code&gt;&#39;a: &#39;b&lt;/code&gt;, then &lt;code&gt;T&lt;/code&gt; is a subtype of &lt;code&gt;U&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;inferring-regions&#34;&gt;Inferring regions.&lt;/h2&gt;
-
-&lt;p&gt;This is the exciting part. Rust has region inference, allowing it to infer the lifetimes in your program.&lt;/p&gt;
-
-&lt;p&gt;Due to Rust&amp;rsquo;s aliasing guarantees, it tries to &lt;em&gt;minimize&lt;/em&gt; the region&amp;rsquo;s span, while still satisfying the conditions (outlives relations) given.&lt;/p&gt;
-
-&lt;p&gt;So, this is just a classical optimization problem:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;minimize    &#39;a
-subject to  A, B, C...
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;A, B, C&amp;hellip; are outlives relations. &lt;code&gt;&#39;a&lt;/code&gt; may or may not be free in those.&lt;/p&gt;
-
-&lt;p&gt;We will cover how we actually solve this optimization problem in a future blog post, but until then you can see if you can find an algorithm to do so ;).&lt;/p&gt;
-
-&lt;h2 id=&#34;questions-and-errata&#34;&gt;Questions and errata&lt;/h2&gt;
-
-&lt;p&gt;Ping me at #rust in Mozilla IRC.&lt;/p&gt;
-
-&lt;h2 id=&#34;credits&#34;&gt;Credits&lt;/h2&gt;
-
-&lt;p&gt;Credits to Yaniel on IRC for the idea for the name of this series. It is based on the famous &amp;ldquo;lambda cats&amp;rdquo; series, but since Ferris, the crab, is our Rust mascot, we do lambda crabs, instead.&lt;/p&gt;
 </description>
     </item>
     
