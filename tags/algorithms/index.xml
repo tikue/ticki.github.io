@@ -35,6 +35,8 @@
 &lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\(f : \{0, 1\}^n \to \{0, 1\}^n\)&lt;/span&gt; is a perfect PRF if and only if given a distribution &lt;span  class=&#34;math&#34;&gt;\(d : \{0, 1\}^n \to \left[0,1\right]\)&lt;/span&gt;, &lt;span  class=&#34;math&#34;&gt;\(f\)&lt;/span&gt; maps inputs following the distribution &lt;span  class=&#34;math&#34;&gt;\(d\)&lt;/span&gt; to the uniform distribution.&lt;/p&gt;
 &lt;/blockquote&gt;
 
+&lt;p&gt;Note that there is a major difference between cryptographic and non-cryptographic hash functions. SeaHash is not cryptographic, and that&#39;s very important to understand: It doesn&#39;t aim to be. It aims to give a good hash quality, but not cryptographic guarentees.&lt;/p&gt;
+
 &lt;h1 id=&#34;constructing-a-hash-function-from-a-prf&#34;&gt;Constructing a hash function from a PRF&lt;/h1&gt;
 
 &lt;p&gt;There are various ways to construct a variable-length hash function from a PRF. The most famous one is Merkle–Damgård construction. We will focus on this.&lt;/p&gt;
@@ -106,6 +108,8 @@ d &amp;\gets f(d \oplus B_4) \\
 &lt;p&gt;We XOR the length with the hash value. Unfortunately, this is obviously not discrete, since appending another zero would then only affect the value slightly, so we need to run it through our PRF:&lt;/p&gt;
 
 &lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/seahash_finalization_diagram.svg&#34; alt=&#34;SeaHash finalization&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;One concern I&#39;ve heard is that XOR is commutative, and hence permuting the states wouldn&#39;t affect the output. But that&#39;s simply not true: Each state has distinct initial value, making each lane hash differently.&lt;/p&gt;
 
 &lt;h1 id=&#34;putting-it-all-together&#34;&gt;Putting it all together&lt;/h1&gt;
 

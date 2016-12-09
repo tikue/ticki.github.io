@@ -60,7 +60,7 @@
         },
         "datePublished": "2016-12-08",
         "description": "I explain how SeaHash works.",
-        "wordCount":  793 
+        "wordCount":  867 
     }
 
     </script>
@@ -118,7 +118,7 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">8 Dec 2016</span> <span class="reading-time">| <span class="estimated-reading-time">4 min.</span> (<span class="word-count">793</span> words)</span></span>
+						<span class="post-date">8 Dec 2016</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">867</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
   				<h1 class="post-title">SeaHash: Explained</h1>
@@ -144,6 +144,8 @@
 <blockquote>
 <p><span  class="math">\(f : \{0, 1\}^n \to \{0, 1\}^n\)</span> is a perfect PRF if and only if given a distribution <span  class="math">\(d : \{0, 1\}^n \to \left[0,1\right]\)</span>, <span  class="math">\(f\)</span> maps inputs following the distribution <span  class="math">\(d\)</span> to the uniform distribution.</p>
 </blockquote>
+
+<p>Note that there is a major difference between cryptographic and non-cryptographic hash functions. SeaHash is not cryptographic, and that's very important to understand: It doesn't aim to be. It aims to give a good hash quality, but not cryptographic guarentees.</p>
 
 <h1 id="constructing-a-hash-function-from-a-prf">Constructing a hash function from a PRF</h1>
 
@@ -216,6 +218,8 @@ d &\gets f(d \oplus B_4) \\
 <p>We XOR the length with the hash value. Unfortunately, this is obviously not discrete, since appending another zero would then only affect the value slightly, so we need to run it through our PRF:</p>
 
 <p><figure><img src="/img/seahash_finalization_diagram.svg" alt="SeaHash finalization"></figure></p>
+
+<p>One concern I've heard is that XOR is commutative, and hence permuting the states wouldn't affect the output. But that's simply not true: Each state has distinct initial value, making each lane hash differently.</p>
 
 <h1 id="putting-it-all-together">Putting it all together</h1>
 
