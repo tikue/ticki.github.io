@@ -6,8 +6,521 @@
     <description>Recent content in Posts on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 08 Dec 2016 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 11 Dec 2016 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://ticki.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>The Eudex Algorithm</title>
+      <link>http://ticki.github.io/blog/the-eudex-algorithm/</link>
+      <pubDate>Sun, 11 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/blog/the-eudex-algorithm/</guid>
+      <description>&lt;script type=&#34;text/javascript&#34;
+  src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
+&lt;/script&gt;
+
+&lt;p&gt;Half a year ago, I designed &lt;a href=&#34;https://github.com/ticki/eudex&#34;&gt;Eudex&lt;/a&gt; as a modern
+replacement for Soundex, which is still widely used today. Eudex supports a
+wide range of special-cases of European languages, while preserving the spirit
+of simplicity, Soundex has.&lt;/p&gt;
+
+&lt;p&gt;Both Eudex and Soundex are phonetic algorithms that produce a representation of
+the sound of some string. Eudex is fundamentally different from Soundex in that
+it is not a phonetic classifier. It is a phonetic locality-sensitive hash,
+which means that two similarly-sounding strings are not mapped to the same
+value, but instead to values near to each other.&lt;/p&gt;
+
+&lt;p&gt;This technically makes it a string similarity index, but it one should be
+careful with this term, given that it doesn&#39;t produce a typing distance, but a
+phonetic/pronounciation distance.&lt;/p&gt;
+
+&lt;p&gt;What this blog post aims to do is to describe the rationale behind Eudex,
+hopefully sparking new ideas and thoughts for the reader.&lt;/p&gt;
+
+&lt;h1 id=&#34;the-output-and-the-input&#34;&gt;The output and the input&lt;/h1&gt;
+
+&lt;p&gt;So, the input is any Unicode string in a Latin-family alphabet.&lt;/p&gt;
+
+&lt;p&gt;The output is fixed-width integer (we&#39;ll use 64-bit, but that is in some cases
+a very narrow width), which has following characteristic:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;If the string &lt;span  class=&#34;math&#34;&gt;\(a\)&lt;/span&gt; sounds similar to a string &lt;span  class=&#34;math&#34;&gt;\(b\)&lt;/span&gt;, &lt;span  class=&#34;math&#34;&gt;\(f(a) \oplus f(b)\)&lt;/span&gt;
+has low Hamming weight.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In other words, two similarly sounding words maps to numbers with only a few
+bits flipped, whereas words without similar sound maps to numbers with many
+bits flipped.&lt;/p&gt;
+
+&lt;h1 id=&#34;the-algorithm&#34;&gt;The algorithm&lt;/h1&gt;
+
+&lt;p&gt;The algorithm itself is fairly simple. It outputs an 8 byte array (an unsigned
+64 bit integer):&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\underbrace{A}_{\text{First phone}} \quad \underbrace{00}_{\text{Padding}} \quad \underbrace{BBBBB}_{\text{Trailing phones}}\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;The crucial point here is that all the characters are mapped through a table
+carefully derived by their phonetic classification, to make similar sounding
+phones have a low Hamming distance.&lt;/p&gt;
+
+&lt;p&gt;If two consecutive phones shares all the bits, but the parity bit, (i.e, &lt;span  class=&#34;math&#34;&gt;\(a \gg 1
+= b \gg 1\)&lt;/span&gt;), the second is skipped. This allows us to &amp;quot;collapse&amp;quot; similar or
+equal phones into one, kind of equivalence to the collapse stage of Soundex:
+Similar phones next to each other can often be collapsed to one of the phones
+without losing the pronounciation.&lt;/p&gt;
+
+&lt;h1 id=&#34;deriving-the-tables&#34;&gt;Deriving the tables&lt;/h1&gt;
+
+&lt;p&gt;The tables are what makes it interesting. There are four tables: one for ASCII
+letters (not characters, letters) in the first slot (&#39;A&#39;), one for C1 (Latin
+Supplement) characters in the first slot, one for ASCII letters in the trailing
+phones, and one for the C1 (Latin Supplement) characters for the trailing
+phones.&lt;/p&gt;
+
+&lt;p&gt;There is a crucial distinction between consonants and vowels in Eudex. The
+first phone treat vowels as first-class citizens by making distinctions between
+all the properties of vowels. The trailing phones only have a distinction
+between open and close vowels.&lt;/p&gt;
+
+&lt;h2 id=&#34;trailing-character-table&#34;&gt;Trailing character table&lt;/h2&gt;
+
+&lt;p&gt;Let&#39;s start with the tables for the trailing characters. Consonants&#39; bytes are
+treated such that each bit represent a property of the phone (i.e.,
+pronunciation) with the exception of the rightmost bit, which is used for
+tagging duplicates (it acts as a discriminant).&lt;/p&gt;
+
+&lt;p&gt;Let&#39;s look at the classification of IPA consonants:&lt;/p&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/en/5/5e/IPA_consonants_2005.png&#34; alt=&#34;IPA&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;As you may notice, characters often represent more than one phone, and
+reasoning about which one a given character in a given context represents can
+be very hard. So we have to do our best in fitting each character into the
+right phonetic category.&lt;/p&gt;
+
+&lt;p&gt;We have to pick the classification intelligently. There are certain groups the
+table doesn&#39;t contain, one of which turns out to be handy in a classification:
+liquid consonants (lateral consonants + rhotics), namely &lt;code&gt;r&lt;/code&gt; and &lt;code&gt;l&lt;/code&gt;. Under
+ideal conditions, these should be put into to distinct bits, but unfortunately
+there are only 8 bits in a byte, so we have to limit ourselves.&lt;/p&gt;
+
+&lt;p&gt;Now, every good phonetic hasher should be able to segregate important
+characters (e.g., hard to mispell, crucial to the pronunciation of the word)
+from the rest. Therefore we add a category we call &amp;quot;confident&amp;quot;, this will
+occupy the most significant bit. In our category of &amp;quot;confident&amp;quot; characters we
+put l, r, x, z, and q, since these are either:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Crucial to the sound of the word (and thus easier to hear, and harder to
+misspell).&lt;/li&gt;
+&lt;li&gt;Rare to occur, and thus statistically harder to mistake.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;So our final trailing consonant table looks like:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Position&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Modifier&lt;/th&gt;
+&lt;th&gt;Property&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Phones&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td&gt;Discriminant&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;(for tagging duplicates)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td&gt;Nasal&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;mn&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td&gt;Fricative&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;fvsjxzhct&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;td&gt;Plosive&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;pbtdcgqk&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;td&gt;Dental&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;tdnzs&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32&lt;/td&gt;
+&lt;td&gt;Liquid&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;lr&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;64&lt;/td&gt;
+&lt;td&gt;Labial&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;bfpv&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;128&lt;/td&gt;
+&lt;td&gt;Confident¹&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;lrxzq&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The more &amp;quot;important&amp;quot; the characteristic is to the phone&#39;s sound the higher
+place it has.&lt;/p&gt;
+
+&lt;p&gt;We then have to treat the vowels. In particular, we don&#39;t care much of vowels
+in trailing position, so we will simply divide them into two categories: open
+and close. It is worth noting that not all vowels fall into these categories,
+therefore we will simply place it in the category it is &amp;quot;nearest to&amp;quot;, e.g. a,
+(e), o gets 0 for &amp;quot;open&amp;quot;.&lt;/p&gt;
+
+&lt;p&gt;So our final ASCII letter table for the trailing phones looks like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;                (for consonants)
+      +--------- Confident
+      |+-------- Labial
+      ||+------- Liquid
+      |||+------ Dental
+      ||||+----- Plosive
+      |||||+---- Fricative
+      ||||||+--- Nasal
+      |||||||+-- Discriminant
+      ||||||||
+   a* 00000000
+   b  01001000
+   c  00001100
+   d  00011000
+   e* 00000001
+   f  01000100
+   g  00001000
+   h  00000100
+   i* 00000001
+   j  00000101
+   k  00001001
+   l  10100000
+   m  00000010
+   n  00010010
+   o* 00000000
+   p  01001001
+   q  10101000
+   r  10100001
+   s  00010100
+   t  00011101
+   u* 00000001
+   v  01000101
+   w  00000000
+   x  10000100
+   y* 00000001
+   z  10010100
+             |  (for vowels)
+             +-- Close
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, we extend our table to C1 characters by the same method:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;                (for consonants)
+      +--------- Confident
+      |+-------- Labial
+      ||+------- Liquid
+      |||+------ Dental
+      ||||+----- Plosive
+      |||||+---- Fricative
+      ||||||+--- Nasal
+      |||||||+-- Discriminant
+      ||||||||
+   ß  -----s-1  (use &#39;s&#39; from the table above with the last bit flipped)
+   à  00000000
+   á  00000000
+   â  00000000
+   ã  00000000
+   ä  00000000  [æ]
+   å  00000001  [oː]
+   æ  00000000  [æ]
+   ç  -----z-1  [t͡ʃ]
+   è  00000001
+   é  00000001
+   ê  00000001
+   ë  00000001
+   ì  00000001
+   í  00000001
+   î  00000001
+   ï  00000001
+   ð  00010101  [ð̠]   (represented as a non-plosive T)
+   ñ  00010111  [nj]  (represented as a combination of n and j)
+   ò  00000000
+   ó  00000000
+   ô  00000000
+   õ  00000000
+   ö  00000001  [ø]
+   ÷  11111111  (placeholder)
+   ø  00000001  [ø]
+   ù  00000001
+   ú  00000001
+   û  00000001
+   ü  00000001
+   ý  00000001
+   þ  -----ð--  [ð̠]   (represented as a non-plosive T)
+   ÿ  00000001
+             |  (for vowels)
+             +-- Close
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;first-phone-table&#34;&gt;First phone table&lt;/h2&gt;
+
+&lt;p&gt;So far we have considered the trailing phones, now we need to look into the
+first phone. The first phone needs a table with minimal collisions, since you
+hardly ever misspell the first letter in the word. Ideally, the table should be
+injective, but due to technical limitations it is not possible.&lt;/p&gt;
+
+&lt;p&gt;We will use the first bit to distinguish between vowels and consonants.&lt;/p&gt;
+
+&lt;p&gt;Previously we have only divided vowels into to classes, we will change that
+now, but first: the consonants. To avoid repeating ourselves, we will use a
+method for reusing the above tables.&lt;/p&gt;
+
+&lt;p&gt;Since the least important property is placed to the left, we will simply shift
+it to the right (that is, truncating the rightmost bit). The least significant
+bit will then be flipped when encountering a duplicate. This way we preserve
+the low Hamming distance, while avoiding collisions.&lt;/p&gt;
+
+&lt;p&gt;The vowels are more interesting. We need a way to distinguish between vowels
+and their sounds.&lt;/p&gt;
+
+&lt;p&gt;Luckily, their classification is quite simple:&lt;/p&gt;
+
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;https://upload.wikimedia.org/wikipedia/en/5/5a/IPA_vowel_chart_2005.png&#34; alt=&#34;IPA&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;If a vowel appears as two phones (e.g., dependent on language), we OR them, and
+possibly modify the discriminant if it collides with another phone.&lt;/p&gt;
+
+&lt;p&gt;We need to divide each of the axises into more than two categories, to utilize
+all our bits, so some properties will have to occupy multiple bits.&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Position&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Modifier&lt;/th&gt;
+&lt;th&gt;Property (vowel)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td&gt;Discriminant&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td&gt;Is it open-mid?&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td&gt;Is it central?&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;td&gt;Is it close-mid?&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;td&gt;Is it front?&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32&lt;/td&gt;
+&lt;td&gt;Is it close?&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;64&lt;/td&gt;
+&lt;td&gt;More close than [ɜ]&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;128&lt;/td&gt;
+&lt;td&gt;Vowel?&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;So we make use of both properties, namely both the openness and &amp;quot;frontness&amp;quot;.
+Moreover, we allow more than just binary choices:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; Class     Close       Close-mid  Open-mid    Open
+          +----------+----------+-----------+---------+
+ Bits      .11.....    ...11...   ......1.   .00.0.0.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let&#39;s do the same for the other axis:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; Class     Front       Central    Back
+          +----------+----------+----------+
+ Bits      ...1.0..    ...0.1..   ...0.0..
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To combine the properties we OR these tables. Applying this technique, we get:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;                (for vowels)
+      +--------- Vowel
+      |+-------- Closer than ɜ
+      ||+------- Close
+      |||+------ Front
+      ||||+----- Close-mid
+      |||||+---- Central
+      ||||||+--- Open-mid
+      |||||||+-- Discriminant
+      ||||||||
+   a* 10000100
+   b  00100100
+   c  00000110
+   d  00001100
+   e* 11011000
+   f  00100010
+   g  00000100
+   h  00000010
+   i* 11111000
+   j  00000011
+   k  00000101
+   l  01010000
+   m  00000001
+   n  00001001
+   o* 10010100
+   p  00100101
+   q  01010100
+   r  01010001
+   s  00001010
+   t  00001110
+   u* 11100000
+   v  00100011
+   w  00000000
+   x  01000010
+   y* 11100100
+   z  01001010
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We then extend it to C1 characters:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;      +--------- Vowel?
+      |+-------- Closer than ɜ
+      ||+------- Close
+      |||+------ Front
+      ||||+----- Close-mid
+      |||||+---- Central
+      ||||||+--- Open-mid
+      |||||||+-- Discriminant
+      ||||||||
+   ß  -----s-1 (use &#39;s&#39; from the table above with the last bit flipped)
+   à  -----a-1
+   á  -----a-1
+   â  10000000
+   ã  10000110
+   ä  10100110  [æ]
+   å  11000010  [oː]
+   æ  10100111  [æ]
+   ç  01010100  [t͡ʃ]
+   è  -----e-1
+   é  -----e-1
+   ê  -----e-1
+   ë  11000110
+   ì  -----i-1
+   í  -----i-1
+   î  -----i-1
+   ï  -----i-1
+   ð  00001011  [ð̠]   (represented as a non-plosive T)
+   ñ  00001011  [nj]  (represented as a combination of n and j)
+   ò  -----o-1
+   ó  -----o-1
+   ô  -----o-1
+   õ  -----o-1
+   ö  11011100  [ø]
+   ÷  11111111  (placeholder)
+   ø  11011101  [ø]
+   ù  -----u-1
+   ú  -----u-1
+   û  -----u-1
+   ü  -----y-1
+   ý  -----y-1
+   þ  -----ð--  [ð̠]   (represented as a non-plosive T)
+   ÿ  -----y-1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now that we have our tables. We now need the distance operator. A naïve
+approach would be to simply use Hamming distance. This has the disadvantage of
+all the bytes having the same weight, which isn&#39;t ideal, since you are more
+likely to misspell later characters, than the first ones.&lt;/p&gt;
+
+&lt;p&gt;For this reason, we use weighted Hamming distance:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Byte:&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;1&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;2&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;3&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;4&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;5&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;6&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;7&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;8&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;Weight:&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;128&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;64&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Namely, we XOR the two values and then add each of the bytes&#39; Hamming weight,
+using the coefficients from the table above.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>SeaHash: Explained</title>
@@ -3000,137 +3513,6 @@ in only a 100-200 lines.&lt;/p&gt;
 &lt;h2 id=&#34;questions-and-errata&#34;&gt;Questions and errata&lt;/h2&gt;
 
 &lt;p&gt;Ping me at #rust in Mozilla IRC.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Lambda crabs (part 1): A mathematical introduction to lifetimes and regions</title>
-      <link>http://ticki.github.io/blog/lambda-crabs-part-1-a-mathematical-introduction-to-lifetimes-and-regions/</link>
-      <pubDate>Mon, 06 Jun 2016 09:12:56 +0200</pubDate>
-      
-      <guid>http://ticki.github.io/blog/lambda-crabs-part-1-a-mathematical-introduction-to-lifetimes-and-regions/</guid>
-      <description>
-
-&lt;p&gt;This post will cover lifetimes and regions in depth, with a focus on the mathematical background of regions. That is, what is a region? What rules do they follow? How does the compiler handle them? And how are they inferred?&lt;/p&gt;
-
-&lt;h2 id=&#34;regions-and-their-ordering&#34;&gt;Regions and their ordering&lt;/h2&gt;
-
-&lt;p&gt;So, let&amp;rsquo;s briefly investigate what a region is. A region (or in Rust lingo, a lifetime) is a span of some form, e.g. the token stream. Regions have an outlive relation defined on them.&lt;/p&gt;
-
-&lt;p&gt;A region &lt;code&gt;&#39;a&lt;/code&gt; outlives &lt;code&gt;&#39;b&lt;/code&gt; if &lt;code&gt;&#39;b&lt;/code&gt;&amp;rsquo;s span is covered by &lt;code&gt;&#39;a&lt;/code&gt;. For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: I----------------I
-&#39;b: I---------I
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As you can see &lt;code&gt;&#39;a: &#39;b&lt;/code&gt; since the first span covers the second. But what is the nature of the outlives relation?&lt;/p&gt;
-
-&lt;h2 id=&#34;regions-a-poset&#34;&gt;Regions: a poset&lt;/h2&gt;
-
-&lt;p&gt;One could mistakenly believe that regions are ordered over their outlives relation. An totally ordered set A under ≤ means that any elements a, b ∈ A satisfy all of the following statements:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;If a ≤ b and b ≤ a are both satisfied, a = b.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;If a ≤ b and b ≤ c are both satisfied, a ≤ c.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;At least one of a ≤ b and b ≤ a is true.&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;To see why the outlives relation is not a total order over the set of regions, consider the case:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: I---------I
-&#39;b:    I------------I
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The third condition is not met here: neither &lt;code&gt;&#39;a: &#39;b&lt;/code&gt; or &lt;code&gt;&#39;b: &#39;a&lt;/code&gt; is true.&lt;/p&gt;
-
-&lt;p&gt;It turns out that weakening the last condition to only consider reflexivity gives us a structure, that L (the set of regions) classifies. Replace 3. by a ≤ a, and you get a partially ordered set, or a poset.&lt;/p&gt;
-
-&lt;h2 id=&#34;outlive-relation-as-a-partial-order&#34;&gt;Outlive relation as a partial order&lt;/h2&gt;
-
-&lt;p&gt;So, let&amp;rsquo;s briefly explain how the rules of outliving mirrors the rules of partial orders.&lt;/p&gt;
-
-&lt;p&gt;The first rule, the rule of antisymmetry, reads&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: &#39;b
-&#39;b: &#39;a
--------
-&#39;a = &#39;b
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;So if two regions (lifetimes, borrows, scopes, etc.) outlives each other symmetrically (&amp;lsquo;a: &amp;lsquo;b and &amp;lsquo;b: &amp;lsquo;a), they are, in fact, the same.&lt;/p&gt;
-
-&lt;p&gt;The second rule, the rule of transitivity, is crucial to understanding the semantics of regions:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: &#39;b
-&#39;b: &#39;c
-------
-&#39;a: &#39;c
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In other words, regions are hierarchical. It might seem very simple, but the implications are in fact very important: it allows us to conclude things from transitivity. Think of it like you can &amp;ldquo;inherit&amp;rdquo; bounds from outliving regions.&lt;/p&gt;
-
-&lt;p&gt;For example,&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;a: I--------------------I
-&#39;b:   I----------------I
-&#39;c:      I---------I
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Say we know that, &lt;code&gt;&#39;a: &#39;b&lt;/code&gt;, and &lt;code&gt;&#39;b: &#39;c&lt;/code&gt;. We can then conclude that &lt;code&gt;&#39;a: &#39;c&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;The last rule simply states that &amp;lsquo;a outlives itself. This might seem counterintuitive due to the odd terminology, but think of outlives as &amp;ldquo;outlives or equals to&amp;rdquo;.&lt;/p&gt;
-
-&lt;p&gt;In fact, there is only one more thing we know about regions: they have an unique maximal extrema, which outlives all other regions, &lt;code&gt;&#39;static&lt;/code&gt;. Namely, &lt;code&gt;&#39;static&lt;/code&gt; outlives any region, &lt;code&gt;&#39;a&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;And that&amp;rsquo;s all the &amp;ldquo;axioms&amp;rdquo; of lifetimes.&lt;/p&gt;
-
-&lt;h2 id=&#34;what-subtyping-is&#34;&gt;What subtyping is&lt;/h2&gt;
-
-&lt;p&gt;Before we go to next section, we will just have to briefly cover subtyping. τ is said to be a subtype of υ (denoted &lt;code&gt;τ &amp;lt;: υ&lt;/code&gt;), if a &lt;em&gt;type mismatch&lt;/em&gt;, such that τ is inferred to be of type υ, makes the value of type τ coerce into a value of type υ.&lt;/p&gt;
-
-&lt;p&gt;In other words, you can replace your subtype by a supertype (the parent type) without getting a type mismatch error.&lt;/p&gt;
-
-&lt;h2 id=&#34;regions-are-just-types-outlive-relation-as-a-subtyping-rule&#34;&gt;Regions are just types: Outlive relation as a subtyping rule&lt;/h2&gt;
-
-&lt;p&gt;If you think about it, you may notice that lifetimes are used in type positions &lt;em&gt;a lot&lt;/em&gt;. This is no coincidence, since &lt;em&gt;regions are just types with a subtyping relation&lt;/em&gt;, which is the very reason you are allowed to do e.g. &lt;code&gt;MyStruct&amp;lt;&#39;a&amp;gt;&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;In fact, the outlive relation defines a subtyping rule. That is, you can always &amp;ldquo;shrink&amp;rdquo; a region span. Let &lt;em&gt;c&lt;/em&gt; be a type constructor, &amp;lsquo;a → *, then &amp;lsquo;a: &amp;lsquo;b implies that &lt;code&gt;&#39;a &amp;lt;: &#39;b&lt;/code&gt;, that is &lt;code&gt;&#39;a&lt;/code&gt; can coerce into &lt;code&gt;&#39;b&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;For example, &lt;code&gt;&amp;amp;&#39;static str&lt;/code&gt; can coerce to any &lt;code&gt;&amp;amp;&#39;a str&lt;/code&gt;, since &lt;code&gt;&#39;static&lt;/code&gt; outlives any lifetime.&lt;/p&gt;
-
-&lt;p&gt;Due to the implementation, there are a few limits, though. You can for example not do &lt;code&gt;let a: &#39;a&lt;/code&gt; which would be useless anyways.&lt;/p&gt;
-
-&lt;p&gt;Syntactically, there is a confusion: lifetimes appears in certain trait places, especially in &lt;em&gt;trait bounds&lt;/em&gt;. But, in fact, that is only a syntactic sugar for an imaginary trait, let&amp;rsquo;s call it &lt;code&gt;Scope&lt;/code&gt;, which takes a lifetime.&lt;/p&gt;
-
-&lt;p&gt;This represents the scope of a type, so when writing &lt;code&gt;fn my_func::&amp;lt;T: &#39;static&amp;gt;()&lt;/code&gt; you can think of it as writing &lt;code&gt;fn my_func::&amp;lt;T: Scope&amp;lt;&#39;static&amp;gt;&amp;gt;&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Due to the coercion rules (which will be covered in a future post), this means that if &lt;code&gt;T: Scope&amp;lt;&#39;a&amp;gt;&lt;/code&gt; and &lt;code&gt;U: Scope&amp;lt;&#39;b&amp;gt;&lt;/code&gt; with &lt;code&gt;&#39;a: &#39;b&lt;/code&gt;, then &lt;code&gt;T&lt;/code&gt; is a subtype of &lt;code&gt;U&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;inferring-regions&#34;&gt;Inferring regions.&lt;/h2&gt;
-
-&lt;p&gt;This is the exciting part. Rust has region inference, allowing it to infer the lifetimes in your program.&lt;/p&gt;
-
-&lt;p&gt;Due to Rust&amp;rsquo;s aliasing guarantees, it tries to &lt;em&gt;minimize&lt;/em&gt; the region&amp;rsquo;s span, while still satisfying the conditions (outlives relations) given.&lt;/p&gt;
-
-&lt;p&gt;So, this is just a classical optimization problem:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;minimize    &#39;a
-subject to  A, B, C...
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;A, B, C&amp;hellip; are outlives relations. &lt;code&gt;&#39;a&lt;/code&gt; may or may not be free in those.&lt;/p&gt;
-
-&lt;p&gt;We will cover how we actually solve this optimization problem in a future blog post, but until then you can see if you can find an algorithm to do so ;).&lt;/p&gt;
-
-&lt;h2 id=&#34;questions-and-errata&#34;&gt;Questions and errata&lt;/h2&gt;
-
-&lt;p&gt;Ping me at #rust in Mozilla IRC.&lt;/p&gt;
-
-&lt;h2 id=&#34;credits&#34;&gt;Credits&lt;/h2&gt;
-
-&lt;p&gt;Credits to Yaniel on IRC for the idea for the name of this series. It is based on the famous &amp;ldquo;lambda cats&amp;rdquo; series, but since Ferris, the crab, is our Rust mascot, we do lambda crabs, instead.&lt;/p&gt;
 </description>
     </item>
     

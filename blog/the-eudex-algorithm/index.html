@@ -7,30 +7,30 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <meta property="og:title" content=" SeaHash: Explained &middot;  Ticki&#39;s blog" />
+        <meta property="og:title" content=" The Eudex Algorithm &middot;  Ticki&#39;s blog" />
         <meta property="og:site_name" content="Ticki&#39;s blog" />
-        <meta property="og:url" content="http://ticki.github.io/blog/seahash-explained/" />
+        <meta property="og:url" content="http://ticki.github.io/blog/the-eudex-algorithm/" />
 
     
         <meta property="og:type" content="article" />
-        <meta property="og:article:published_time" content="2016-12-08T00:00:00Z" />
-        <meta property="og:article:tag" content="hashing" />
-        <meta property="og:article:tag" content="computer-science" />
+        <meta property="og:article:published_time" content="2016-12-11T00:00:00Z" />
+        <meta property="og:article:tag" content="eudex" />
+        <meta property="og:article:tag" content="phonetics" />
         <meta property="og:article:tag" content="algorithms" />
         
 
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@ticki_" />
         <meta name="twitter:creator" content="@ticki_" />
-        <meta name="twitter:title" content="SeaHash: Explained" />
-        <meta name="twitter:description" content="I explain how SeaHash works." />
-        <meta name="twitter:url" content="http://ticki.github.io/blog/seahash-explained/" />
+        <meta name="twitter:title" content="The Eudex Algorithm" />
+        <meta name="twitter:description" content="7 months ago, I designedthe Eudex phonetic algorithm, which I explain in this post." />
+        <meta name="twitter:url" content="http://ticki.github.io/blog/the-eudex-algorithm/" />
     
 
-        <title> SeaHash: Explained &middot;  Ticki&#39;s blog</title>
+        <title> The Eudex Algorithm &middot;  Ticki&#39;s blog</title>
 
     
-        <meta name="description" content="I explain how SeaHash works." />
+        <meta name="description" content="7 months ago, I designedthe Eudex phonetic algorithm, which I explain in this post." />
     
 
         <meta name="p:domain_verify" content="fc173d84e3a4de948ed4bda2908afd3e"/>
@@ -46,21 +46,21 @@
     
 
     
-        <link rel="canonical" href="http://ticki.github.io/blog/seahash-explained/" />
+        <link rel="canonical" href="http://ticki.github.io/blog/the-eudex-algorithm/" />
 
     
     <script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "Article",
-        "headline": "SeaHash: Explained",
+        "headline": "The Eudex Algorithm",
         "author": {
             "@type": "Person",
             "name": "http://profiles.google.com/?rel=author"
         },
-        "datePublished": "2016-12-08",
-        "description": "I explain how SeaHash works.",
-        "wordCount":  867 
+        "datePublished": "2016-12-11",
+        "description": "7 months ago, I designedthe Eudex phonetic algorithm, which I explain in this post.",
+        "wordCount":  1668 
     }
 
     </script>
@@ -69,9 +69,9 @@
     
     
       var disqus_shortname = 'http-ticki-github-io';
-      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/seahash-explained\/';
-      var disqus_title = 'SeaHash: Explained';
-      var disqus_url = 'http:\/\/ticki.github.io\/blog\/seahash-explained\/';
+      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/the-eudex-algorithm\/';
+      var disqus_title = 'The Eudex Algorithm';
+      var disqus_url = 'http:\/\/ticki.github.io\/blog\/the-eudex-algorithm\/';
     
 
     </script>
@@ -118,10 +118,10 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">8 Dec 2016</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">867</span> words)</span></span>
+						<span class="post-date">11 Dec 2016</span> <span class="reading-time">| <span class="estimated-reading-time">8 min.</span> (<span class="word-count">1668</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
-  				<h1 class="post-title">SeaHash: Explained</h1>
+  				<h1 class="post-title">The Eudex Algorithm</h1>
   			</header>
 
   			<section class="post-content">
@@ -129,107 +129,506 @@
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
-<p>So, not so long ago, I designed <a href="https://github.com/ticki/tfs/tree/master/seahash">SeaHash</a>, an alternative hash algorithm with performance better than most (all?) of the existing non-cryptographic hash functions available. I designed it for checksumming for a file system, I'm working on, but I quickly found out it was sufficient for general hashing.</p>
+<p>Half a year ago, I designed <a href="https://github.com/ticki/eudex">Eudex</a> as a modern
+replacement for Soundex, which is still widely used today. Eudex supports a
+wide range of special-cases of European languages, while preserving the spirit
+of simplicity, Soundex has.</p>
 
-<p>It blew up. I got a lot of cool feedback, and yesterday it was picked as <a href="https://this-week-in-rust.org/blog/2016/12/06/this-week-in-rust-159/">crate of the week</a>. It shows that there is some interest in it, so I want to explain the ideas behind it.</p>
+<p>Both Eudex and Soundex are phonetic algorithms that produce a representation of
+the sound of some string. Eudex is fundamentally different from Soundex in that
+it is not a phonetic classifier. It is a phonetic locality-sensitive hash,
+which means that two similarly-sounding strings are not mapped to the same
+value, but instead to values near to each other.</p>
 
-<h1 id="hashing-an-introduction">Hashing: an introduction</h1>
+<p>This technically makes it a string similarity index, but it one should be
+careful with this term, given that it doesn't produce a typing distance, but a
+phonetic/pronounciation distance.</p>
 
-<p>The basic idea of hashing is to map data with patterns in it to pseudorandom values. It should be designed such that only few collisions happen.</p>
+<p>What this blog post aims to do is to describe the rationale behind Eudex,
+hopefully sparking new ideas and thoughts for the reader.</p>
 
-<p>Simply put, the hash function should behave like a pseudorandom function (PRF) producing a seemingly random stream from a non-random stream. It is similar to pseudorandom functions, in a sense, with difference that they must take variable input.</p>
+<h1 id="the-output-and-the-input">The output and the input</h1>
 
-<p>Formally, perfect PRFs are defined as follows:</p>
+<p>So, the input is any Unicode string in a Latin-family alphabet.</p>
+
+<p>The output is fixed-width integer (we'll use 64-bit, but that is in some cases
+a very narrow width), which has following characteristic:</p>
 
 <blockquote>
-<p><span  class="math">\(f : \{0, 1\}^n \to \{0, 1\}^n\)</span> is a perfect PRF if and only if given a distribution <span  class="math">\(d : \{0, 1\}^n \to \left[0,1\right]\)</span>, <span  class="math">\(f\)</span> maps inputs following the distribution <span  class="math">\(d\)</span> to the uniform distribution.</p>
+<p>If the string <span  class="math">\(a\)</span> sounds similar to a string <span  class="math">\(b\)</span>, <span  class="math">\(f(a) \oplus f(b)\)</span>
+has low Hamming weight.</p>
 </blockquote>
 
-<p>Note that there is a major difference between cryptographic and non-cryptographic hash functions. SeaHash is not cryptographic, and that's very important to understand: It doesn't aim to be. It aims to give a good hash quality, but not cryptographic guarentees.</p>
+<p>In other words, two similarly sounding words maps to numbers with only a few
+bits flipped, whereas words without similar sound maps to numbers with many
+bits flipped.</p>
 
-<h1 id="constructing-a-hash-function-from-a-prf">Constructing a hash function from a PRF</h1>
+<h1 id="the-algorithm">The algorithm</h1>
 
-<p>There are various ways to construct a variable-length hash function from a PRF. The most famous one is Merkle–Damgård construction. We will focus on this.</p>
+<p>The algorithm itself is fairly simple. It outputs an 8 byte array (an unsigned
+64 bit integer):</p>
 
-<p>There are multiple ways to do Merkle–Damgård construction. The most famous one is the wide-pipe construction. It works by having a state, which combined with one block of the input data at a time. The final state will then be the hash value. This combining function is called a &quot;compression function&quot;. It takes two blocks of same length and maps it to one: <span  class="math">\(f : \{0, 1\}^n \times \{0, 1\}^n \to \{0, 1\}^n\)</span>.</p>
+<p><span  class="math">\[\underbrace{A}_{\text{First phone}} \quad \underbrace{00}_{\text{Padding}} \quad \underbrace{BBBBB}_{\text{Trailing phones}}\]</span></p>
 
-<p><span  class="math">\[h = f(f(f(\ldots, b_0), b_1), b_2)\]</span></p>
+<p>The crucial point here is that all the characters are mapped through a table
+carefully derived by their phonetic classification, to make similar sounding
+phones have a low Hamming distance.</p>
 
-<p>It is important that this compression emits pseudorandom behavior, and that's where PRFs comes in. For general-purpose hash function where we don't care about security, the construction usually looks like this:</p>
+<p>If two consecutive phones shares all the bits, but the parity bit, (i.e, <span  class="math">\(a \gg 1
+= b \gg 1\)</span>), the second is skipped. This allows us to &quot;collapse&quot; similar or
+equal phones into one, kind of equivalence to the collapse stage of Soundex:
+Similar phones next to each other can often be collapsed to one of the phones
+without losing the pronounciation.</p>
 
-<p><span  class="math">\[f(a, b) = p(a \oplus b)\]</span></p>
+<h1 id="deriving-the-tables">Deriving the tables</h1>
 
-<p>This of course is commutative, but that doesn't matter, because we don't need non-commutativity in the Merkle–Damgård construction.</p>
+<p>The tables are what makes it interesting. There are four tables: one for ASCII
+letters (not characters, letters) in the first slot ('A'), one for C1 (Latin
+Supplement) characters in the first slot, one for ASCII letters in the trailing
+phones, and one for the C1 (Latin Supplement) characters for the trailing
+phones.</p>
 
-<h1 id="choosing-a-prf">Choosing a PRF</h1>
+<p>There is a crucial distinction between consonants and vowels in Eudex. The
+first phone treat vowels as first-class citizens by making distinctions between
+all the properties of vowels. The trailing phones only have a distinction
+between open and close vowels.</p>
 
-<p>The <a href="http://www.pcg-random.org/">PCG family of PRFs</a> is my favorite PRF I've seen so far:</p>
+<h2 id="trailing-character-table">Trailing character table</h2>
 
-<p><span  class="math">\[\begin{align*}
-x &\gets p \otimes x \\
-x &\gets x \oplus ((x \gg 32) \gg (x \gg 60)) \\
-x &\gets p \otimes x
-\end{align*}\]</span></p>
+<p>Let's start with the tables for the trailing characters. Consonants' bytes are
+treated such that each bit represent a property of the phone (i.e.,
+pronunciation) with the exception of the rightmost bit, which is used for
+tagging duplicates (it acts as a discriminant).</p>
 
-<p>(<span  class="math">\(\otimes\)</span> means modular multiplication)</p>
+<p>Let's look at the classification of IPA consonants:</p>
 
-<p>The PCG paper goes into depth on why this. In particular, it is a quite uncommon to use these kinds of non-fixed shifts.</p>
+<p><figure><img src="https://upload.wikimedia.org/wikipedia/en/5/5e/IPA_consonants_2005.png" alt="IPA"></figure></p>
 
-<p>This is a bijective function, which means that we can't ever have less entropy than the input, which is a good property to have in a hash function.</p>
+<p>As you may notice, characters often represent more than one phone, and
+reasoning about which one a given character in a given context represents can
+be very hard. So we have to do our best in fitting each character into the
+right phonetic category.</p>
 
-<h1 id="parallelism">Parallelism</h1>
+<p>We have to pick the classification intelligently. There are certain groups the
+table doesn't contain, one of which turns out to be handy in a classification:
+liquid consonants (lateral consonants + rhotics), namely <code>r</code> and <code>l</code>. Under
+ideal conditions, these should be put into to distinct bits, but unfortunately
+there are only 8 bits in a byte, so we have to limit ourselves.</p>
 
-<p>This construction of course relies on dependencies between the states, rendering it impossible to parallelize.</p>
+<p>Now, every good phonetic hasher should be able to segregate important
+characters (e.g., hard to mispell, crucial to the pronunciation of the word)
+from the rest. Therefore we add a category we call &quot;confident&quot;, this will
+occupy the most significant bit. In our category of &quot;confident&quot; characters we
+put l, r, x, z, and q, since these are either:</p>
 
-<p>We need a way to be able to independently calculate multiple block updates. With a single state, this is simply not possible, but fear not, we can add multiple states.</p>
+<ol>
+<li>Crucial to the sound of the word (and thus easier to hear, and harder to
+misspell).</li>
+<li>Rare to occur, and thus statistically harder to mistake.</li>
+</ol>
 
-<p>Instruction-level parallelism means that we don't even need to fire up multiple threads (which would be quite expensive), but simply exploit CPU's instruction pipelines.</p>
+<p>So our final trailing consonant table looks like:</p>
 
-<p><figure><img src="/img/seahash_state_update_diagram.svg" alt="A diagram of the new design."></figure></p>
+<table>
+<thead>
+<tr>
+<th>Position</th>
+<th align="right">Modifier</th>
+<th>Property</th>
+<th align="center">Phones</th>
+</tr>
+</thead>
 
-<p>In the above diagram, you can see a 4-state design, where every state except the first is shifted down. The first state (<span  class="math">\(a\)</span>) gets the last one (<span  class="math">\(d\)</span>) after being combined with the input block (<span  class="math">\(D\)</span>) through our PRF:</p>
+<tbody>
+<tr>
+<td>1</td>
+<td align="right">1</td>
+<td>Discriminant</td>
+<td align="center">(for tagging duplicates)</td>
+</tr>
 
-<p><span  class="math">\[\begin{align*}
-a' &= b \\
-b' &= c \\
-c' &= d \\
-d' &= f(a \oplus D) \\
-\end{align*}\]</span></p>
+<tr>
+<td>2</td>
+<td align="right">2</td>
+<td>Nasal</td>
+<td align="center">mn</td>
+</tr>
 
-<p>It isn't obvious how this design allows parallelism, but it has to do with the fact that you can unroll the loop, such that the shifts aren't needed. In particular, after 4 rounds, everything is back at where it started:</p>
+<tr>
+<td>3</td>
+<td align="right">4</td>
+<td>Fricative</td>
+<td align="center">fvsjxzhct</td>
+</tr>
 
-<p><span  class="math">\[\begin{align*}
-a &\gets f(a \oplus B_1) \\
-b &\gets f(b \oplus B_2) \\
-c &\gets f(c \oplus B_3) \\
-d &\gets f(d \oplus B_4) \\
-\end{align*}\]</span></p>
+<tr>
+<td>4</td>
+<td align="right">8</td>
+<td>Plosive</td>
+<td align="center">pbtdcgqk</td>
+</tr>
 
-<p>If we take 4 rounds every iteration, we get 4 independent state updates, which are run in parallel.</p>
+<tr>
+<td>5</td>
+<td align="right">16</td>
+<td>Dental</td>
+<td align="center">tdnzs</td>
+</tr>
 
-<p>This is also called an <em>alternating 4-state Merkle–Damgård construction</em>.</p>
+<tr>
+<td>6</td>
+<td align="right">32</td>
+<td>Liquid</td>
+<td align="center">lr</td>
+</tr>
 
-<h2 id="finalizing-the-four-states">Finalizing the four states</h2>
+<tr>
+<td>7</td>
+<td align="right">64</td>
+<td>Labial</td>
+<td align="center">bfpv</td>
+</tr>
 
-<p>Naively, we would just XOR the four states (which have difference initialization vectors, and hence would not commute).</p>
+<tr>
+<td>8</td>
+<td align="right">128</td>
+<td>Confident¹</td>
+<td align="center">lrxzq</td>
+</tr>
+</tbody>
+</table>
 
-<p>There are some issues: What if the input doesn't divide our 4 blocks? Well, the simple solution is of course padding, but that gives us another issue: how do we distinguish between padding and normal zeros?</p>
+<p>The more &quot;important&quot; the characteristic is to the phone's sound the higher
+place it has.</p>
 
-<p>We XOR the length with the hash value. Unfortunately, this is obviously not discrete, since appending another zero would then only affect the value slightly, so we need to run it through our PRF:</p>
+<p>We then have to treat the vowels. In particular, we don't care much of vowels
+in trailing position, so we will simply divide them into two categories: open
+and close. It is worth noting that not all vowels fall into these categories,
+therefore we will simply place it in the category it is &quot;nearest to&quot;, e.g. a,
+(e), o gets 0 for &quot;open&quot;.</p>
 
-<p><figure><img src="/img/seahash_finalization_diagram.svg" alt="SeaHash finalization"></figure></p>
+<p>So our final ASCII letter table for the trailing phones looks like:</p>
 
-<p>One concern I've heard is that XOR is commutative, and hence permuting the states wouldn't affect the output. But that's simply not true: Each state has distinct initial value, making each lane hash differently.</p>
+<pre><code>                (for consonants)
+      +--------- Confident
+      |+-------- Labial
+      ||+------- Liquid
+      |||+------ Dental
+      ||||+----- Plosive
+      |||||+---- Fricative
+      ||||||+--- Nasal
+      |||||||+-- Discriminant
+      ||||||||
+   a* 00000000
+   b  01001000
+   c  00001100
+   d  00011000
+   e* 00000001
+   f  01000100
+   g  00001000
+   h  00000100
+   i* 00000001
+   j  00000101
+   k  00001001
+   l  10100000
+   m  00000010
+   n  00010010
+   o* 00000000
+   p  01001001
+   q  10101000
+   r  10100001
+   s  00010100
+   t  00011101
+   u* 00000001
+   v  01000101
+   w  00000000
+   x  10000100
+   y* 00000001
+   z  10010100
+             |  (for vowels)
+             +-- Close
+</code></pre>
 
-<h1 id="putting-it-all-together">Putting it all together</h1>
+<p>Now, we extend our table to C1 characters by the same method:</p>
 
-<p>We can finally put it all together:</p>
+<pre><code>                (for consonants)
+      +--------- Confident
+      |+-------- Labial
+      ||+------- Liquid
+      |||+------ Dental
+      ||||+----- Plosive
+      |||||+---- Fricative
+      ||||||+--- Nasal
+      |||||||+-- Discriminant
+      ||||||||
+   ß  -----s-1  (use 's' from the table above with the last bit flipped)
+   à  00000000
+   á  00000000
+   â  00000000
+   ã  00000000
+   ä  00000000  [æ]
+   å  00000001  [oː]
+   æ  00000000  [æ]
+   ç  -----z-1  [t͡ʃ]
+   è  00000001
+   é  00000001
+   ê  00000001
+   ë  00000001
+   ì  00000001
+   í  00000001
+   î  00000001
+   ï  00000001
+   ð  00010101  [ð̠]   (represented as a non-plosive T)
+   ñ  00010111  [nj]  (represented as a combination of n and j)
+   ò  00000000
+   ó  00000000
+   ô  00000000
+   õ  00000000
+   ö  00000001  [ø]
+   ÷  11111111  (placeholder)
+   ø  00000001  [ø]
+   ù  00000001
+   ú  00000001
+   û  00000001
+   ü  00000001
+   ý  00000001
+   þ  -----ð--  [ð̠]   (represented as a non-plosive T)
+   ÿ  00000001
+             |  (for vowels)
+             +-- Close
+</code></pre>
 
-<p><a href="/img/seahash_construction_diagram.svg"><figure><img src="/img/seahash_construction_diagram.svg" alt="SeaHash construction"></figure></a></p>
+<h2 id="first-phone-table">First phone table</h2>
 
-<p>(click to zoom)</p>
+<p>So far we have considered the trailing phones, now we need to look into the
+first phone. The first phone needs a table with minimal collisions, since you
+hardly ever misspell the first letter in the word. Ideally, the table should be
+injective, but due to technical limitations it is not possible.</p>
 
-<p>You can see the code and benchmarks <a href="https://github.com/ticki/tfs/tree/master/seahash">here</a>.</p>
+<p>We will use the first bit to distinguish between vowels and consonants.</p>
+
+<p>Previously we have only divided vowels into to classes, we will change that
+now, but first: the consonants. To avoid repeating ourselves, we will use a
+method for reusing the above tables.</p>
+
+<p>Since the least important property is placed to the left, we will simply shift
+it to the right (that is, truncating the rightmost bit). The least significant
+bit will then be flipped when encountering a duplicate. This way we preserve
+the low Hamming distance, while avoiding collisions.</p>
+
+<p>The vowels are more interesting. We need a way to distinguish between vowels
+and their sounds.</p>
+
+<p>Luckily, their classification is quite simple:</p>
+
+<p><figure><img src="https://upload.wikimedia.org/wikipedia/en/5/5a/IPA_vowel_chart_2005.png" alt="IPA"></figure></p>
+
+<p>If a vowel appears as two phones (e.g., dependent on language), we OR them, and
+possibly modify the discriminant if it collides with another phone.</p>
+
+<p>We need to divide each of the axises into more than two categories, to utilize
+all our bits, so some properties will have to occupy multiple bits.</p>
+
+<table>
+<thead>
+<tr>
+<th>Position</th>
+<th align="right">Modifier</th>
+<th>Property (vowel)</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>1</td>
+<td align="right">1</td>
+<td>Discriminant</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td align="right">2</td>
+<td>Is it open-mid?</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td align="right">4</td>
+<td>Is it central?</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td align="right">8</td>
+<td>Is it close-mid?</td>
+</tr>
+
+<tr>
+<td>5</td>
+<td align="right">16</td>
+<td>Is it front?</td>
+</tr>
+
+<tr>
+<td>6</td>
+<td align="right">32</td>
+<td>Is it close?</td>
+</tr>
+
+<tr>
+<td>7</td>
+<td align="right">64</td>
+<td>More close than [ɜ]</td>
+</tr>
+
+<tr>
+<td>8</td>
+<td align="right">128</td>
+<td>Vowel?</td>
+</tr>
+</tbody>
+</table>
+
+<p>So we make use of both properties, namely both the openness and &quot;frontness&quot;.
+Moreover, we allow more than just binary choices:</p>
+
+<pre><code> Class     Close       Close-mid  Open-mid    Open
+          +----------+----------+-----------+---------+
+ Bits      .11.....    ...11...   ......1.   .00.0.0.
+</code></pre>
+
+<p>Let's do the same for the other axis:</p>
+
+<pre><code> Class     Front       Central    Back
+          +----------+----------+----------+
+ Bits      ...1.0..    ...0.1..   ...0.0..
+</code></pre>
+
+<p>To combine the properties we OR these tables. Applying this technique, we get:</p>
+
+<pre><code>                (for vowels)
+      +--------- Vowel
+      |+-------- Closer than ɜ
+      ||+------- Close
+      |||+------ Front
+      ||||+----- Close-mid
+      |||||+---- Central
+      ||||||+--- Open-mid
+      |||||||+-- Discriminant
+      ||||||||
+   a* 10000100
+   b  00100100
+   c  00000110
+   d  00001100
+   e* 11011000
+   f  00100010
+   g  00000100
+   h  00000010
+   i* 11111000
+   j  00000011
+   k  00000101
+   l  01010000
+   m  00000001
+   n  00001001
+   o* 10010100
+   p  00100101
+   q  01010100
+   r  01010001
+   s  00001010
+   t  00001110
+   u* 11100000
+   v  00100011
+   w  00000000
+   x  01000010
+   y* 11100100
+   z  01001010
+</code></pre>
+
+<p>We then extend it to C1 characters:</p>
+
+<pre><code>      +--------- Vowel?
+      |+-------- Closer than ɜ
+      ||+------- Close
+      |||+------ Front
+      ||||+----- Close-mid
+      |||||+---- Central
+      ||||||+--- Open-mid
+      |||||||+-- Discriminant
+      ||||||||
+   ß  -----s-1 (use 's' from the table above with the last bit flipped)
+   à  -----a-1
+   á  -----a-1
+   â  10000000
+   ã  10000110
+   ä  10100110  [æ]
+   å  11000010  [oː]
+   æ  10100111  [æ]
+   ç  01010100  [t͡ʃ]
+   è  -----e-1
+   é  -----e-1
+   ê  -----e-1
+   ë  11000110
+   ì  -----i-1
+   í  -----i-1
+   î  -----i-1
+   ï  -----i-1
+   ð  00001011  [ð̠]   (represented as a non-plosive T)
+   ñ  00001011  [nj]  (represented as a combination of n and j)
+   ò  -----o-1
+   ó  -----o-1
+   ô  -----o-1
+   õ  -----o-1
+   ö  11011100  [ø]
+   ÷  11111111  (placeholder)
+   ø  11011101  [ø]
+   ù  -----u-1
+   ú  -----u-1
+   û  -----u-1
+   ü  -----y-1
+   ý  -----y-1
+   þ  -----ð--  [ð̠]   (represented as a non-plosive T)
+   ÿ  -----y-1
+</code></pre>
+
+<p>Now that we have our tables. We now need the distance operator. A naïve
+approach would be to simply use Hamming distance. This has the disadvantage of
+all the bytes having the same weight, which isn't ideal, since you are more
+likely to misspell later characters, than the first ones.</p>
+
+<p>For this reason, we use weighted Hamming distance:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Byte:</th>
+<th align="right">1</th>
+<th align="right">2</th>
+<th align="right">3</th>
+<th align="right">4</th>
+<th align="right">5</th>
+<th align="right">6</th>
+<th align="right">7</th>
+<th align="right">8</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">Weight:</td>
+<td align="right">128</td>
+<td align="right">64</td>
+<td align="right">32</td>
+<td align="right">16</td>
+<td align="right">8</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+
+<p>Namely, we XOR the two values and then add each of the bytes' Hamming weight,
+using the coefficients from the table above.</p>
 
   			</section>
 
@@ -237,22 +636,22 @@ d &\gets f(d \oplus B_4) \\
   				<div class="post-tags">
             
             
-                <a href="http://ticki.github.io//tags/hashing/">hashing</a>
+                <a href="http://ticki.github.io//tags/eudex/">eudex</a>
             
-                <a href="http://ticki.github.io//tags/computer-science/">computer-science</a>
+                <a href="http://ticki.github.io//tags/phonetics/">phonetics</a>
             
                 <a href="http://ticki.github.io//tags/algorithms/">algorithms</a>
             
             
   				</div>
   				<div class="post-share">
-  					<a class="icon-twitter" href="https://twitter.com/share?text=SeaHash%3a%20Explained&url=http%3a%2f%2fticki.github.io%2fblog%2fseahash-explained%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+  					<a class="icon-twitter" href="https://twitter.com/share?text=The%20Eudex%20Algorithm&url=http%3a%2f%2fticki.github.io%2fblog%2fthe-eudex-algorithm%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
   						<span>Twitter</span>
   					</a>
-  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fseahash-explained%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fthe-eudex-algorithm%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
   						<span>Facebook</span>
   					</a>
-  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fseahash-explained%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fthe-eudex-algorithm%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
   						<span>Google+</span>
   					</a>
   				</div>
@@ -272,23 +671,13 @@ d &\gets f(d \oplus B_4) \\
 
 			<nav class="post-nav">
 				
-					<a class="post-nav-item post-nav-next" href="http://ticki.github.io/blog/the-eudex-algorithm/">
-						<section class="post-nav-teaser">
-							<span class="post-nav-icon"><i class="icon-arrow-left"></i></span>
-							<span class="post-nav-info">
-								<h4 class="post-nav-title">The Eudex Algorithm</h4>
-								<p class="post-nav-excerpt">7 months ago, I designedthe Eudex phonetic algorithm, which I explain in this post.&hellip;</p>
-							</span>
-						</section>
-					</a>
 				
-				
-					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/the-trump-effect/">
+					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/seahash-explained/">
 						<section class="post-nav-teaser">
 							<span class="post-nav-icon"><i class="icon-arrow-right"></i></span>
 							<span class="post-nav-info">
-								<h4 class="post-nav-title">The Trump Effect</h4>
-								<p class="post-nav-excerpt">A weird phenomenon has dominated the US election.&hellip;</p>
+								<h4 class="post-nav-title">SeaHash: Explained</h4>
+								<p class="post-nav-excerpt">I explain how SeaHash works.&hellip;</p>
 							</span>
 						</section>
 					</a>
