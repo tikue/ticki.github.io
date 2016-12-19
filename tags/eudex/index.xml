@@ -480,6 +480,8 @@ Moreover, we allow more than just binary choices:&lt;/p&gt;
    ÿ  -----y-1
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;h1 id=&#34;distance-operator&#34;&gt;Distance operator&lt;/h1&gt;
+
 &lt;p&gt;Now that we have our tables. We now need the distance operator. A naïve
 approach would be to simply use Hamming distance. This has the disadvantage of
 all the bytes having the same weight, which isn&#39;t ideal, since you are more

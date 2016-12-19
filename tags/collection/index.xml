@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Collection on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/collection/</link>
+    <description>Recent content in Collection on Ticki&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 19 Dec 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://ticki.github.io/tags/collection/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Portfolio of Logos and Icons</title>
+      <link>http://ticki.github.io/blog/portfolio-of-logos-and-icons/</link>
+      <pubDate>Mon, 19 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/blog/portfolio-of-logos-and-icons/</guid>
+      <description>&lt;p&gt;This is a collection of the logos and icons, I created (and used/not drafts) during the last years.&lt;/p&gt;
+
+&lt;h1 id=&#34;redox&#34;&gt;Redox&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/redox-os&#34;&gt;Redox&lt;/a&gt; is an operating-system I work on. The icon was one of the first things I contributed to Redox (before code):&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;figure&gt;&lt;img src=&#34;https://rawgit.com/redox-os/assets/master/vectorized_icon.svg&#34; alt=&#34;Redox vectorized icon&#34;&gt;&lt;/figure&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It is a circle construction formed after an atom.&lt;/li&gt;
+&lt;li&gt;The electrons are placed to resemble a sodium atom, which together with e.g. fluorine reacts in a redox reaction.&lt;/li&gt;
+&lt;li&gt;It&#39;s SVG!&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;sodium&#34;&gt;Sodium&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/redox-os/sodium&#34;&gt;Sodium&lt;/a&gt; is a text editor I wrote. The logo is&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;img src=&#34;https://raw.githubusercontent.com/redox-os/assets/master/Sodium_logo.png&#34; height=&#34;200&#34; width=&#34;200&#34; /&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It is based on a basic square with rounded edges (square construction).&lt;/li&gt;
+&lt;li&gt;It uses text as a form of background noise.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;xenotime&#34;&gt;XENOTIME&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/neon-sector/xenotime&#34;&gt;XENOTIME&lt;/a&gt; is a game engine, which I created a logo for:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;img src=&#34;https://raw.githubusercontent.com/neon-sector/xenotime/master/res/xenotime/logo.png&#34; height=&#34;200&#34; width=&#34;200&#34; /&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It is a text-based logo.&lt;/li&gt;
+&lt;li&gt;It uses red-black colorscheme because it reflects the colorful game world.&lt;/li&gt;
+&lt;li&gt;It preserves simplicity.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;tfs&#34;&gt;TFS&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/ticki/tfs&#34;&gt;TFS&lt;/a&gt; is a filesystem I&#39;m working on. The icon is:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;figure&gt;&lt;img src=&#34;https://rawgit.com/ticki/tfs/master/icon.svg&#34; alt=&#34;TFS icon&#34;&gt;&lt;/figure&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It is a hexagone looking like an isometric projection of a cube, giving it a 3D feel.&lt;/li&gt;
+&lt;li&gt;The tetragon gives it a &amp;quot;glassy&amp;quot; feel (looking modern).&lt;/li&gt;
+&lt;li&gt;One of my favorite logo creations.&lt;/li&gt;
+&lt;li&gt;Just 284 bytes, in total (optimized SVG). Compressed, it is around 100 bytes.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;seahash&#34;&gt;SeaHash&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/ticki/tfs/tree/master/seahash&#34;&gt;SeaHash&lt;/a&gt; is a hash function I designed:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;img src=&#34;https://raw.githubusercontent.com/ticki/tfs/master/seahash/logo.png&#34; height=&#34;200&#34; width=&#34;200&#34; /&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Very simple and not so fancy (showing stability and robustness).&lt;/li&gt;
+&lt;li&gt;Waves symbolizing the sea and performance.&lt;/li&gt;
+&lt;li&gt;Basic monospace font.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;termion&#34;&gt;Termion&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/ticki/termion&#34;&gt;Termion&lt;/a&gt; is a terminal manipulation library I wrote:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;a href=&#34;https://rawgit.com/ticki/termion/master/logo.svg&#34;&gt;&lt;figure&gt;&lt;img src=&#34;https://rawgit.com/ticki/termion/master/logo.svg&#34; alt=&#34;Termion logo&#34;&gt;&lt;/figure&gt;&lt;/a&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It&#39;s animated, which is really cool. Note that in some browsers, the animation doesn&#39;t work in IMG tags, so if it is static, click it.&lt;/li&gt;
+&lt;li&gt;The animation gives it an &amp;quot;interactive&amp;quot; feel.&lt;/li&gt;
+&lt;li&gt;It uses common terminal colors and font.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;tip-of-the-iceberg&#34;&gt;Tip of the iceberg&lt;/h1&gt;
+
+&lt;p&gt;These are just the ones I used. I&#39;ve created many other drafts and candidates, which I might show in another blog post.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
