@@ -17,6 +17,27 @@
       <guid>http://ticki.github.io/blog/portfolio-of-logos-and-icons/</guid>
       <description>&lt;p&gt;This is a collection of the logos and icons, I created (and used/not drafts) during the last years.&lt;/p&gt;
 
+&lt;h1 id=&#34;opensea&#34;&gt;Open-Sea&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/ticki/Open-Sea&#34;&gt;Open Sea&lt;/a&gt; is a dead game project I was working on:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;figure&gt;&lt;img src=&#34;https://raw.githubusercontent.com/ticki/Open-Sea/master/data/graphics/logo_scaled.png&#34; alt=&#34;Open-Sea logo&#34;&gt;&lt;/figure&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Simple pixel art.&lt;/li&gt;
+&lt;li&gt;Stylistic and minimalistic text.&lt;/li&gt;
+&lt;li&gt;Simple icon similar to the graphics in the game.&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h1 id=&#34;redox&#34;&gt;Redox&lt;/h1&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/redox-os&#34;&gt;Redox&lt;/a&gt; is an operating-system I work on. The icon was one of the first things I contributed to Redox (before code):&lt;/p&gt;
