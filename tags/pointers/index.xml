@@ -2,11 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Pointers on Ticki&#39;s blog</title>
-    <link>http://ticki.github.io/tags/pointers/</link>
+    <link>http://ticki.github.io/tags/pointers/index.xml</link>
     <description>Recent content in Pointers on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 08 Jun 2016 11:24:24 +0200</lastBuildDate>
     <atom:link href="http://ticki.github.io/tags/pointers/index.xml" rel="self" type="application/rss+xml" />
     
     <item>

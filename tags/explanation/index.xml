@@ -2,11 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Explanation on Ticki&#39;s blog</title>
-    <link>http://ticki.github.io/tags/explanation/</link>
+    <link>http://ticki.github.io/tags/explanation/index.xml</link>
     <description>Recent content in Explanation on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 25 Oct 2016 23:25:15 +0200</lastBuildDate>
     <atom:link href="http://ticki.github.io/tags/explanation/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
