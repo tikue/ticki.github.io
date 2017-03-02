@@ -1,24 +1,35 @@
+
 <!DOCTYPE html>
 <html lang="en-us">
 
     <head>
-	<meta name="generator" content="Hugo 0.18.1" />
 
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <meta property="og:title" content=" Ticki&#39;s blog" />
+        <meta property="og:title" content=" A general construction for rolling hash functions &middot;  Ticki&#39;s blog" />
         <meta property="og:site_name" content="Ticki&#39;s blog" />
-        <meta property="og:url" content="http://ticki.github.io/" />
+        <meta property="og:url" content="http://ticki.github.io/blog/a-general-construction-for-rolling-hash-functions/" />
 
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
+        <meta property="og:article:published_time" content="2017-03-02T00:00:00Z" />
+        <meta property="og:article:tag" content="cryptography" />
+        <meta property="og:article:tag" content="hash-functions" />
+        
+
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@ticki_" />
+        <meta name="twitter:creator" content="@ticki_" />
+        <meta name="twitter:title" content="A general construction for rolling hash functions" />
+        <meta name="twitter:description" content="This short blog post looks at a general way of constructing rolling hash functions." />
+        <meta name="twitter:url" content="http://ticki.github.io/blog/a-general-construction-for-rolling-hash-functions/" />
     
 
-        <title> Ticki&#39;s blog</title>
+        <title> A general construction for rolling hash functions &middot;  Ticki&#39;s blog</title>
 
     
-        <meta name="description" content="This blog contains my thoughts, ideas, and humble discoveries in mathematics and computer science." />
+        <meta name="description" content="This short blog post looks at a general way of constructing rolling hash functions." />
     
 
         <meta name="p:domain_verify" content="fc173d84e3a4de948ed4bda2908afd3e"/>
@@ -30,12 +41,39 @@
         
 
     
-
-    
         <link href="http://ticki.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Ticki&#39;s blog" />
     
-        <link rel="canonical" href="http://ticki.github.io/" />
 
+    
+        <link rel="canonical" href="http://ticki.github.io/blog/a-general-construction-for-rolling-hash-functions/" />
+
+    
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "A general construction for rolling hash functions",
+        "author": {
+            "@type": "Person",
+            "name": "http://profiles.google.com/?rel=author"
+        },
+        "datePublished": "2017-03-02",
+        "description": "This short blog post looks at a general way of constructing rolling hash functions.",
+        "wordCount":  811 
+    }
+
+    </script>
+
+    <script type="text/javascript">
+    
+    
+      var disqus_shortname = 'http-ticki-github-io';
+      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/a-general-construction-for-rolling-hash-functions\/';
+      var disqus_title = 'A general construction for rolling hash functions';
+      var disqus_url = 'http:\/\/ticki.github.io\/blog\/a-general-construction-for-rolling-hash-functions\/';
+    
+
+    </script>
     
 
     <style>
@@ -58,9 +96,11 @@
 			  	    
             </div>
             <div class="nav-menu">
-              <a class="rss" href="http://ticki.github.io/index.xml">
+              <a class="rss" href="">
                 <i class="icon-rss"></i>
               </a>
+                
+                <a class="menu" data-action="toc" data-target="toc"><i class="icon-location"></i></a>
                 
                 
                 <a class="menu" data-action="menu" data-target="menu"><i class="icon-menu"></i></a>
@@ -69,210 +109,181 @@
           </nav>
 
 
-	<header id="header" class="header has-cover">
+<main class="content" role="main">
+	<article class="post">
 		<div class="inner">
-			<a class="header-title" href="http://ticki.github.io/">
-				<h1 class="header-name">Ticki&#39;s blog</h1>
-				
-					<span class="header-description">A blog about the beauty of mathematics and computer science.</span>
-				
-			</a>
-		</div>
-		
-		<div class="header-cover" style="background-image: url(/cover.png)"></div>
-		
-	</header>
 
-	<div id="post-index" class="container">
+			<div id="push">
 
-		<main class="content" role="main">
+  			<header class="post-header">
+  				<span class="post-meta">
+						<span class="post-date">2 Mar 2017</span> <span class="reading-time">| <span class="estimated-reading-time">4 min.</span> (<span class="word-count">811</span> words)</span></span>
+  				</span>
+  				<div class="clear"></div>
+  				<h1 class="post-title">A general construction for rolling hash functions</h1>
+  			</header>
 
-			<div class="post-list">
-				<div id="push">
+  			<section class="post-content">
+  				<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
-			
+<h1 id="what-is-a-rolling-hash-function">What is a rolling hash function?</h1>
 
-			
-			  
-<article class="post">
+<p>A hash function is a function <span  class="math">\(h : S^\times \to F\)</span> with <span  class="math">\(S, F\)</span> being some finite sets.</p>
 
-	<div class="inner">
-		<a class="post-link" href="http://ticki.github.io/blog/how-lz4-works/"></a>
-		
-		<figure class="post-image">
-			<a href="http://ticki.github.io/blog/how-lz4-works/"><img src="/img/lz4_literals_copy_diagram.svg" alt="" /></a>
-		</figure>
-		
-		<span class="post-meta">
-			<span class="post-date">25 Oct 2016</span>
-		</span>
-		<h2 class="post-title"><a href="http://ticki.github.io/blog/how-lz4-works/">How LZ4 works</a></h2>
-		<p class="post-excerpt">LZ4 is an exciting algorithm, but unfortunately there is no good explanation on how it works. This blog post tries to explain it in terms that everybody can understand.&hellip;</p>
-		<span class="post-more"><a href="http://ticki.github.io/blog/how-lz4-works/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>A rolling hash function is really a set of functions <span  class="math">\((h, u)\)</span>, where <span  class="math">\(u\)</span> allows retroactively updated a symbol</p>
 
-			
-			  
-<article class="post">
+<p><span  class="math">\[h(\ldots a \ldots) \mapsto h(\ldots a' \ldots)\]</span></p>
 
-	<div class="inner">
-		<a class="post-link" href="http://ticki.github.io/blog/on-random-access-compression/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">23 Oct 2016</span>
-		</span>
-		<h2 class="post-title"><a href="http://ticki.github.io/blog/on-random-access-compression/">On Random-Access Compression</a></h2>
-		<p class="post-excerpt">Some notes and ideas on block-based rolling compression.&hellip;</p>
-		<span class="post-more"><a href="http://ticki.github.io/blog/on-random-access-compression/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>To put it more formally, a rolling hash function has an associated function <span  class="math">\(u : F \times S^2 \times \mathbb N \to F\)</span>, satisfying</p>
 
-			
-			  
-<article class="post">
+<p><span  class="math">\[u(n, a, a', h(\underbrace{\ldots}_n a \ldots)) = h(\underbrace{\ldots}_n a' \ldots)\]</span></p>
 
-	<div class="inner">
-		<a class="post-link" href="http://ticki.github.io/blog/making-terminal-applications-in-rust-with-termion/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">6 Oct 2016</span>
-		</span>
-		<h2 class="post-title"><a href="http://ticki.github.io/blog/making-terminal-applications-in-rust-with-termion/">Making Terminal Applications in Rust with Termion</a></h2>
-		<p class="post-excerpt">This post will explain how to make terminal applications in Rust for new beginners.&hellip;</p>
-		<span class="post-more"><a href="http://ticki.github.io/blog/making-terminal-applications-in-rust-with-termion/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<h2 id="an-example">An example</h2>
 
-			
-			  
-<article class="post featured">
+<p>One of my favorite examples of a rolling hash function is the Rabin-Karp rolling hash.</p>
 
-	<div class="inner">
-		<a class="post-link" href="http://ticki.github.io/blog/a-hoare-logic-for-rust/"></a>
-		
-		<figure class="post-image">
-			<a href="http://ticki.github.io/blog/a-hoare-logic-for-rust/"><img src="/thumb/a-hoare-logic-for-rust.png" alt="" /></a>
-		</figure>
-		
-		<span class="post-meta">
-			<span class="post-date">24 Sep 2016</span>
-		</span>
-		<h2 class="post-title"><a href="http://ticki.github.io/blog/a-hoare-logic-for-rust/">A Hoare Logic for Rust</a></h2>
-		<p class="post-excerpt">In this post, I introduce a Hoare logic specifically for the Rust MIR.&hellip;</p>
-		<span class="post-more"><a href="http://ticki.github.io/blog/a-hoare-logic-for-rust/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>Essentially, you pick some prime <span  class="math">\(p\)</span> and do following operation (over <span  class="math">\(\mathbb Z_n\)</span>):</p>
 
-			
-			  
-<article class="post featured">
+<p><span  class="math">\[h(\{c_n\}) = c_1 p^{k - 1} + c_2 p^{k - 2} + \ldots + c_k\]</span></p>
 
-	<div class="inner">
-		<a class="post-link" href="http://ticki.github.io/blog/skip-lists-done-right/"></a>
-		
-		<figure class="post-image">
-			<a href="http://ticki.github.io/blog/skip-lists-done-right/"><img src="https://i.imgur.com/cQsPnGa.png" alt="" /></a>
-		</figure>
-		
-		<span class="post-meta">
-			<span class="post-date">17 Sep 2016</span>
-		</span>
-		<h2 class="post-title"><a href="http://ticki.github.io/blog/skip-lists-done-right/">Skip Lists: Done Right</a></h2>
-		<p class="post-excerpt">    Skip lists are a wonderful data structure, but it is hard to get\
-    right. This blog post presents various techniques to optimize and\
-    improve the implementation of skip lists.
-&hellip;</p>
-		<span class="post-more"><a href="http://ticki.github.io/blog/skip-lists-done-right/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>You might be able to figure out how you can construct <span  class="math">\(u\)</span>.</p>
 
-			
-			  
-<article class="post">
+<p><span  class="math">\[u(n, x, x', H) = H + (x' - x) p^{k - n}\]</span></p>
 
-	<div class="inner">
-		<a class="post-link" href="http://ticki.github.io/blog/fantastic/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">14 Sep 2016</span>
-		</span>
-		<h2 class="post-title"><a href="http://ticki.github.io/blog/fantastic/">Why Rust&#39;s `std::collections` is absolutely fantastic</a></h2>
-		<p class="post-excerpt">Now that we&#39;ve seen the bad stuff of `std::collections`, we&#39;re going to look into all the good stuff and various techniques used to optimize and improve the collections&hellip;</p>
-		<span class="post-more"><a href="http://ticki.github.io/blog/fantastic/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>So why isn't this a pretty good choice? Well, it's</p>
 
-			
-			  
-<article class="post">
+<ol>
+<li>Slow. Doing the exponentation can be quite expensive.</li>
+<li>It's relatively poor quality. This can be shown by looking at the behavior of the bits: Multiplication never affects lower bits, so it's avalanche effect is very weak.</li>
+</ol>
 
-	<div class="inner">
-		<a class="post-link" href="http://ticki.github.io/blog/a-critique-of-rusts-stdcollections/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">12 Sep 2016</span>
-		</span>
-		<h2 class="post-title"><a href="http://ticki.github.io/blog/a-critique-of-rusts-stdcollections/">A Critique of Rust&#39;s `std::collections`</a></h2>
-		<p class="post-excerpt">This is an in-depth critique of the bad parts of Rust&#39;s collection primitves.&hellip;</p>
-		<span class="post-more"><a href="http://ticki.github.io/blog/a-critique-of-rusts-stdcollections/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>It has a really nice property though, you can use an arbitrary substring of the input and the substring's hash and replace it in <span  class="math">\(O(1)\)</span>, whereas most other rolling hash functions requires <span  class="math">\(O(n)\)</span>.</p>
 
-			
-			  
-<article class="post">
+<h1 id="a-generalpurpose-construction">A general-purpose construction</h1>
 
-	<div class="inner">
-		<a class="post-link" href="http://ticki.github.io/blog/lambda-crabs-part-3-region-based-alias-analysis/"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">8 Jun 2016</span>
-		</span>
-		<h2 class="post-title"><a href="http://ticki.github.io/blog/lambda-crabs-part-3-region-based-alias-analysis/">Lambda crabs (part 3): Region-based alias analysis</a></h2>
-		<p class="post-excerpt">In this post, we show how you can analyse alias properties through region data.&hellip;</p>
-		<span class="post-more"><a href="http://ticki.github.io/blog/lambda-crabs-part-3-region-based-alias-analysis/">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>So, is there a general way we can come up with these?</p>
 
-			
-			  
-<article class="post">
+<p>Well, what if we had some family of permutations, <span  class="math">\(\sigma_n : F \to F\)</span>?</p>
 
-	<div class="inner">
-		<a class="post-link" href="http://ticki.github.io/blog/lambda-crabs-part-2-region-inference-is-not-magic./"></a>
-		
-		<span class="post-meta">
-			<span class="post-date">6 Jun 2016</span>
-		</span>
-		<h2 class="post-title"><a href="http://ticki.github.io/blog/lambda-crabs-part-2-region-inference-is-not-magic./">Lambda crabs (part 2): Region inference is (not) magic.</a></h2>
-		<p class="post-excerpt">I go through the solution to our optimization problem presented in last post. This provides an full algorithm for inference of regions.&hellip;</p>
-		<span class="post-more"><a href="http://ticki.github.io/blog/lambda-crabs-part-2-region-inference-is-not-magic./">Read More <i class="icon-arrow-right"></i></a></span>
-	</div>
-</article>
+<p>Assume our <span  class="math">\(F\)</span> is an abelian group with some operation <span  class="math">\(+\)</span> (could be addition or XOR or a third option).</p>
 
-			
+<p>Then, construct the hash function</p>
 
-				</div>
+<p><span  class="math">\[h(\{x_n\}) = \sum_n \sigma_n(x_n)\]</span></p>
+
+<p>Now, we can easily construct <span  class="math">\(u\)</span>:</p>
+
+<p><span  class="math">\[u(n, x, x', H) = H - \sigma_n(x_n) + \sigma_n(x'_n)\]</span></p>
+
+<h1 id="xor-special-case">XOR special case</h1>
+
+<p>As programmers, we love XOR, because it is so simple, and even better: Every element is its own inverse, under XOR.</p>
+
+<p>Namely, under XOR, <span  class="math">\(u\)</span> would look like</p>
+
+<p><span  class="math">\[u(n, x, x', H) = H \oplus \sigma_n(x_n) \oplus \sigma_n(x'_n)\]</span></p>
+
+<h1 id="rabinkarp-as-a-special-case">Rabin-Karp as a special case</h1>
+
+<p>The interesting thing is that we can see Rabin-Karp as a special case, namely the family of permutations,</p>
+
+<p><span  class="math">\[\sigma_n(x) \equiv xp^{n} \pmod m\]</span></p>
+
+<p>The reason this is a permutation is because <span  class="math">\(p\)</span> is odd, hence <span  class="math">\(p^n\)</span> is odd, and must therefore have a multiplicative inverse in <span  class="math">\(\mathbb Z/m \mathbb Z\)</span>.</p>
+
+<p>Now, why does <span  class="math">\(p\)</span> have to be a prime? Well, Every permutation must be distinct, <span  class="math">\(f(x) \equiv p^x \pmod m\)</span> is a permutation itself (which can be shown relatively easily through basic group theory).</p>
+
+<h1 id="statistical-properties-and-qualities">Statistical properties and qualities</h1>
+
+<ul>
+<li>Flipping a single bit will change the output, no matter what: If <span  class="math">\(x \neq x'\)</span>, <span  class="math">\(\sigma(x) \neq \sigma(x')\)</span>, because <span  class="math">\(\sigma\)</span> is a permutation.</li>
+<li>It has perfect collision property: Pick some <span  class="math">\(n\)</span>-bit sequence, <span  class="math">\(s\)</span>. The number of <span  class="math">\(n\)</span>-bit sequences colliding with <span  class="math">\(s\)</span> is independent of the choice of <span  class="math">\(s\)</span> (all equivalence class have equal size).</li>
+</ul>
+
+<h2 id="reduction-to-the-permutation-family">Reduction to the permutation family</h2>
+
+<p>A lot of properties of the function are directly inherited from the quality of the permutation family. In fact, it can be shown that if the permutation family is a family of random oracles, the function is a perfect PRF.</p>
+
+<p>Similarly, if the permutations are uniformly distributed over some input, the constructed function will be as well.</p>
+
+<p>Almost all of the statistical properties, I can think of, has this kind of reductive property allowing us to prove it on the constructed property.</p>
+
+<h2 id="a-good-family-of-permutations">A good family of permutations</h2>
+
+<p>This is a really hard question. Analyzing a single permutation is easy, but analyzing a family of permutations can be pretty hard. Why? Because you need to show their independence.</p>
+
+<p>If one permutation had some dependence on another, the hash function could have poor quality, even if the permutations are pseudorandom, when studied individually.</p>
+
+<h1 id="parallelization">Parallelization</h1>
+
+<p>I'm the author of <a href="https://ticki.github.io/blog/seahash-explained/">SeaHash</a>, and a big part of the design of SeaHash was to parallelize it.</p>
+
+<p>And I could, pretty well. But with its design, there will always be a limit to this parallelization. In case of SeaHash, this limit is 4 (as there are 4 lanes). However, one could imagine hardware where such parallelization ideally should be say 32.</p>
+
+<p>This construction allows for exactly this, without changing the specification. The function is adaptive: The implementation can choose whatever number of parallel lanes to hash in.</p>
+
+<p>This can be done by simply breaking the input up in <span  class="math">\(k\)</span> strings, and hashing each individually, starting with <span  class="math">\(n\)</span> being the offset of the string.</p>
+
+<p>This is a fairly nice property, as it also allows combination of threaded parallelization and ILP without any constant overhead. Say I'm hashing 4 TB of data, then I could spawn 4 threads (depending on your hardware) and still exploit the 4 CPU pipelines, while not hurting the performance of hashing only a few bytes.</p>
+
+  			</section>
+
+  			<footer class="post-footer">
+  				<div class="post-tags">
+            
+            
+                <a href="http://ticki.github.io//tags/cryptography/">cryptography</a>
+            
+                <a href="http://ticki.github.io//tags/hash-functions/">hash-functions</a>
+            
+            
+  				</div>
+  				<div class="post-share">
+  					<a class="icon-twitter" href="https://twitter.com/share?text=A%20general%20construction%20for%20rolling%20hash%20functions&url=http%3a%2f%2fticki.github.io%2fblog%2fa-general-construction-for-rolling-hash-functions%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+  						<span>Twitter</span>
+  					</a>
+  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fa-general-construction-for-rolling-hash-functions%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+  						<span>Facebook</span>
+  					</a>
+  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fa-general-construction-for-rolling-hash-functions%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+  						<span>Google+</span>
+  					</a>
+  				</div>
+  			</footer>
+
+  			<aside class="post-comments">
+    
+    
+    <div id="disqus_thread"></div>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    
+    
+</aside>
+
+
 			</div>
 
-			<nav id="pagination" class="pagination" role="pagination">
-	<div class="inner">
-	
-	  <a class="pagination-item pagination-next" href="/"><i class="icon-arrow-left"></i> <span>Newer Posts</span></a>
-	
-		<span class="pagination-info">Page 2 of 3</span>
-	
-	  <a class="pagination-item pagination-prev" href="/page/3/"><span>Older Posts</span> <i class="icon-arrow-right"></i></a>
-	
-		<div class="clear"></div>
-	</div>
-</nav>
+			<nav class="post-nav">
+				
+				
+					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/collision-resolution-with-nested-hash-tables/">
+						<section class="post-nav-teaser">
+							<span class="post-nav-icon"><i class="icon-arrow-right"></i></span>
+							<span class="post-nav-info">
+								<h4 class="post-nav-title">Collision Resolution with Nested Hash Tables</h4>
+								<p class="post-nav-excerpt">I discuss a new way of doing collision resolution.&hellip;</p>
+							</span>
+						</section>
+					</a>
+				
+				<div class="clear"></div>
+			</nav>
 
-
-		</main>
-
-	</div>
+		</div>
+	</article>
+</main>
 
 				<div id="body-class" style="display: none;"></div>
 				<footer id="footer">
@@ -313,6 +324,16 @@
 </div>
 
 				
+<div id="tocMenu" data-target="toc">
+    <div class="menu-header">
+        <span class="menu-label">Menu</span>
+        <a class="menu-close" data-action="toc" data-target="toc"></a>
+    </div>
+    <div id="toc" class="menu-list">
+        
+    </div>
+</div>
+
 
 				<div class="overlay"></div>
 			</div>

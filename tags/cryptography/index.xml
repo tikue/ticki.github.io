@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cryptography on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/cryptography/index.xml</link>
+    <description>Recent content in Cryptography on Ticki&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <atom:link href="http://ticki.github.io/tags/cryptography/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>A general construction for rolling hash functions</title>
+      <link>http://ticki.github.io/blog/a-general-construction-for-rolling-hash-functions/</link>
+      <pubDate>Thu, 02 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/blog/a-general-construction-for-rolling-hash-functions/</guid>
+      <description>&lt;script type=&#34;text/javascript&#34;
+  src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
+&lt;/script&gt;
+
+&lt;h1 id=&#34;what-is-a-rolling-hash-function&#34;&gt;What is a rolling hash function?&lt;/h1&gt;
+
+&lt;p&gt;A hash function is a function &lt;span  class=&#34;math&#34;&gt;\(h : S^\times \to F\)&lt;/span&gt; with &lt;span  class=&#34;math&#34;&gt;\(S, F\)&lt;/span&gt; being some finite sets.&lt;/p&gt;
+
+&lt;p&gt;A rolling hash function is really a set of functions &lt;span  class=&#34;math&#34;&gt;\((h, u)\)&lt;/span&gt;, where &lt;span  class=&#34;math&#34;&gt;\(u\)&lt;/span&gt; allows retroactively updated a symbol&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[h(\ldots a \ldots) \mapsto h(\ldots a&#39; \ldots)\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;To put it more formally, a rolling hash function has an associated function &lt;span  class=&#34;math&#34;&gt;\(u : F \times S^2 \times \mathbb N \to F\)&lt;/span&gt;, satisfying&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[u(n, a, a&#39;, h(\underbrace{\ldots}_n a \ldots)) = h(\underbrace{\ldots}_n a&#39; \ldots)\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;an-example&#34;&gt;An example&lt;/h2&gt;
+
+&lt;p&gt;One of my favorite examples of a rolling hash function is the Rabin-Karp rolling hash.&lt;/p&gt;
+
+&lt;p&gt;Essentially, you pick some prime &lt;span  class=&#34;math&#34;&gt;\(p\)&lt;/span&gt; and do following operation (over &lt;span  class=&#34;math&#34;&gt;\(\mathbb Z_n\)&lt;/span&gt;):&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[h(\{c_n\}) = c_1 p^{k - 1} + c_2 p^{k - 2} + \ldots + c_k\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;You might be able to figure out how you can construct &lt;span  class=&#34;math&#34;&gt;\(u\)&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[u(n, x, x&#39;, H) = H + (x&#39; - x) p^{k - n}\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;So why isn&#39;t this a pretty good choice? Well, it&#39;s&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Slow. Doing the exponentation can be quite expensive.&lt;/li&gt;
+&lt;li&gt;It&#39;s relatively poor quality. This can be shown by looking at the behavior of the bits: Multiplication never affects lower bits, so it&#39;s avalanche effect is very weak.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;It has a really nice property though, you can use an arbitrary substring of the input and the substring&#39;s hash and replace it in &lt;span  class=&#34;math&#34;&gt;\(O(1)\)&lt;/span&gt;, whereas most other rolling hash functions requires &lt;span  class=&#34;math&#34;&gt;\(O(n)\)&lt;/span&gt;.&lt;/p&gt;
+
+&lt;h1 id=&#34;a-generalpurpose-construction&#34;&gt;A general-purpose construction&lt;/h1&gt;
+
+&lt;p&gt;So, is there a general way we can come up with these?&lt;/p&gt;
+
+&lt;p&gt;Well, what if we had some family of permutations, &lt;span  class=&#34;math&#34;&gt;\(\sigma_n : F \to F\)&lt;/span&gt;?&lt;/p&gt;
+
+&lt;p&gt;Assume our &lt;span  class=&#34;math&#34;&gt;\(F\)&lt;/span&gt; is an abelian group with some operation &lt;span  class=&#34;math&#34;&gt;\(+\)&lt;/span&gt; (could be addition or XOR or a third option).&lt;/p&gt;
+
+&lt;p&gt;Then, construct the hash function&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[h(\{x_n\}) = \sum_n \sigma_n(x_n)\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, we can easily construct &lt;span  class=&#34;math&#34;&gt;\(u\)&lt;/span&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[u(n, x, x&#39;, H) = H - \sigma_n(x_n) + \sigma_n(x&#39;_n)\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;xor-special-case&#34;&gt;XOR special case&lt;/h1&gt;
+
+&lt;p&gt;As programmers, we love XOR, because it is so simple, and even better: Every element is its own inverse, under XOR.&lt;/p&gt;
+
+&lt;p&gt;Namely, under XOR, &lt;span  class=&#34;math&#34;&gt;\(u\)&lt;/span&gt; would look like&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[u(n, x, x&#39;, H) = H \oplus \sigma_n(x_n) \oplus \sigma_n(x&#39;_n)\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;rabinkarp-as-a-special-case&#34;&gt;Rabin-Karp as a special case&lt;/h1&gt;
+
+&lt;p&gt;The interesting thing is that we can see Rabin-Karp as a special case, namely the family of permutations,&lt;/p&gt;
+
+&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\sigma_n(x) \equiv xp^{n} \pmod m\]&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;The reason this is a permutation is because &lt;span  class=&#34;math&#34;&gt;\(p\)&lt;/span&gt; is odd, hence &lt;span  class=&#34;math&#34;&gt;\(p^n\)&lt;/span&gt; is odd, and must therefore have a multiplicative inverse in &lt;span  class=&#34;math&#34;&gt;\(\mathbb Z/m \mathbb Z\)&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now, why does &lt;span  class=&#34;math&#34;&gt;\(p\)&lt;/span&gt; have to be a prime? Well, Every permutation must be distinct, &lt;span  class=&#34;math&#34;&gt;\(f(x) \equiv p^x \pmod m\)&lt;/span&gt; is a permutation itself (which can be shown relatively easily through basic group theory).&lt;/p&gt;
+
+&lt;h1 id=&#34;statistical-properties-and-qualities&#34;&gt;Statistical properties and qualities&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Flipping a single bit will change the output, no matter what: If &lt;span  class=&#34;math&#34;&gt;\(x \neq x&#39;\)&lt;/span&gt;, &lt;span  class=&#34;math&#34;&gt;\(\sigma(x) \neq \sigma(x&#39;)\)&lt;/span&gt;, because &lt;span  class=&#34;math&#34;&gt;\(\sigma\)&lt;/span&gt; is a permutation.&lt;/li&gt;
+&lt;li&gt;It has perfect collision property: Pick some &lt;span  class=&#34;math&#34;&gt;\(n\)&lt;/span&gt;-bit sequence, &lt;span  class=&#34;math&#34;&gt;\(s\)&lt;/span&gt;. The number of &lt;span  class=&#34;math&#34;&gt;\(n\)&lt;/span&gt;-bit sequences colliding with &lt;span  class=&#34;math&#34;&gt;\(s\)&lt;/span&gt; is independent of the choice of &lt;span  class=&#34;math&#34;&gt;\(s\)&lt;/span&gt; (all equivalence class have equal size).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;reduction-to-the-permutation-family&#34;&gt;Reduction to the permutation family&lt;/h2&gt;
+
+&lt;p&gt;A lot of properties of the function are directly inherited from the quality of the permutation family. In fact, it can be shown that if the permutation family is a family of random oracles, the function is a perfect PRF.&lt;/p&gt;
+
+&lt;p&gt;Similarly, if the permutations are uniformly distributed over some input, the constructed function will be as well.&lt;/p&gt;
+
+&lt;p&gt;Almost all of the statistical properties, I can think of, has this kind of reductive property allowing us to prove it on the constructed property.&lt;/p&gt;
+
+&lt;h2 id=&#34;a-good-family-of-permutations&#34;&gt;A good family of permutations&lt;/h2&gt;
+
+&lt;p&gt;This is a really hard question. Analyzing a single permutation is easy, but analyzing a family of permutations can be pretty hard. Why? Because you need to show their independence.&lt;/p&gt;
+
+&lt;p&gt;If one permutation had some dependence on another, the hash function could have poor quality, even if the permutations are pseudorandom, when studied individually.&lt;/p&gt;
+
+&lt;h1 id=&#34;parallelization&#34;&gt;Parallelization&lt;/h1&gt;
+
+&lt;p&gt;I&#39;m the author of &lt;a href=&#34;https://ticki.github.io/blog/seahash-explained/&#34;&gt;SeaHash&lt;/a&gt;, and a big part of the design of SeaHash was to parallelize it.&lt;/p&gt;
+
+&lt;p&gt;And I could, pretty well. But with its design, there will always be a limit to this parallelization. In case of SeaHash, this limit is 4 (as there are 4 lanes). However, one could imagine hardware where such parallelization ideally should be say 32.&lt;/p&gt;
+
+&lt;p&gt;This construction allows for exactly this, without changing the specification. The function is adaptive: The implementation can choose whatever number of parallel lanes to hash in.&lt;/p&gt;
+
+&lt;p&gt;This can be done by simply breaking the input up in &lt;span  class=&#34;math&#34;&gt;\(k\)&lt;/span&gt; strings, and hashing each individually, starting with &lt;span  class=&#34;math&#34;&gt;\(n\)&lt;/span&gt; being the offset of the string.&lt;/p&gt;
+
+&lt;p&gt;This is a fairly nice property, as it also allows combination of threaded parallelization and ILP without any constant overhead. Say I&#39;m hashing 4 TB of data, then I could spawn 4 threads (depending on your hardware) and still exploit the 4 CPU pipelines, while not hurting the performance of hashing only a few bytes.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
