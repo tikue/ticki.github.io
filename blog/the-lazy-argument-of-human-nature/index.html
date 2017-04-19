@@ -7,29 +7,30 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <meta property="og:title" content=" Collision Resolution with Nested Hash Tables &middot;  Ticki&#39;s blog" />
+        <meta property="og:title" content=" The Lazy Argument of Human Nature &middot;  Ticki&#39;s blog" />
         <meta property="og:site_name" content="Ticki&#39;s blog" />
-        <meta property="og:url" content="http://ticki.github.io/blog/collision-resolution-with-nested-hash-tables/" />
+        <meta property="og:url" content="http://ticki.github.io/blog/the-lazy-argument-of-human-nature/" />
 
     
         <meta property="og:type" content="article" />
-        <meta property="og:article:published_time" content="2017-02-16T00:00:00Z" />
-        <meta property="og:article:tag" content="computer-science" />
-        <meta property="og:article:tag" content="data-structures" />
+        <meta property="og:article:published_time" content="2017-04-19T00:00:00Z" />
+        <meta property="og:article:tag" content="politics" />
+        <meta property="og:article:tag" content="communism" />
+        <meta property="og:article:tag" content="socialism" />
         
 
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@ticki_" />
         <meta name="twitter:creator" content="@ticki_" />
-        <meta name="twitter:title" content="Collision Resolution with Nested Hash Tables" />
-        <meta name="twitter:description" content="I discuss a new way of doing collision resolution." />
-        <meta name="twitter:url" content="http://ticki.github.io/blog/collision-resolution-with-nested-hash-tables/" />
+        <meta name="twitter:title" content="The Lazy Argument of Human Nature" />
+        <meta name="twitter:description" content="Why human nature is a lazy argument in the context of socialism." />
+        <meta name="twitter:url" content="http://ticki.github.io/blog/the-lazy-argument-of-human-nature/" />
     
 
-        <title> Collision Resolution with Nested Hash Tables &middot;  Ticki&#39;s blog</title>
+        <title> The Lazy Argument of Human Nature &middot;  Ticki&#39;s blog</title>
 
     
-        <meta name="description" content="I discuss a new way of doing collision resolution." />
+        <meta name="description" content="Why human nature is a lazy argument in the context of socialism." />
     
 
         <meta name="p:domain_verify" content="fc173d84e3a4de948ed4bda2908afd3e"/>
@@ -45,21 +46,21 @@
     
 
     
-        <link rel="canonical" href="http://ticki.github.io/blog/collision-resolution-with-nested-hash-tables/" />
+        <link rel="canonical" href="http://ticki.github.io/blog/the-lazy-argument-of-human-nature/" />
 
     
     <script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "Article",
-        "headline": "Collision Resolution with Nested Hash Tables",
+        "headline": "The Lazy Argument of Human Nature",
         "author": {
             "@type": "Person",
             "name": "http://profiles.google.com/?rel=author"
         },
-        "datePublished": "2017-02-16",
-        "description": "I discuss a new way of doing collision resolution.",
-        "wordCount": 578
+        "datePublished": "2017-04-19",
+        "description": "Why human nature is a lazy argument in the context of socialism.",
+        "wordCount": 805
     }
 
     </script>
@@ -68,9 +69,9 @@
     
     
       var disqus_shortname = 'http-ticki-github-io';
-      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/collision-resolution-with-nested-hash-tables\/';
-      var disqus_title = 'Collision Resolution with Nested Hash Tables';
-      var disqus_url = 'http:\/\/ticki.github.io\/blog\/collision-resolution-with-nested-hash-tables\/';
+      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/the-lazy-argument-of-human-nature\/';
+      var disqus_title = 'The Lazy Argument of Human Nature';
+      var disqus_url = 'http:\/\/ticki.github.io\/blog\/the-lazy-argument-of-human-nature\/';
     
 
     </script>
@@ -117,59 +118,70 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">16 Feb 2017</span> <span class="reading-time">| <span class="estimated-reading-time">3 min.</span> (<span class="word-count">578</span> words)</span></span>
+						<span class="post-date">19 Apr 2017</span> <span class="reading-time">| <span class="estimated-reading-time">4 min.</span> (<span class="word-count">805</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
-  				<h1 class="post-title">Collision Resolution with Nested Hash Tables</h1>
+  				<h1 class="post-title">The Lazy Argument of Human Nature</h1>
   			</header>
 
   			<section class="post-content">
-  				<script type="text/javascript"
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
+  				<p>When you discuss socialism, you are guaranteed to hear someone say &quot;socialism won't work because of human nature&quot;. This argument is particularly lazy, but I keep hearing it, so I wanted to address it in my own words.</p>
 
-<h1 id="collision-resolution">Collision resolution</h1>
+<h2 id="what-the-argument-entails">What the argument entails</h2>
 
-<p>Hash collisions in hash tables are unevitable, and therefore every proper implementation needs a form of <em>collision resolution</em>. Collision resolution is the name of the class of algorithms and techniques used to organize and resolve the case where two entries in the table hash to the same bucket.</p>
+<p>It is incredibly vague, but it usually goes something like</p>
 
-<p>It turns out that the choice and implementation of collision resolution is absolutely critical for the performance of the table, because while hash tables are often mistaken for having <span  class="math">\(O(1)\)</span> lookups, they do in reality and theory have a sligthly more complicated behavior.</p>
+<blockquote>
+<p>Greed and selfishness is an essential part of human nature, hence socialism will fail.</p>
+</blockquote>
 
-<p>There are really two big competing families of algorithms of resolving collisions:</p>
+<p>It often follows that capitalism is the only system that works.</p>
 
-<ol start="2">
-<li>Open addressing: This keeps all entries in the bucket array, but applies some way of finding a new bucket if the ideal one is occupied. To keep the load factor low, they generally reallocate before they get full. This is an OK solution when doing things in-memory, but on-disk this absolutely sucks, since you potentially have millions of entries. If you plot the lookup time over the number of entries, it will look like an increasing line, which suddenly peaks and then falls, with the peaks getting more and more uncommon. This rather complex performance behavior can also make them unfit for certain purposes.</li>
-<li>Chaining: This uses some structure for storing multiple entries in a bucket. Often through B-trees or linked lists.</li>
-</ol>
+<p>So where does this argument fail?</p>
 
-<p>In this post, we will look at chaining.</p>
+<h2 id="human-nature-is-not-capitalistic">Human nature is not capitalistic</h2>
 
-<h1 id="nested-tables">Nested tables</h1>
+<p>First off all, human nature is not capitalist. Capitalism means that the means of production is privately owned, and the surplus value of the labour goes to the owner of the production.</p>
 
-<p>What if we used another hash table for multi-entry buckets?</p>
+<p>The human race has lived far longer without capitalism than with it. In fact, capitalism is a relatively recent invention. In most countries it did not exist until the 19th century. It is simply ahistorical to say that capitalism is a part of human nature, unless you think that human nature is something recent.</p>
 
-<p>The idea is that we have some sequence of independent (this is a very important invariant) hash functions <span  class="math">\(\{h_n(x)\}\)</span>, and the root table uses hash function <span  class="math">\(h_0(k)\)</span> to assign a bucket to key <span  class="math">\(k\)</span>. If the entry is empty, the value is simply inserted there and the bucket's tag is set to &quot;single&quot;.</p>
+<p>It is <strong>not</strong> human nature to spend most of your day producing surplus value for a small elite, who gives you little to nothing in return. Nor is it human nature to exploit child workers in the third world in order to consume endlessly. This is the inevitable result of capitalism - a system of exploitation.</p>
 
-<p>If however the bucket already has at least one entry, it will be inserted into a hash table, placed in said bucket, and the bucket where the entry will be (in the new hash table) is determined by <span  class="math">\(h_1(k)\)</span>.</p>
+<p>I want to direct your to following quote from The Conquest of Bread (by Peter Kropotkin):</p>
 
-<p>This process (<span  class="math">\(h_0(k)\)</span>, <span  class="math">\(h_1(k)\)</span>, <span  class="math">\(h_2(k)\)</span>...) repeats until a free bucket is found.</p>
+<blockquote>
+<p>However, the moment we consider human history more attentively, it loses its strength. We see, first, that hundreds of millions¹ of men have succeeded in maintaining amongst themselves, in their village communities, for many hundreds of years, one of the main elements of Socialism—the common ownership of the chief instrument of production, the land, and the apportionment of the same according to the labour capacities of the different families; and we learn that if the communal possession of the land has been destroyed in Western Europe, it was not from within, but from without, by the governments which created a land monopoly in favour of the nobility and the middle classes</p>
+</blockquote>
 
-<p>This seems like a pretty obvious thing, but when you think about it it has some interesting properties for block-based on-disk structures, as we will discuss later.</p>
+<p>¹before someone points out that this number is in fact not true: This book was written in the late 19th century and thus not with the knowledge from contemporary sciences.</p>
 
-<h1 id="analysis">Analysis</h1>
+<h2 id="capitalism-does-not-mean-trade">Capitalism does not mean trade</h2>
 
-<p>The analysis is pretty simple: If the hash functions are sufficiently good and independent, the space usage has a (amortized) linear upper-bound.</p>
+<p>Trade has indeed been going on since the early days of civilization. It is however distinct from capitalism in an important way, that many people seem to miss: Capitalism means that the means of production is not controlled by the workers, but instead a system of investors, capitalists, etc.. Trade simply means the exchange of goods for money or other goods.</p>
 
-<p>The lookup speed is perhaps more important than the space, and it is in many ways similar to B+ trees, except that this is simpler and perhaps faster. Both have logarithmic complexity of lookups, and more importantly, the base of the logarithm is usually pretty high (although it depends on the choice of default table size).</p>
+<p>Socialism is in no way incompatible with trade nor ownership². In fact, many socialists (like myself) believes in trade of goods and services.</p>
 
-<h1 id="blockbased-ondisk-storage">Block-based on-disk storage</h1>
+<p>²there is a distinction between private and personal ownership in socialist theory. <a href="https://www.youtube.com/watch?v=eknoQYrgq60">Here's</a> a video, which does a good job at explaining this distinction.</p>
 
-<p>Because block-based storage is so convenient, it is used in many database systems and file systems. It is one of the reasons B+ trees is such a popular indexing method.</p>
+<h2 id="human-nature-is-adaptive">Human nature is adaptive</h2>
 
-<p>In particular, if a single block can store N pointers, we can simply let one table have N buckets, meaning there is no waste of space.</p>
+<p>Many socialists thinks that human nature is a &quot;spook&quot; (to invoke the wonderful terminology of Max Stirner) and outright nonexistent. I tend to disagree with that. Human certainly have some nature, however there is one particular thing that makes it radically different from other species.</p>
 
-<p>Compared to B+ trees, there is a pretty clear advantage in the case of dynamically sized keys, since comparing requires loading, which is generally a very expensive task. Hashing on the other hand is easy, and never requires any comparison (with the exception of the last table, perhaps¹).</p>
+<p>Ability to adaption. This is why the human species is so successful: We are able to adapt to almost any environment we are put in. There is a reason that humans are the only mammal to walk all continents -- it's the adaptive human nature.</p>
 
-<p>¹it is popular to use cryptographic fingerprints to avoid the inconvenience of arbitrary-sized keys.</p>
+<p>The human nature adapts to whatever environment, such as economic system, it's under. If a system A rewards behavior B, then this behavior will naturally become more common under this system.</p>
+
+<h2 id="greed-is-exactly-why-capitalism-fails">Greed is exactly why capitalism fails</h2>
+
+<p>What is particularly weird about the argument is the point about &quot;greed&quot;. Any system that rewards greed will obviously take basis in greed, and humans are greedy, which is why you want to avoid rewarding such behavior.</p>
+
+<p>This is the opposite of what capitalism does: It rewards greed. If you want to build a successful business, you must create as inhumane work condition as possible³.</p>
+
+<p>Capitalism is responsible for this -- and it's not an issue of &quot;free markets&quot;, it is at the core of capitalism. Rosa Luxemburg wrote a good book on <a href="https://www.marxists.org/archive/luxemburg/1900/reform-revolution/">why reformism fails</a>: Reformism fails to actually address the problems with capitalism. Reformed capitalism is still capitalism, and it will still have the same fundamental properties of capitalism.</p>
+
+<p>The failure of capitalism isn't in its functioning: It clearly works, but it's in its ethical aspect. It relies on exploitation and fails to distribute wealth fairly, causing mass starvation next to extreme wealth.</p>
+
+<p>³although recently this oppression have been moved to the third world. I'll elaborate on this in a future post.</p>
 
   			</section>
 
@@ -177,20 +189,22 @@
   				<div class="post-tags">
             
             
-                <a href="http://ticki.github.io//tags/computer-science/">computer-science</a>
+                <a href="http://ticki.github.io//tags/politics/">politics</a>
             
-                <a href="http://ticki.github.io//tags/data-structures/">data-structures</a>
+                <a href="http://ticki.github.io//tags/communism/">communism</a>
+            
+                <a href="http://ticki.github.io//tags/socialism/">socialism</a>
             
             
   				</div>
   				<div class="post-share">
-  					<a class="icon-twitter" href="https://twitter.com/share?text=Collision%20Resolution%20with%20Nested%20Hash%20Tables&url=http%3a%2f%2fticki.github.io%2fblog%2fcollision-resolution-with-nested-hash-tables%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+  					<a class="icon-twitter" href="https://twitter.com/share?text=The%20Lazy%20Argument%20of%20Human%20Nature&url=http%3a%2f%2fticki.github.io%2fblog%2fthe-lazy-argument-of-human-nature%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
   						<span>Twitter</span>
   					</a>
-  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fcollision-resolution-with-nested-hash-tables%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fthe-lazy-argument-of-human-nature%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
   						<span>Facebook</span>
   					</a>
-  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fcollision-resolution-with-nested-hash-tables%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fthe-lazy-argument-of-human-nature%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
   						<span>Google+</span>
   					</a>
   				</div>
@@ -210,23 +224,13 @@
 
 			<nav class="post-nav">
 				
-					<a class="post-nav-item post-nav-next" href="http://ticki.github.io/blog/a-general-construction-for-rolling-hash-functions/">
-						<section class="post-nav-teaser">
-							<span class="post-nav-icon"><i class="icon-arrow-left"></i></span>
-							<span class="post-nav-info">
-								<h4 class="post-nav-title">A general construction for rolling hash functions</h4>
-								<p class="post-nav-excerpt">This short blog post looks at a general way of constructing rolling hash functions.&hellip;</p>
-							</span>
-						</section>
-					</a>
 				
-				
-					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/portfolio-of-logos-and-icons/">
+					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/a-general-construction-for-rolling-hash-functions/">
 						<section class="post-nav-teaser">
 							<span class="post-nav-icon"><i class="icon-arrow-right"></i></span>
 							<span class="post-nav-info">
-								<h4 class="post-nav-title">Portfolio of Logos and Icons</h4>
-								<p class="post-nav-excerpt">This is a collection of some of the icons I&#39;ve made in the last year.&hellip;</p>
+								<h4 class="post-nav-title">A general construction for rolling hash functions</h4>
+								<p class="post-nav-excerpt">This short blog post looks at a general way of constructing rolling hash functions.&hellip;</p>
 							</span>
 						</section>
 					</a>

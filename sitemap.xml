@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://ticki.github.io/blog/the-lazy-argument-of-human-nature/</loc>
+    <lastmod>2017-04-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://ticki.github.io/blog/a-general-construction-for-rolling-hash-functions/</loc>
     <lastmod>2017-03-02T00:00:00+00:00</lastmod>
   </url>
@@ -128,6 +133,12 @@
   <url>
     <loc>http://ticki.github.io/tags/collection/</loc>
     <lastmod>2016-12-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://ticki.github.io/tags/communism/</loc>
+    <lastmod>2017-04-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -307,13 +318,13 @@
   
   <url>
     <loc>http://ticki.github.io/tags/politics/</loc>
-    <lastmod>2016-11-16T00:00:00+00:00</lastmod>
+    <lastmod>2017-04-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://ticki.github.io/post/</loc>
-    <lastmod>2017-03-02T00:00:00+00:00</lastmod>
+    <lastmod>2017-04-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -354,6 +365,12 @@
   </url>
   
   <url>
+    <loc>http://ticki.github.io/tags/socialism/</loc>
+    <lastmod>2017-04-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://ticki.github.io/tags/standard-library/</loc>
     <lastmod>2016-09-14T16:07:34+02:00</lastmod>
     <priority>0</priority>
@@ -384,7 +401,7 @@
   
   <url>
     <loc>http://ticki.github.io/</loc>
-    <lastmod>2017-03-02T00:00:00+00:00</lastmod>
+    <lastmod>2017-04-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
