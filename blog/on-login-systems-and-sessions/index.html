@@ -7,30 +7,29 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <meta property="og:title" content=" The Lazy Argument of Human Nature &middot;  Ticki&#39;s blog" />
+        <meta property="og:title" content=" On Login Systems and Sessions &middot;  Ticki&#39;s blog" />
         <meta property="og:site_name" content="Ticki&#39;s blog" />
-        <meta property="og:url" content="http://ticki.github.io/blog/the-lazy-argument-of-human-nature/" />
+        <meta property="og:url" content="http://ticki.github.io/blog/on-login-systems-and-sessions/" />
 
     
         <meta property="og:type" content="article" />
-        <meta property="og:article:published_time" content="2017-04-19T00:00:00Z" />
-        <meta property="og:article:tag" content="politics" />
-        <meta property="og:article:tag" content="communism" />
-        <meta property="og:article:tag" content="socialism" />
+        <meta property="og:article:published_time" content="2017-05-12T00:00:00Z" />
+        <meta property="og:article:tag" content="design" />
+        <meta property="og:article:tag" content="cryptography" />
         
 
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@ticki_" />
         <meta name="twitter:creator" content="@ticki_" />
-        <meta name="twitter:title" content="The Lazy Argument of Human Nature" />
-        <meta name="twitter:description" content="Why human nature is a lazy argument in the context of socialism." />
-        <meta name="twitter:url" content="http://ticki.github.io/blog/the-lazy-argument-of-human-nature/" />
+        <meta name="twitter:title" content="On Login Systems and Sessions" />
+        <meta name="twitter:description" content="This blog post details various ideas to create a secure login system." />
+        <meta name="twitter:url" content="http://ticki.github.io/blog/on-login-systems-and-sessions/" />
     
 
-        <title> The Lazy Argument of Human Nature &middot;  Ticki&#39;s blog</title>
+        <title> On Login Systems and Sessions &middot;  Ticki&#39;s blog</title>
 
     
-        <meta name="description" content="Why human nature is a lazy argument in the context of socialism." />
+        <meta name="description" content="This blog post details various ideas to create a secure login system." />
     
 
         <meta name="p:domain_verify" content="fc173d84e3a4de948ed4bda2908afd3e"/>
@@ -46,21 +45,21 @@
     
 
     
-        <link rel="canonical" href="http://ticki.github.io/blog/the-lazy-argument-of-human-nature/" />
+        <link rel="canonical" href="http://ticki.github.io/blog/on-login-systems-and-sessions/" />
 
     
     <script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "Article",
-        "headline": "The Lazy Argument of Human Nature",
+        "headline": "On Login Systems and Sessions",
         "author": {
             "@type": "Person",
             "name": "http://profiles.google.com/?rel=author"
         },
-        "datePublished": "2017-04-19",
-        "description": "Why human nature is a lazy argument in the context of socialism.",
-        "wordCount": 805
+        "datePublished": "2017-05-12",
+        "description": "This blog post details various ideas to create a secure login system.",
+        "wordCount": 885
     }
 
     </script>
@@ -69,9 +68,9 @@
     
     
       var disqus_shortname = 'http-ticki-github-io';
-      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/the-lazy-argument-of-human-nature\/';
-      var disqus_title = 'The Lazy Argument of Human Nature';
-      var disqus_url = 'http:\/\/ticki.github.io\/blog\/the-lazy-argument-of-human-nature\/';
+      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/on-login-systems-and-sessions\/';
+      var disqus_title = 'On Login Systems and Sessions';
+      var disqus_url = 'http:\/\/ticki.github.io\/blog\/on-login-systems-and-sessions\/';
     
 
     </script>
@@ -119,70 +118,137 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">19 Apr 2017</span> <span class="reading-time">| <span class="estimated-reading-time">4 min.</span> (<span class="word-count">805</span> words)</span></span>
+						<span class="post-date">12 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">885</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
-  				<h1 class="post-title">The Lazy Argument of Human Nature</h1>
+  				<h1 class="post-title">On Login Systems and Sessions</h1>
   			</header>
 
   			<section class="post-content">
-  				<p>When you discuss socialism, you are guaranteed to hear someone say &quot;socialism won't work because of human nature&quot;. This argument is particularly lazy, but I keep hearing it, so I wanted to address it in my own words.</p>
+  				<p>A thing, most programmers have tried at least once, is login systems. Despite
+being seemingly a simple task, it is in fact very hard to do right.</p>
 
-<h2 id="what-the-argument-entails">What the argument entails</h2>
+<p>So, let's look into, how we can actually do this right.</p>
 
-<p>It is incredibly vague, but it usually goes something like</p>
+<h1 id="storing-passwords">Storing passwords</h1>
 
-<blockquote>
-<p>Greed and selfishness is an essential part of human nature, hence socialism will fail.</p>
-</blockquote>
+<p>Okay, this is common knowledge: Salt and hash your passwords.</p>
 
-<p>It often follows that capitalism is the only system that works.</p>
+<p>However, it is often done wrong. You'll see code like:</p>
 
-<p>So where does this argument fail?</p>
+<pre><code>hash(password + salt)
+</code></pre>
 
-<h2 id="human-nature-is-not-capitalistic">Human nature is not capitalistic</h2>
+<p>This is better than unsalted, unhashed passwords, but it's far from bruteforce
+resistant. Why? Because hashing is cheap. With proper machines, you can do
+billions of them in a second. A dictionary attack is piece of cake.</p>
 
-<p>First off all, human nature is not capitalist. Capitalism means that the means of production is privately owned, and the surplus value of the labour goes to the owner of the production.</p>
+<p>So how do we solve this? Well, we use a KDF. A KDF (key derivation function)
+acts like a slow hash function. A hash function, where calculating takes maybe
+100 ms. or more.</p>
 
-<p>The human race has lived far longer without capitalism than with it. In fact, capitalism is a relatively recent invention. In most countries it did not exist until the 19th century. It is simply ahistorical to say that capitalism is a part of human nature, unless you think that human nature is something recent.</p>
+<p>In general, two kinds of KDFs exists, the CPU-based and the CPU-memory hybrids.
+The CPU based are still in use, but I don't recommend using them, as they can
+easily be calculated with ASICs. The CPU-memory hybrids requires some amount of
+memory for calculating the hash value, often making it substantially harder to
+create ASICs.</p>
 
-<p>It is <strong>not</strong> human nature to spend most of your day producing surplus value for a small elite, who gives you little to nothing in return. Nor is it human nature to exploit child workers in the third world in order to consume endlessly. This is the inevitable result of capitalism - a system of exploitation.</p>
+<p>For the reasons stated above, I recommend <code>scrypt</code>, for a modern, well-known
+an secure KDF.</p>
 
-<p>I want to direct your to following quote from The Conquest of Bread (by Peter Kropotkin):</p>
+<h1 id="sessions">Sessions</h1>
 
-<blockquote>
-<p>However, the moment we consider human history more attentively, it loses its strength. We see, first, that hundreds of millions¹ of men have succeeded in maintaining amongst themselves, in their village communities, for many hundreds of years, one of the main elements of Socialism—the common ownership of the chief instrument of production, the land, and the apportionment of the same according to the labour capacities of the different families; and we learn that if the communal possession of the land has been destroyed in Western Europe, it was not from within, but from without, by the governments which created a land monopoly in favour of the nobility and the middle classes</p>
-</blockquote>
+<p>In general, sessions should be assigned a token by the server. This token is
+shared with the client (e.g. through a cookie) as the way to prove, that they
+are logged in with a given account to the server.</p>
 
-<p>¹before someone points out that this number is in fact not true: This book was written in the late 19th century and thus not with the knowledge from contemporary sciences.</p>
+<p>There is a few things to keep in mind, though.</p>
 
-<h2 id="capitalism-does-not-mean-trade">Capitalism does not mean trade</h2>
+<p>The session token shall have an expiration date, for security reasons.
+Furthermore, the session token shall be deactivated when the user logs out.</p>
 
-<p>Trade has indeed been going on since the early days of civilization. It is however distinct from capitalism in an important way, that many people seem to miss: Capitalism means that the means of production is not controlled by the workers, but instead a system of investors, capitalists, etc.. Trade simply means the exchange of goods for money or other goods.</p>
+<p>Lastly, the session must not be shared through GET or other logged means.
+Rather, it should be stored in a cookie or <code>localStorage</code>.</p>
 
-<p>Socialism is in no way incompatible with trade nor ownership². In fact, many socialists (like myself) believes in trade of goods and services.</p>
+<h1 id="clientside-hashing">Client-side hashing</h1>
 
-<p>²there is a distinction between private and personal ownership in socialist theory. <a href="https://www.youtube.com/watch?v=eknoQYrgq60">Here's</a> a video, which does a good job at explaining this distinction.</p>
+<p>A pretty uncommon, but really good practice, is the client-side hashing. It is
+supposed act as another layer of security, hiding the password from the server.</p>
 
-<h2 id="human-nature-is-adaptive">Human nature is adaptive</h2>
+<p>The idea is that the client-side should hash (e.g. <code>scrypt</code>) the password
+before sending it to the server.</p>
 
-<p>Many socialists thinks that human nature is a &quot;spook&quot; (to invoke the wonderful terminology of Max Stirner) and outright nonexistent. I tend to disagree with that. Human certainly have some nature, however there is one particular thing that makes it radically different from other species.</p>
+<p>This can seem pretty pointless, as (in the case of the web) the server could
+simply change the JavaScript to leak the password, but there is a reason: If
+the server-side has a bug that allows to read certain chosen memory locations
+(a buffer overflow, for example), it could be exploited to read the plaintext
+password.</p>
 
-<p>Ability to adaption. This is why the human species is so successful: We are able to adapt to almost any environment we are put in. There is a reason that humans are the only mammal to walk all continents -- it's the adaptive human nature.</p>
+<p>Instead, with client-side hashing, it can only read the hashed value. This of
+course doesn't stop the hacker from logging in to the user's account, but it
+stops them from obtaining the potentially reused plain-text password.</p>
 
-<p>The human nature adapts to whatever environment, such as economic system, it's under. If a system A rewards behavior B, then this behavior will naturally become more common under this system.</p>
+<h1 id="rate-limiting">Rate limiting</h1>
 
-<h2 id="greed-is-exactly-why-capitalism-fails">Greed is exactly why capitalism fails</h2>
+<p>Rate limiting is really, really important, even though it is often understated.
+It prevents someone from bruteforcing common passwords.</p>
 
-<p>What is particularly weird about the argument is the point about &quot;greed&quot;. Any system that rewards greed will obviously take basis in greed, and humans are greedy, which is why you want to avoid rewarding such behavior.</p>
+<p>But how should the rate limiting work?</p>
 
-<p>This is the opposite of what capitalism does: It rewards greed. If you want to build a successful business, you must create as inhumane work condition as possible³.</p>
+<p>One neat way is the &quot;leaky bucket algorithm&quot;. It works by having requests
+&quot;dripping&quot; into a bucket like drops of water. When the leaky bucket is filled,
+no more requessts can be made, until the bucket has leaked to empty.</p>
 
-<p>Capitalism is responsible for this -- and it's not an issue of &quot;free markets&quot;, it is at the core of capitalism. Rosa Luxemburg wrote a good book on <a href="https://www.marxists.org/archive/luxemburg/1900/reform-revolution/">why reformism fails</a>: Reformism fails to actually address the problems with capitalism. Reformed capitalism is still capitalism, and it will still have the same fundamental properties of capitalism.</p>
+<p>In less figurative language, you have a counter on every visitor IP address,
+which is incremented on every request (e.g. login, create account etc.). When
+this counter is above some level (say 5), a timeout is set (e.g. the time when
+it expire is set as a field of the user). First when this timeout expires, the
+counter resets, and new requests can be made.</p>
 
-<p>The failure of capitalism isn't in its functioning: It clearly works, but it's in its ethical aspect. It relies on exploitation and fails to distribute wealth fairly, causing mass starvation next to extreme wealth.</p>
+<h1 id="resetting-accounts">Resetting accounts</h1>
 
-<p>³although recently this oppression have been moved to the third world. I'll elaborate on this in a future post.</p>
+<p>Of course a proper system must have the ability to reset accounts. There are
+many ways of doing this.</p>
+
+<p>I would recommend to have the user provide username and E-mail, as it—contrary
+to other approaches—does not allow spamming or denial of service attacks. It is
+important that you do not reveal whether or not the E-mail matched, as that can
+be a breach of privacy of the user (such thing can be used to check if the
+E-mail address matched).</p>
+
+<p>If the E-mail is only going to be used for resetting, I strongly recommend that
+you store a fingerprint (e.g. scrypt) of the E-mail address rather than the
+plaintext version. This still ensures that you can check if the given E-mail
+address of the resetting user matches, without the server side knowing anything
+about the address. It prevents the database being misused or sold for spam
+purposes, and also helps to protect the user's identity.</p>
+
+<p>When the user resets, a token shall be generated. This token is used in a link,
+sent to the user through an E-mail. It is important that this token is
+sufficiently long, random, and furthermore, that it expires (ideally within only
+a few hours).</p>
+
+<p>Note that upon resetting, the token should removed from the map.</p>
+
+<h1 id="other-tips">Other tips</h1>
+
+<ul>
+<li>Consider implementing a common two-factor key-sharing algorithm, such as
+<a href="https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm">TOTP</a>.</li>
+<li>I recommend that changing E-mail and password are done under the &quot;reset
+password&quot; formula, such that E-mail confirmation is required.</li>
+<li>It is extremely important that the connection, where the login happens is
+secure, for example <code>https</code>.</li>
+</ul>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Well, that's it.</p>
+
+<p>You have to be careful about what you do, though. This is a minefield of
+vulnerabilities, and you have to be very careful not to introduce subtle bugs
+in your code. I recommend that you let somebody other than yourself review your
+code, to give you another's perspective on the code.</p>
 
 
                 <hr>
@@ -193,22 +259,20 @@
   				<div class="post-tags">
             
             
-                <a href="http://ticki.github.io//tags/politics/">politics</a>
+                <a href="http://ticki.github.io//tags/design/">design</a>
             
-                <a href="http://ticki.github.io//tags/communism/">communism</a>
-            
-                <a href="http://ticki.github.io//tags/socialism/">socialism</a>
+                <a href="http://ticki.github.io//tags/cryptography/">cryptography</a>
             
             
   				</div>
   				<div class="post-share">
-  					<a class="icon-twitter" href="https://twitter.com/share?text=The%20Lazy%20Argument%20of%20Human%20Nature&url=http%3a%2f%2fticki.github.io%2fblog%2fthe-lazy-argument-of-human-nature%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+  					<a class="icon-twitter" href="https://twitter.com/share?text=On%20Login%20Systems%20and%20Sessions&url=http%3a%2f%2fticki.github.io%2fblog%2fon-login-systems-and-sessions%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
   						<span>Twitter</span>
   					</a>
-  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fthe-lazy-argument-of-human-nature%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fon-login-systems-and-sessions%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
   						<span>Facebook</span>
   					</a>
-  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fthe-lazy-argument-of-human-nature%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fon-login-systems-and-sessions%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
   						<span>Google+</span>
   					</a>
   				</div>
@@ -228,23 +292,13 @@
 
 			<nav class="post-nav">
 				
-					<a class="post-nav-item post-nav-next" href="http://ticki.github.io/blog/on-login-systems-and-sessions/">
-						<section class="post-nav-teaser">
-							<span class="post-nav-icon"><i class="icon-arrow-left"></i></span>
-							<span class="post-nav-info">
-								<h4 class="post-nav-title">On Login Systems and Sessions</h4>
-								<p class="post-nav-excerpt">This blog post details various ideas to create a secure login system.&hellip;</p>
-							</span>
-						</section>
-					</a>
 				
-				
-					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/a-general-construction-for-rolling-hash-functions/">
+					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/the-lazy-argument-of-human-nature/">
 						<section class="post-nav-teaser">
 							<span class="post-nav-icon"><i class="icon-arrow-right"></i></span>
 							<span class="post-nav-info">
-								<h4 class="post-nav-title">A general construction for rolling hash functions</h4>
-								<p class="post-nav-excerpt">This short blog post looks at a general way of constructing rolling hash functions.&hellip;</p>
+								<h4 class="post-nav-title">The Lazy Argument of Human Nature</h4>
+								<p class="post-nav-excerpt">Why human nature is a lazy argument in the context of socialism.&hellip;</p>
 							</span>
 						</section>
 					</a>

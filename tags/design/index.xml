@@ -9,6 +9,139 @@
     <atom:link href="http://ticki.github.io/tags/design/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>On Login Systems and Sessions</title>
+      <link>http://ticki.github.io/blog/on-login-systems-and-sessions/</link>
+      <pubDate>Fri, 12 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/blog/on-login-systems-and-sessions/</guid>
+      <description>&lt;p&gt;A thing, most programmers have tried at least once, is login systems. Despite
+being seemingly a simple task, it is in fact very hard to do right.&lt;/p&gt;
+
+&lt;p&gt;So, let&#39;s look into, how we can actually do this right.&lt;/p&gt;
+
+&lt;h1 id=&#34;storing-passwords&#34;&gt;Storing passwords&lt;/h1&gt;
+
+&lt;p&gt;Okay, this is common knowledge: Salt and hash your passwords.&lt;/p&gt;
+
+&lt;p&gt;However, it is often done wrong. You&#39;ll see code like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;hash(password + salt)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is better than unsalted, unhashed passwords, but it&#39;s far from bruteforce
+resistant. Why? Because hashing is cheap. With proper machines, you can do
+billions of them in a second. A dictionary attack is piece of cake.&lt;/p&gt;
+
+&lt;p&gt;So how do we solve this? Well, we use a KDF. A KDF (key derivation function)
+acts like a slow hash function. A hash function, where calculating takes maybe
+100 ms. or more.&lt;/p&gt;
+
+&lt;p&gt;In general, two kinds of KDFs exists, the CPU-based and the CPU-memory hybrids.
+The CPU based are still in use, but I don&#39;t recommend using them, as they can
+easily be calculated with ASICs. The CPU-memory hybrids requires some amount of
+memory for calculating the hash value, often making it substantially harder to
+create ASICs.&lt;/p&gt;
+
+&lt;p&gt;For the reasons stated above, I recommend &lt;code&gt;scrypt&lt;/code&gt;, for a modern, well-known
+an secure KDF.&lt;/p&gt;
+
+&lt;h1 id=&#34;sessions&#34;&gt;Sessions&lt;/h1&gt;
+
+&lt;p&gt;In general, sessions should be assigned a token by the server. This token is
+shared with the client (e.g. through a cookie) as the way to prove, that they
+are logged in with a given account to the server.&lt;/p&gt;
+
+&lt;p&gt;There is a few things to keep in mind, though.&lt;/p&gt;
+
+&lt;p&gt;The session token shall have an expiration date, for security reasons.
+Furthermore, the session token shall be deactivated when the user logs out.&lt;/p&gt;
+
+&lt;p&gt;Lastly, the session must not be shared through GET or other logged means.
+Rather, it should be stored in a cookie or &lt;code&gt;localStorage&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h1 id=&#34;clientside-hashing&#34;&gt;Client-side hashing&lt;/h1&gt;
+
+&lt;p&gt;A pretty uncommon, but really good practice, is the client-side hashing. It is
+supposed act as another layer of security, hiding the password from the server.&lt;/p&gt;
+
+&lt;p&gt;The idea is that the client-side should hash (e.g. &lt;code&gt;scrypt&lt;/code&gt;) the password
+before sending it to the server.&lt;/p&gt;
+
+&lt;p&gt;This can seem pretty pointless, as (in the case of the web) the server could
+simply change the JavaScript to leak the password, but there is a reason: If
+the server-side has a bug that allows to read certain chosen memory locations
+(a buffer overflow, for example), it could be exploited to read the plaintext
+password.&lt;/p&gt;
+
+&lt;p&gt;Instead, with client-side hashing, it can only read the hashed value. This of
+course doesn&#39;t stop the hacker from logging in to the user&#39;s account, but it
+stops them from obtaining the potentially reused plain-text password.&lt;/p&gt;
+
+&lt;h1 id=&#34;rate-limiting&#34;&gt;Rate limiting&lt;/h1&gt;
+
+&lt;p&gt;Rate limiting is really, really important, even though it is often understated.
+It prevents someone from bruteforcing common passwords.&lt;/p&gt;
+
+&lt;p&gt;But how should the rate limiting work?&lt;/p&gt;
+
+&lt;p&gt;One neat way is the &amp;quot;leaky bucket algorithm&amp;quot;. It works by having requests
+&amp;quot;dripping&amp;quot; into a bucket like drops of water. When the leaky bucket is filled,
+no more requessts can be made, until the bucket has leaked to empty.&lt;/p&gt;
+
+&lt;p&gt;In less figurative language, you have a counter on every visitor IP address,
+which is incremented on every request (e.g. login, create account etc.). When
+this counter is above some level (say 5), a timeout is set (e.g. the time when
+it expire is set as a field of the user). First when this timeout expires, the
+counter resets, and new requests can be made.&lt;/p&gt;
+
+&lt;h1 id=&#34;resetting-accounts&#34;&gt;Resetting accounts&lt;/h1&gt;
+
+&lt;p&gt;Of course a proper system must have the ability to reset accounts. There are
+many ways of doing this.&lt;/p&gt;
+
+&lt;p&gt;I would recommend to have the user provide username and E-mail, as it—contrary
+to other approaches—does not allow spamming or denial of service attacks. It is
+important that you do not reveal whether or not the E-mail matched, as that can
+be a breach of privacy of the user (such thing can be used to check if the
+E-mail address matched).&lt;/p&gt;
+
+&lt;p&gt;If the E-mail is only going to be used for resetting, I strongly recommend that
+you store a fingerprint (e.g. scrypt) of the E-mail address rather than the
+plaintext version. This still ensures that you can check if the given E-mail
+address of the resetting user matches, without the server side knowing anything
+about the address. It prevents the database being misused or sold for spam
+purposes, and also helps to protect the user&#39;s identity.&lt;/p&gt;
+
+&lt;p&gt;When the user resets, a token shall be generated. This token is used in a link,
+sent to the user through an E-mail. It is important that this token is
+sufficiently long, random, and furthermore, that it expires (ideally within only
+a few hours).&lt;/p&gt;
+
+&lt;p&gt;Note that upon resetting, the token should removed from the map.&lt;/p&gt;
+
+&lt;h1 id=&#34;other-tips&#34;&gt;Other tips&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Consider implementing a common two-factor key-sharing algorithm, such as
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm&#34;&gt;TOTP&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;I recommend that changing E-mail and password are done under the &amp;quot;reset
+password&amp;quot; formula, such that E-mail confirmation is required.&lt;/li&gt;
+&lt;li&gt;It is extremely important that the connection, where the login happens is
+secure, for example &lt;code&gt;https&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Well, that&#39;s it.&lt;/p&gt;
+
+&lt;p&gt;You have to be careful about what you do, though. This is a minefield of
+vulnerabilities, and you have to be very careful not to introduce subtle bugs
+in your code. I recommend that you let somebody other than yourself review your
+code, to give you another&#39;s perspective on the code.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Portfolio of Logos and Icons</title>
       <link>http://ticki.github.io/blog/portfolio-of-logos-and-icons/</link>
       <pubDate>Mon, 19 Dec 2016 00:00:00 +0000</pubDate>

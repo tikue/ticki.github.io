@@ -2,8 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://ticki.github.io/blog/veterans-are-not-blameless/</loc>
-    <lastmod>2017-04-30T00:00:00+00:00</lastmod>
+    <loc>http://ticki.github.io/blog/on-login-systems-and-sessions/</loc>
+    <lastmod>2017-05-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -130,12 +130,6 @@
   </url>
   
   <url>
-    <loc>http://ticki.github.io/tags/capitalism/</loc>
-    <lastmod>2017-04-30T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://ticki.github.io/tags/coding-theory/</loc>
     <lastmod>2016-11-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -179,7 +173,7 @@
   
   <url>
     <loc>http://ticki.github.io/tags/cryptography/</loc>
-    <lastmod>2017-03-02T00:00:00+00:00</lastmod>
+    <lastmod>2017-05-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -197,13 +191,7 @@
   
   <url>
     <loc>http://ticki.github.io/tags/design/</loc>
-    <lastmod>2016-12-19T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://ticki.github.io/tags/ethics/</loc>
-    <lastmod>2017-04-30T00:00:00+00:00</lastmod>
+    <lastmod>2017-05-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -304,12 +292,6 @@
   </url>
   
   <url>
-    <loc>http://ticki.github.io/tags/nationalism/</loc>
-    <lastmod>2017-04-30T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://ticki.github.io/tags/notes/</loc>
     <lastmod>2016-11-04T16:28:44+02:00</lastmod>
     <priority>0</priority>
@@ -347,7 +329,7 @@
   
   <url>
     <loc>http://ticki.github.io/post/</loc>
-    <lastmod>2017-04-30T00:00:00+00:00</lastmod>
+    <lastmod>2017-05-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -424,7 +406,7 @@
   
   <url>
     <loc>http://ticki.github.io/</loc>
-    <lastmod>2017-04-30T00:00:00+00:00</lastmod>
+    <lastmod>2017-05-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -461,12 +443,6 @@
   <url>
     <loc>http://ticki.github.io/tags/usa/</loc>
     <lastmod>2016-11-09T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://ticki.github.io/tags/war/</loc>
-    <lastmod>2017-04-30T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

@@ -6,70 +6,139 @@
     <description>Recent content on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 30 Apr 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 12 May 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://ticki.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Veterans are not blameless</title>
-      <link>http://ticki.github.io/blog/veterans-are-not-blameless/</link>
-      <pubDate>Sun, 30 Apr 2017 00:00:00 +0000</pubDate>
+      <title>On Login Systems and Sessions</title>
+      <link>http://ticki.github.io/blog/on-login-systems-and-sessions/</link>
+      <pubDate>Fri, 12 May 2017 00:00:00 +0000</pubDate>
       
-      <guid>http://ticki.github.io/blog/veterans-are-not-blameless/</guid>
-      <description>&lt;p&gt;In USA, no matter where you go, you will find people praising veterans, the millitary, and war in general to an almost masturbatory extent. This mentality is now spreading to Europe.&lt;/p&gt;
+      <guid>http://ticki.github.io/blog/on-login-systems-and-sessions/</guid>
+      <description>&lt;p&gt;A thing, most programmers have tried at least once, is login systems. Despite
+being seemingly a simple task, it is in fact very hard to do right.&lt;/p&gt;
 
-&lt;p&gt;Not only do I find it tiring, I find it disgusting. I have to admit it: I feel little sympathy with the veterans of fighting imperialist powers. They don&#39;t serve their nation; they serve their elites.&lt;/p&gt;
+&lt;p&gt;So, let&#39;s look into, how we can actually do this right.&lt;/p&gt;
 
-&lt;p&gt;I simply cannot put myself into the hivemind of imperialism disguised as patriotism.&lt;/p&gt;
+&lt;h1 id=&#34;storing-passwords&#34;&gt;Storing passwords&lt;/h1&gt;
 
-&lt;p&gt;There are some opinions you simply cannot express in the west — and this is one of them.&lt;/p&gt;
+&lt;p&gt;Okay, this is common knowledge: Salt and hash your passwords.&lt;/p&gt;
 
-&lt;h2 id=&#34;cruelty-of-war&#34;&gt;Cruelty of war&lt;/h2&gt;
+&lt;p&gt;However, it is often done wrong. You&#39;ll see code like:&lt;/p&gt;
 
-&lt;p&gt;If you list the wars in the last 50 years of the world powers, you will find none which is not motivated by money, power, or natural resources. None of the recent wars have been acts of humanitarianism.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;hash(password + salt)
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Contrary to the popular believe, wars are not an act between soldiers. Civilians die en masse as well. It is simply impossible to avoid this. You cannot go to war with another state without going to war with its people as well, which is exactly &lt;em&gt;why&lt;/em&gt; war is inheritly cruel.&lt;/p&gt;
+&lt;p&gt;This is better than unsalted, unhashed passwords, but it&#39;s far from bruteforce
+resistant. Why? Because hashing is cheap. With proper machines, you can do
+billions of them in a second. A dictionary attack is piece of cake.&lt;/p&gt;
 
-&lt;h2 id=&#34;patriotism&#34;&gt;Patriotism&lt;/h2&gt;
+&lt;p&gt;So how do we solve this? Well, we use a KDF. A KDF (key derivation function)
+acts like a slow hash function. A hash function, where calculating takes maybe
+100 ms. or more.&lt;/p&gt;
 
-&lt;p&gt;Patriotism is a tool of the elites. It is manipulated and constructed as such. It is the very epitome of hivemind. It is used to condemn resistance, support war, etc.&lt;/p&gt;
+&lt;p&gt;In general, two kinds of KDFs exists, the CPU-based and the CPU-memory hybrids.
+The CPU based are still in use, but I don&#39;t recommend using them, as they can
+easily be calculated with ASICs. The CPU-memory hybrids requires some amount of
+memory for calculating the hash value, often making it substantially harder to
+create ASICs.&lt;/p&gt;
 
-&lt;p&gt;&amp;quot;Support the troops&amp;quot; is more-or-less equivalent to &amp;quot;support the imperialist wars pushed by the elites&amp;quot;, because without such wars, there would be no need for the troops you&#39;re supposed to support.&lt;/p&gt;
+&lt;p&gt;For the reasons stated above, I recommend &lt;code&gt;scrypt&lt;/code&gt;, for a modern, well-known
+an secure KDF.&lt;/p&gt;
 
-&lt;h2 id=&#34;blame-the-game-not-the-player&#34;&gt;&amp;quot;Blame the game not the player&amp;quot;&lt;/h2&gt;
+&lt;h1 id=&#34;sessions&#34;&gt;Sessions&lt;/h1&gt;
 
-&lt;p&gt;At first, this is a good argument for supporting veterans, however I don&#39;t think you can plead ignorance in this case.&lt;/p&gt;
+&lt;p&gt;In general, sessions should be assigned a token by the server. This token is
+shared with the client (e.g. through a cookie) as the way to prove, that they
+are logged in with a given account to the server.&lt;/p&gt;
 
-&lt;p&gt;There is simply too information available on the subject, and you cannot strip responsibility from an adult.&lt;/p&gt;
+&lt;p&gt;There is a few things to keep in mind, though.&lt;/p&gt;
 
-&lt;p&gt;Soldiers are puppets of the elites for the elites. They don&#39;t plan the war nor push the imperailist ideas, but they do all the dirty work.&lt;/p&gt;
+&lt;p&gt;The session token shall have an expiration date, for security reasons.
+Furthermore, the session token shall be deactivated when the user logs out.&lt;/p&gt;
 
-&lt;p&gt;In the end of the day, they are murderers. A murderer truely believing, he is doing good, is still a murderer; evil is not justified by belief.&lt;/p&gt;
+&lt;p&gt;Lastly, the session must not be shared through GET or other logged means.
+Rather, it should be stored in a cookie or &lt;code&gt;localStorage&lt;/code&gt;.&lt;/p&gt;
 
-&lt;h2 id=&#34;duty-to-resist&#34;&gt;Duty to resist&lt;/h2&gt;
+&lt;h1 id=&#34;clientside-hashing&#34;&gt;Client-side hashing&lt;/h1&gt;
 
-&lt;p&gt;Even under conscription, you can still resist. This is true in every western country. The president of USA will certainly know this.&lt;/p&gt;
+&lt;p&gt;A pretty uncommon, but really good practice, is the client-side hashing. It is
+supposed act as another layer of security, hiding the password from the server.&lt;/p&gt;
 
-&lt;p&gt;You can even resist without punishment. It is safe to say, that it is easy and cheap to avoid conscription. It requires little effort.&lt;/p&gt;
+&lt;p&gt;The idea is that the client-side should hash (e.g. &lt;code&gt;scrypt&lt;/code&gt;) the password
+before sending it to the server.&lt;/p&gt;
 
-&lt;p&gt;In the USA, there isn&#39;t even a conscription currently. It is thus totally voluntary. You have to actively choose to go to war (rather than passively not dodging the draft).&lt;/p&gt;
+&lt;p&gt;This can seem pretty pointless, as (in the case of the web) the server could
+simply change the JavaScript to leak the password, but there is a reason: If
+the server-side has a bug that allows to read certain chosen memory locations
+(a buffer overflow, for example), it could be exploited to read the plaintext
+password.&lt;/p&gt;
 
-&lt;h2 id=&#34;forgiveness&#34;&gt;Forgiveness&lt;/h2&gt;
+&lt;p&gt;Instead, with client-side hashing, it can only read the hashed value. This of
+course doesn&#39;t stop the hacker from logging in to the user&#39;s account, but it
+stops them from obtaining the potentially reused plain-text password.&lt;/p&gt;
 
-&lt;p&gt;But make no mistake, even if the individual is well aware of the horrors, they can still be manipulated into evil.&lt;/p&gt;
+&lt;h1 id=&#34;rate-limiting&#34;&gt;Rate limiting&lt;/h1&gt;
 
-&lt;p&gt;Capitalism, nationalism, racism, and mindless patriotism are all ideologies and ideas which can be imposed on people to justify their action.&lt;/p&gt;
+&lt;p&gt;Rate limiting is really, really important, even though it is often understated.
+It prevents someone from bruteforcing common passwords.&lt;/p&gt;
 
-&lt;p&gt;In fact, Noam Chomsky wrote a whole book on this, &amp;quot;Manufactoring Consent&amp;quot;. He argues that education, media, etc. are all tools to impose these ideas on us.&lt;/p&gt;
+&lt;p&gt;But how should the rate limiting work?&lt;/p&gt;
 
-&lt;p&gt;In other words, the soldier might not have acted in bad faith. And if that matters (which I personally think it does to some extent), they deserve to be forgived. But to be forgived, you must admit to your mistakes.&lt;/p&gt;
+&lt;p&gt;One neat way is the &amp;quot;leaky bucket algorithm&amp;quot;. It works by having requests
+&amp;quot;dripping&amp;quot; into a bucket like drops of water. When the leaky bucket is filled,
+no more requessts can be made, until the bucket has leaked to empty.&lt;/p&gt;
 
-&lt;p&gt;Many veterans won&#39;t do so, most still support the causes of the war, they served in, and thus approve of the imperialist force, they helped.&lt;/p&gt;
+&lt;p&gt;In less figurative language, you have a counter on every visitor IP address,
+which is incremented on every request (e.g. login, create account etc.). When
+this counter is above some level (say 5), a timeout is set (e.g. the time when
+it expire is set as a field of the user). First when this timeout expires, the
+counter resets, and new requests can be made.&lt;/p&gt;
 
-&lt;h2 id=&#34;final-words&#34;&gt;Final words&lt;/h2&gt;
+&lt;h1 id=&#34;resetting-accounts&#34;&gt;Resetting accounts&lt;/h1&gt;
 
-&lt;p&gt;I want to make it clear, that I&#39;m not saying that the countless lives of soldiers lost in war is good in any way. I don&#39;t believe in death penality, so I naturally don&#39;t hope nor cheer for their death, which is disrespectful to their family and loved ones.&lt;/p&gt;
+&lt;p&gt;Of course a proper system must have the ability to reset accounts. There are
+many ways of doing this.&lt;/p&gt;
 
-&lt;p&gt;If you lost someone to war, you have my condolences. However, I won&#39;t support the veterans nor the troops or any of the work they did. They were paid and knew what they did.&lt;/p&gt;
+&lt;p&gt;I would recommend to have the user provide username and E-mail, as it—contrary
+to other approaches—does not allow spamming or denial of service attacks. It is
+important that you do not reveal whether or not the E-mail matched, as that can
+be a breach of privacy of the user (such thing can be used to check if the
+E-mail address matched).&lt;/p&gt;
+
+&lt;p&gt;If the E-mail is only going to be used for resetting, I strongly recommend that
+you store a fingerprint (e.g. scrypt) of the E-mail address rather than the
+plaintext version. This still ensures that you can check if the given E-mail
+address of the resetting user matches, without the server side knowing anything
+about the address. It prevents the database being misused or sold for spam
+purposes, and also helps to protect the user&#39;s identity.&lt;/p&gt;
+
+&lt;p&gt;When the user resets, a token shall be generated. This token is used in a link,
+sent to the user through an E-mail. It is important that this token is
+sufficiently long, random, and furthermore, that it expires (ideally within only
+a few hours).&lt;/p&gt;
+
+&lt;p&gt;Note that upon resetting, the token should removed from the map.&lt;/p&gt;
+
+&lt;h1 id=&#34;other-tips&#34;&gt;Other tips&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Consider implementing a common two-factor key-sharing algorithm, such as
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm&#34;&gt;TOTP&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;I recommend that changing E-mail and password are done under the &amp;quot;reset
+password&amp;quot; formula, such that E-mail confirmation is required.&lt;/li&gt;
+&lt;li&gt;It is extremely important that the connection, where the login happens is
+secure, for example &lt;code&gt;https&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Well, that&#39;s it.&lt;/p&gt;
+
+&lt;p&gt;You have to be careful about what you do, though. This is a minefield of
+vulnerabilities, and you have to be very careful not to introduce subtle bugs
+in your code. I recommend that you let somebody other than yourself review your
+code, to give you another&#39;s perspective on the code.&lt;/p&gt;
 </description>
     </item>
     
