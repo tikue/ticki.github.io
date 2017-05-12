@@ -37,11 +37,6 @@
   </url>
   
   <url>
-    <loc>http://ticki.github.io/blog/the-trump-effect/</loc>
-    <lastmod>2016-11-16T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>http://ticki.github.io/blog/ternary-as-a-prediction-residue-code/</loc>
     <lastmod>2016-11-11T00:00:00+00:00</lastmod>
   </url>
@@ -287,7 +282,7 @@
   
   <url>
     <loc>http://ticki.github.io/tags/mind-dump/</loc>
-    <lastmod>2016-11-16T00:00:00+00:00</lastmod>
+    <lastmod>2016-10-23T23:25:15+02:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -411,12 +406,6 @@
   </url>
   
   <url>
-    <loc>http://ticki.github.io/tags/trump/</loc>
-    <lastmod>2016-11-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://ticki.github.io/tags/tui/</loc>
     <lastmod>2016-10-06T10:12:22+02:00</lastmod>
     <priority>0</priority>
@@ -431,12 +420,6 @@
   <url>
     <loc>http://ticki.github.io/tags/type-systems/</loc>
     <lastmod>2016-06-06T11:06:21+02:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://ticki.github.io/tags/united-states/</loc>
-    <lastmod>2016-11-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
