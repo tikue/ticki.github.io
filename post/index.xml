@@ -10,11 +10,11 @@
     <atom:link href="http://ticki.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>On Login Systems and Sessions</title>
-      <link>http://ticki.github.io/blog/on-login-systems-and-sessions/</link>
+      <title>You are (probably) doing login systems wrong</title>
+      <link>http://ticki.github.io/blog/you-are-probably-doing-login-systems-wrong/</link>
       <pubDate>Fri, 12 May 2017 00:00:00 +0000</pubDate>
       
-      <guid>http://ticki.github.io/blog/on-login-systems-and-sessions/</guid>
+      <guid>http://ticki.github.io/blog/you-are-probably-doing-login-systems-wrong/</guid>
       <description>&lt;p&gt;A thing, most programmers have tried at least once, is login systems. Despite
 being seemingly a simple task, it is in fact very hard to do right.&lt;/p&gt;
 
