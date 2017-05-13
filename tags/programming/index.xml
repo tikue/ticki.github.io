@@ -9,6 +9,280 @@
     <atom:link href="http://ticki.github.io/tags/programming/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>An Atomic Hash Table</title>
+      <link>http://ticki.github.io/blog/an-atomic-hash-table/</link>
+      <pubDate>Sat, 13 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/blog/an-atomic-hash-table/</guid>
+      <description>&lt;script type=&#34;text/javascript&#34;
+  src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
+&lt;/script&gt;
+
+&lt;p&gt;In programs where there is some kind of global state, you will often find
+the need for having a key-value map; you could for example imagine keeping some
+kind of cache of a bunch of entries from database table. Obviously, you&#39;d just
+use a hash table, easy right?&lt;/p&gt;
+
+&lt;p&gt;Not really. Imagine that there is multiple threads. One approach is to wrap it
+in a mutex to ensure thread safety, but that would kind of miss the point of
+concurrency: It wouldn&#39;t be concurrent, it would just be blocking. So, imagine
+we want a non-blocking, truly concurrent hash table. How&#39;d we go about that?&lt;/p&gt;
+
+&lt;p&gt;Several ways to get there exists, unfortunately they all have their trade-offs.
+In this blog post, I am going represent the implementation of such table, which
+I came up with during the development of &lt;a href=&#34;https://github.com/ticki/tfs&#34;&gt;TFS&lt;/a&gt;.
+It is hopefully a sane way to solve the issue with good trade-offs: It has
+relatively good consistency guarantees, yet very fast.&lt;/p&gt;
+
+&lt;p&gt;To be clear, if you&#39;re just looking for a quick way to implement this, this is
+probably not the post for you. It is somewhat complicated, and you might be
+fine with a hash table with locks and striping. However, if you are looking for
+something scalable to an arbitrary number of CPU cores, this is for you.&lt;/p&gt;
+
+&lt;h1 id=&#34;preface&#34;&gt;Preface&lt;/h1&gt;
+
+&lt;p&gt;I assume that you are familiar with hash tables and hash table design, as well
+as basic terms in concurrent programming.&lt;/p&gt;
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;To be able to actually approach the problem, we have to define a limited API
+for the hash table. Here&#39;s the obvious basics:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;insert(key, value)&lt;/code&gt; - for, well, inserting into the table.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;remove(key)&lt;/code&gt; - for removing a entry from the table.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;get(key)&lt;/code&gt; - for querying a value from the table.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;There are many ways the above set can be expanded, such as iteration, bulk
+operations, etc., but we will stick to those for simplicity.&lt;/p&gt;
+
+&lt;h1 id=&#34;the-structure&#34;&gt;The structure&lt;/h1&gt;
+
+&lt;p&gt;As any data structure, you will have the structure (how it is organized, that
+is) and the algorithms manipulating it. It is only natural to start by asking:
+How should the keys and values be organized?&lt;/p&gt;
+
+&lt;p&gt;There is not really a single answer to that question, but there&#39;s a few things
+to keep in mind. First of all, we probably want to avoid reallocation. That
+thing is messy, and often impossible, to do atomically; you will almost always
+end up introducing some kind of lock, either explicitly or implicitly, so we
+must necessarily use a kind of linearly growing structure.&lt;/p&gt;
+
+&lt;p&gt;What if we used some kind of tree?&lt;/p&gt;
+
+&lt;p&gt;If you&#39;ve seen my post about &lt;a href=&#34;https://ticki.github.io/blog/collision-resolution-with-nested-hash-tables/&#34;&gt;nested hash
+tables&lt;/a&gt;,
+you will know where I&#39;m going, namely that we must organize a tree of tables,
+such that extending it, simply means placing a new table at a leaf of the tree.&lt;/p&gt;
+
+&lt;p&gt;The idea is this: Every table has some fixed number of buckets, each of which
+can be in one of following states:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Empty - no entry, key, or value.&lt;/li&gt;
+&lt;li&gt;Leaf - there is a key and value.&lt;/li&gt;
+&lt;li&gt;Branch - the bucket &amp;quot;branches&amp;quot; to another table.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The structure itself is nothing, but a root table. The operations are defined
+on any table, and not just the root table, as this allows us to use recursion.&lt;/p&gt;
+
+&lt;p&gt;We&#39;ll see why in a second.&lt;/p&gt;
+
+&lt;h1 id=&#34;the-algorithm&#34;&gt;The algorithm&lt;/h1&gt;
+
+&lt;p&gt;The biggest obstruction to designing concurrent hash table (or hash tables in
+general) is of course the collision resolution. When two keys collide (which
+will happen with almost certainty), there must be a way of resolving this
+collision, meaning to make them able to coexist in the same map.&lt;/p&gt;
+
+&lt;p&gt;In this structure, it is simply done by going from a leaf of the tree to a
+branch, containing both key-value pairs (say a bucket is &lt;code&gt;Leaf(entry)&lt;/code&gt; and you
+want to insert an entry there called &lt;code&gt;entry2&lt;/code&gt;, then the bucket is changed to
+&lt;code&gt;Table(new_table)&lt;/code&gt; where &lt;code&gt;new_table&lt;/code&gt; has both entries; if the two keys still
+collide in the new table, repeat).&lt;/p&gt;
+
+&lt;p&gt;The natural question to ask here is how we hash. Surely, if we simply used the
+same hash function throughout, a collision would keep happening, even after
+branches, as the keys would be assigned the same bucket, over and over again.
+Hence, we must choose a way, wherein we can produce distinct hashes for
+different tables.&lt;/p&gt;
+
+&lt;p&gt;The easiest way to do this is of course using one of these fancy &amp;quot;seeded hash
+functions&amp;quot;, but even that has it&#39;s limitations: What if (like most of these
+functions) their independence isn&#39;t mathematically proven? What if there
+exists a key which would always generate a collision, despite of the seed? In
+other words, it relies on the correctness and quality of the underlying hash
+function, which we would like to avoid. We will come back to another way of
+producing the hashes in next section.&lt;/p&gt;
+
+&lt;p&gt;Searching is pretty obvious from here: We simply index by the hash until we
+find a leaf or empty bucket, in which case we&#39;re done.&lt;/p&gt;
+
+&lt;p&gt;Lastly, we have deleting, which is simply a matter of replacing a bucket with
+&amp;quot;empty&amp;quot;.&lt;/p&gt;
+
+&lt;h1 id=&#34;hashing&#34;&gt;Hashing&lt;/h1&gt;
+
+&lt;p&gt;So, how exactly do we generate the sequence (I say sequence, as in the indexes
+for each of the tables in traversing to the entry, namely the sequence of
+buckets to follow/jump)?&lt;/p&gt;
+
+&lt;p&gt;Well, we could start by formulating a property of correctness:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Given enough elements of the sequence, it shall be possible to reproduce the
+hashed value?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Since the sequence is never-ending (and hence has an infinite codomain), this
+is possible to satisfy, contrary to classical hash functions, with a finite
+codomain.&lt;/p&gt;
+
+&lt;p&gt;Another way of thinking about this is that such function is a function of byte
+strings to numbers in the interval, &lt;span  class=&#34;math&#34;&gt;\(\left[0;1\right)\)&lt;/span&gt;. This definition
+actually allows us to go one step further and define bijectiveness to create the
+ideal of such function.&lt;/p&gt;
+
+&lt;p&gt;Anyway, now that we know what we&#39;re looking for, we must find a way to actually
+find it.&lt;/p&gt;
+
+&lt;p&gt;The way I&#39;ve done it is by having a state, which is altering based on the
+previous element; and a stack, which contains permuted input.&lt;/p&gt;
+
+&lt;p&gt;The idea is like this: First the stack is populated with the input,
+one-byte-by-one. Each byte XOR&#39;d with the state and then permuted by some
+table. The generated element is pushed to the stack and is made the state.&lt;/p&gt;
+
+&lt;p&gt;When the stack is populated, elements of the sequence can be read by popping
+from the stack, and then permuting the popped element according to the state
+(i.e. XOR, then use lookup table). Again, this is set to the state.&lt;/p&gt;
+
+&lt;p&gt;So why exactly this thing? Doesn&#39;t it seem a bit arbitrary?&lt;/p&gt;
+
+&lt;p&gt;Well, there is a reason. First of all, the state is there for bringing in some
+context, such that the element in the output can&#39;t simply be predicted
+according to the same element in the input.&lt;/p&gt;
+
+&lt;p&gt;Secondly, from the stack, we can reconstruct the input sequence. And from the
+output sequence, we can reconstruct the stack, so the input sequence is
+reconstructible from the input sequence.&lt;/p&gt;
+
+&lt;p&gt;But why not simply have the output sequence be the stack? Well, without
+permuting it after each pop, entropy would only move upwards, i.e. the output
+would only depend on the elements &lt;em&gt;before&lt;/em&gt; it in the input. The permutation in
+the pop brings in context of the elements &lt;em&gt;after&lt;/em&gt;?&lt;/p&gt;
+
+&lt;p&gt;Is this optimal? Probably not, but it&#39;s fine, as it isn&#39;t exactly critical in
+performance, kind of like how you don&#39;t optimize command-line parsing in
+&lt;code&gt;wget&lt;/code&gt;, the real hit comes from the atomics, not the hashing.&lt;/p&gt;
+
+&lt;h1 id=&#34;making-it-concurrent&#34;&gt;Making it concurrent&lt;/h1&gt;
+
+&lt;p&gt;If you&#39;ve noticed, so far we&#39;ve really only constructed our table in terms of
+single-threaded algorithms.&lt;/p&gt;
+
+&lt;p&gt;Maybe it&#39;s obvious to the reader how to make it concurrent, maybe not. It
+depends on your experience with things, but I hope the text that follows will
+make it sensical to you.&lt;/p&gt;
+
+&lt;p&gt;We can represent each bucket in a node (table) as a pointer, which we only
+modify atomically. The null state represents the empty bucket. This allows us
+to do certain pretty convenient things.&lt;/p&gt;
+
+&lt;p&gt;Namely, it allows us to use CAS (compare-and-swap) to ensure that the entry,
+we&#39;re replacing, is indeed empty. If not, we get the non-matching value, which
+allows us to handle things case-by-case.&lt;/p&gt;
+
+&lt;h2 id=&#34;searching&#34;&gt;Searching&lt;/h2&gt;
+
+&lt;p&gt;Searching is painfully obvious: Simply read and follow the appropriate buckets,
+until you get to a leaf, which is your final destination. It is a match, if the
+key of the leaf matches the key, you&#39;re searching for.&lt;/p&gt;
+
+&lt;h2 id=&#34;insertion&#34;&gt;Insertion&lt;/h2&gt;
+
+&lt;p&gt;As described above, the insert routine starts by effectively CAS-ing the bucket
+of the key for null pointers (empty buckets), and replacing with the leaf
+containing the key and value, we&#39;re interested in inserting.&lt;/p&gt;
+
+&lt;p&gt;If it failed, we do the following:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If the bucket is a leaf, try to CAS this bucket pointer to a branching table
+containing the leaf&#39;s K/V pair and the pair, we&#39;re inserting. If the CAS
+fails, start over with the updated value (see below).&lt;/li&gt;
+&lt;li&gt;If the bucket is a table, simply go to that table and insert it there.&lt;/li&gt;
+&lt;li&gt;If the bucket is an empty (this means there&#39;ve been an ABA condition; another
+thread has removed the value in the meantime), start over with the updated value.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;removal&#34;&gt;Removal&lt;/h2&gt;
+
+&lt;p&gt;Removal is slightly more complicated.&lt;/p&gt;
+
+&lt;p&gt;First, the bucket is read. If it is a subtable, recurse and remove on that.&lt;/p&gt;
+
+&lt;p&gt;If not a table and not empty, then you must CAS for the pointer to the null
+pointer. If this fails, one must restart the process (ABA).&lt;/p&gt;
+
+&lt;h1 id=&#34;optional-the-aba-problem&#34;&gt;(Optional:) The ABA problem&lt;/h1&gt;
+
+&lt;p&gt;I&#39;ve mentioned the ABA problem a few times so far, and it turns out to be a
+very important issue of concurrent algorithms, but what does it mean?&lt;/p&gt;
+
+&lt;p&gt;In simple terms, it means that some data, we&#39;ve read has changed in the
+meantime.&lt;/p&gt;
+
+&lt;p&gt;This is why I don&#39;t read and then write the modified version. Instead I read
+&lt;span  class=&#34;math&#34;&gt;\(A\)&lt;/span&gt;, then find &lt;span  class=&#34;math&#34;&gt;\(f(A)\)&lt;/span&gt; and then try to CAS &lt;span  class=&#34;math&#34;&gt;\(A\)&lt;/span&gt; to &lt;span  class=&#34;math&#34;&gt;\(f(A)\)&lt;/span&gt;. It can be a
+pain, but it&#39;s necessary. The reason for this is that the atomic, we read as
+&lt;span  class=&#34;math&#34;&gt;\(A\)&lt;/span&gt;, could have been changed before or while we evaluated &lt;span  class=&#34;math&#34;&gt;\(f(A)\)&lt;/span&gt;, hence
+meaning that &lt;span  class=&#34;math&#34;&gt;\(f(A)\)&lt;/span&gt; would reverse progress another thread has made.&lt;/p&gt;
+
+&lt;p&gt;So the question (to which I have already revealed the answer) is, what happens
+if this CAS fails?&lt;/p&gt;
+
+&lt;p&gt;Well, we use a loop. If it fails, we use the new value and repeat our
+operation.&lt;/p&gt;
+
+&lt;p&gt;Doesn&#39;t this kind of defeat the point of concurrent algorithms? Well, in a
+sense, it does make it non-atomic, but it isn&#39;t really a spin-lock or anything
+like that, even though it can seem like that: It doesn&#39;t wait for the data to
+be in a state (like a spin-lock will do), it just repeats if the data failed to
+be substituted.&lt;/p&gt;
+
+&lt;h1 id=&#34;the-code&#34;&gt;The code&lt;/h1&gt;
+
+&lt;p&gt;It is available
+&lt;a href=&#34;https://github.com/redox-os/tfs/tree/master/atomic-hashmap/src&#34;&gt;here&lt;/a&gt;. Note
+that it won&#39;t compile right now, as it relies on some patches I made to the
+&lt;code&gt;crossbeam&lt;/code&gt; library. Eventually, I will replace the dependency with my own
+replacement for crossbeam.&lt;/p&gt;
+
+&lt;h1 id=&#34;limitations&#34;&gt;Limitations&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It cannot shrink. Hopefully, this isn&#39;t that big of an issue, given that the
+space is reusable, despite not being able to shrink. It is similar to certain
+balanced trees, which cannot shrink. In general, the space isn&#39;t lost, nor
+leads to unbounded memory usage.&lt;/li&gt;
+&lt;li&gt;It is cache suboptimal. This cannot really be avoided. There will, likely, be
+more than one cache miss, during traversal. However, the added concurrency
+often pays that off performance-wise.&lt;/li&gt;
+&lt;li&gt;It relies on some type of concurrent memory reclamation (e.g. hazard
+pointers) in order to free memory of removed entries.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Are these worth it? Well, it depends on what you&#39;re doing. In my case, these
+are all very much worth it, and I haven&#39;t had any issue with any of them, but
+every program is unique and will have its own set of conditions.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Skip Lists: Done Right</title>
       <link>http://ticki.github.io/blog/skip-lists-done-right/</link>
       <pubDate>Sat, 17 Sep 2016 13:46:49 +0200</pubDate>

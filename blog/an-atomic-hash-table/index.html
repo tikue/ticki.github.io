@@ -7,29 +7,31 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <meta property="og:title" content=" You Are (Probably) Doing Login Systems Wrong &middot;  Ticki&#39;s blog" />
+        <meta property="og:title" content=" An Atomic Hash Table &middot;  Ticki&#39;s blog" />
         <meta property="og:site_name" content="Ticki&#39;s blog" />
-        <meta property="og:url" content="http://ticki.github.io/blog/you-are-probably-doing-login-systems-wrong/" />
+        <meta property="og:url" content="http://ticki.github.io/blog/an-atomic-hash-table/" />
 
     
         <meta property="og:type" content="article" />
-        <meta property="og:article:published_time" content="2017-05-12T00:00:00Z" />
+        <meta property="og:article:published_time" content="2017-05-13T00:00:00Z" />
         <meta property="og:article:tag" content="design" />
-        <meta property="og:article:tag" content="cryptography" />
+        <meta property="og:article:tag" content="programming" />
+        <meta property="og:article:tag" content="concurrency" />
+        <meta property="og:article:tag" content="atomic" />
         
 
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@ticki_" />
         <meta name="twitter:creator" content="@ticki_" />
-        <meta name="twitter:title" content="You Are (Probably) Doing Login Systems Wrong" />
-        <meta name="twitter:description" content="This blog post details various ideas to create a secure login system." />
-        <meta name="twitter:url" content="http://ticki.github.io/blog/you-are-probably-doing-login-systems-wrong/" />
+        <meta name="twitter:title" content="An Atomic Hash Table" />
+        <meta name="twitter:description" content="A design for a high-performance atomic and linearizable hash table." />
+        <meta name="twitter:url" content="http://ticki.github.io/blog/an-atomic-hash-table/" />
     
 
-        <title> You Are (Probably) Doing Login Systems Wrong &middot;  Ticki&#39;s blog</title>
+        <title> An Atomic Hash Table &middot;  Ticki&#39;s blog</title>
 
     
-        <meta name="description" content="This blog post details various ideas to create a secure login system." />
+        <meta name="description" content="A design for a high-performance atomic and linearizable hash table." />
     
 
         <meta name="p:domain_verify" content="fc173d84e3a4de948ed4bda2908afd3e"/>
@@ -45,21 +47,21 @@
     
 
     
-        <link rel="canonical" href="http://ticki.github.io/blog/you-are-probably-doing-login-systems-wrong/" />
+        <link rel="canonical" href="http://ticki.github.io/blog/an-atomic-hash-table/" />
 
     
     <script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "Article",
-        "headline": "You Are (Probably) Doing Login Systems Wrong",
+        "headline": "An Atomic Hash Table",
         "author": {
             "@type": "Person",
             "name": "http://profiles.google.com/?rel=author"
         },
-        "datePublished": "2017-05-12",
-        "description": "This blog post details various ideas to create a secure login system.",
-        "wordCount": 934
+        "datePublished": "2017-05-13",
+        "description": "A design for a high-performance atomic and linearizable hash table.",
+        "wordCount": 1962
     }
 
     </script>
@@ -68,9 +70,9 @@
     
     
       var disqus_shortname = 'http-ticki-github-io';
-      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/you-are-probably-doing-login-systems-wrong\/';
-      var disqus_title = 'You Are (Probably) Doing Login Systems Wrong';
-      var disqus_url = 'http:\/\/ticki.github.io\/blog\/you-are-probably-doing-login-systems-wrong\/';
+      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/an-atomic-hash-table\/';
+      var disqus_title = 'An Atomic Hash Table';
+      var disqus_url = 'http:\/\/ticki.github.io\/blog\/an-atomic-hash-table\/';
     
 
     </script>
@@ -118,142 +120,278 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">12 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">934</span> words)</span></span>
+						<span class="post-date">13 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">10 min.</span> (<span class="word-count">1962</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
-  				<h1 class="post-title">You Are (Probably) Doing Login Systems Wrong</h1>
+  				<h1 class="post-title">An Atomic Hash Table</h1>
   			</header>
 
   			<section class="post-content">
-  				<p>A thing, most programmers have tried at least once, is login systems. Despite
-being seemingly a simple task, it is in fact very hard to do right.</p>
+  				<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
-<p>So, let's look into, how we can actually do this right.</p>
+<p>In programs where there is some kind of global state, you will often find
+the need for having a key-value map; you could for example imagine keeping some
+kind of cache of a bunch of entries from database table. Obviously, you'd just
+use a hash table, easy right?</p>
 
-<h1 id="storing-passwords">Storing passwords</h1>
+<p>Not really. Imagine that there is multiple threads. One approach is to wrap it
+in a mutex to ensure thread safety, but that would kind of miss the point of
+concurrency: It wouldn't be concurrent, it would just be blocking. So, imagine
+we want a non-blocking, truly concurrent hash table. How'd we go about that?</p>
 
-<p>Okay, this is common knowledge: Salt and hash your passwords.</p>
+<p>Several ways to get there exists, unfortunately they all have their trade-offs.
+In this blog post, I am going represent the implementation of such table, which
+I came up with during the development of <a href="https://github.com/ticki/tfs">TFS</a>.
+It is hopefully a sane way to solve the issue with good trade-offs: It has
+relatively good consistency guarantees, yet very fast.</p>
 
-<p>However, it is often done wrong. You'll see code like:</p>
+<p>To be clear, if you're just looking for a quick way to implement this, this is
+probably not the post for you. It is somewhat complicated, and you might be
+fine with a hash table with locks and striping. However, if you are looking for
+something scalable to an arbitrary number of CPU cores, this is for you.</p>
 
-<pre><code>hash(password + salt)
-</code></pre>
+<h1 id="preface">Preface</h1>
 
-<p>This is better than unsalted, unhashed passwords, but it's far from bruteforce
-resistant. Why? Because hashing is cheap. With proper machines, you can do
-billions of them in a second. A dictionary attack is piece of cake.</p>
+<p>I assume that you are familiar with hash tables and hash table design, as well
+as basic terms in concurrent programming.</p>
 
-<p>So how do we solve this? Well, we use a KDF. A KDF (key derivation function)
-acts like a slow hash function. A hash function, where calculating takes maybe
-100 ms. or more.</p>
+<h1 id="introduction">Introduction</h1>
 
-<p>In general, two kinds of KDFs exists, the CPU-based and the CPU-memory hybrids.
-The CPU based are still in use, but I don't recommend using them, as they can
-easily be calculated with ASICs. The CPU-memory hybrids requires some amount of
-memory for calculating the hash value, often making it substantially harder to
-create ASICs.</p>
-
-<p>For the reasons stated above, I recommend <code>scrypt</code>, for a modern, well-known
-an secure KDF.</p>
-
-<h1 id="sessions">Sessions</h1>
-
-<p>In general, sessions should be assigned a token by the server. This token is
-shared with the client (e.g. through a cookie) as the way to prove, that they
-are logged in with a given account to the server.</p>
-
-<p>There is a few things to keep in mind, though.</p>
-
-<p>The session token shall have an expiration date, for security reasons.
-Furthermore, the session token shall be deactivated when the user logs out.</p>
-
-<p>One mistake often made in storing the session tokens is to store them in
-memory. This is wrong, as it means that crashes or restarts logs every user
-out, suspending all sessions. Instead, it ought to be stored in a database,
-possibly in a column of the users table.</p>
-
-<p>Lastly, the session must not be shared through GET or other logged means.
-Rather, it should be stored in a cookie or <code>localStorage</code>.</p>
-
-<h1 id="clientside-hashing">Client-side hashing</h1>
-
-<p>A pretty uncommon, but really good practice, is the client-side hashing. It is
-supposed act as another layer of security, hiding the password from the server.</p>
-
-<p>The idea is that the client-side should hash (e.g. <code>scrypt</code>) the password
-before sending it to the server.</p>
-
-<p>This can seem pretty pointless, as (in the case of the web) the server could
-simply change the JavaScript to leak the password, but there is a reason: If
-the server-side has a bug that allows to read certain chosen memory locations
-(a buffer overflow, for example), it could be exploited to read the plaintext
-password.</p>
-
-<p>Instead, with client-side hashing, it can only read the hashed value. This of
-course doesn't stop the hacker from logging in to the user's account, but it
-stops them from obtaining the potentially reused plain-text password.</p>
-
-<h1 id="rate-limiting">Rate limiting</h1>
-
-<p>Rate limiting is really, really important, even though it is often understated.
-It prevents someone from bruteforcing common passwords.</p>
-
-<p>But how should the rate limiting work?</p>
-
-<p>One neat way is the &quot;leaky bucket algorithm&quot;. It works by having requests
-&quot;dripping&quot; into a bucket like drops of water. When the leaky bucket is filled,
-no more requessts can be made, until the bucket has leaked to empty.</p>
-
-<p>In less figurative language, you have a counter on every visitor IP address,
-which is incremented on every request (e.g. login, create account etc.). When
-this counter is above some level (say 5), a timeout is set (e.g. the time when
-it expire is set as a field of the user). First when this timeout expires, the
-counter resets, and new requests can be made.</p>
-
-<h1 id="resetting-accounts">Resetting accounts</h1>
-
-<p>Of course a proper system must have the ability to reset accounts. There are
-many ways of doing this.</p>
-
-<p>I would recommend to have the user provide username and E-mail, as it—contrary
-to other approaches—does not allow spamming or denial of service attacks. It is
-important that you do not reveal whether or not the E-mail matched, as that can
-be a breach of privacy of the user (such thing can be used to check if the
-E-mail address matched).</p>
-
-<p>If the E-mail is only going to be used for resetting, I strongly recommend that
-you store a fingerprint (e.g. scrypt) of the E-mail address rather than the
-plaintext version. This still ensures that you can check if the given E-mail
-address of the resetting user matches, without the server side knowing anything
-about the address. It prevents the database being misused or sold for spam
-purposes, and also helps to protect the user's identity.</p>
-
-<p>When the user resets, a token shall be generated. This token is used in a link,
-sent to the user through an E-mail. It is important that this token is
-sufficiently long, random, and furthermore, that it expires (ideally within only
-a few hours).</p>
-
-<p>Note that upon resetting, the token should removed from the map.</p>
-
-<h1 id="other-tips">Other tips</h1>
+<p>To be able to actually approach the problem, we have to define a limited API
+for the hash table. Here's the obvious basics:</p>
 
 <ul>
-<li>Consider implementing a common two-factor key-sharing algorithm, such as
-<a href="https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm">TOTP</a>.</li>
-<li>I recommend that changing E-mail and password are done under the &quot;reset
-password&quot; formula, such that E-mail confirmation is required.</li>
-<li>It is extremely important that the connection, where the login happens is
-secure, for example <code>https</code>.</li>
+<li><code>insert(key, value)</code> - for, well, inserting into the table.</li>
+<li><code>remove(key)</code> - for removing a entry from the table.</li>
+<li><code>get(key)</code> - for querying a value from the table.</li>
 </ul>
 
-<h1 id="conclusion">Conclusion</h1>
+<p>There are many ways the above set can be expanded, such as iteration, bulk
+operations, etc., but we will stick to those for simplicity.</p>
 
-<p>Well, that's it.</p>
+<h1 id="the-structure">The structure</h1>
 
-<p>You have to be careful about what you do, though. This is a minefield of
-vulnerabilities, and you have to be very careful not to introduce subtle bugs
-in your code. I recommend that you let somebody other than yourself review your
-code, to give you another's perspective on the code.</p>
+<p>As any data structure, you will have the structure (how it is organized, that
+is) and the algorithms manipulating it. It is only natural to start by asking:
+How should the keys and values be organized?</p>
+
+<p>There is not really a single answer to that question, but there's a few things
+to keep in mind. First of all, we probably want to avoid reallocation. That
+thing is messy, and often impossible, to do atomically; you will almost always
+end up introducing some kind of lock, either explicitly or implicitly, so we
+must necessarily use a kind of linearly growing structure.</p>
+
+<p>What if we used some kind of tree?</p>
+
+<p>If you've seen my post about <a href="https://ticki.github.io/blog/collision-resolution-with-nested-hash-tables/">nested hash
+tables</a>,
+you will know where I'm going, namely that we must organize a tree of tables,
+such that extending it, simply means placing a new table at a leaf of the tree.</p>
+
+<p>The idea is this: Every table has some fixed number of buckets, each of which
+can be in one of following states:</p>
+
+<ul>
+<li>Empty - no entry, key, or value.</li>
+<li>Leaf - there is a key and value.</li>
+<li>Branch - the bucket &quot;branches&quot; to another table.</li>
+</ul>
+
+<p>The structure itself is nothing, but a root table. The operations are defined
+on any table, and not just the root table, as this allows us to use recursion.</p>
+
+<p>We'll see why in a second.</p>
+
+<h1 id="the-algorithm">The algorithm</h1>
+
+<p>The biggest obstruction to designing concurrent hash table (or hash tables in
+general) is of course the collision resolution. When two keys collide (which
+will happen with almost certainty), there must be a way of resolving this
+collision, meaning to make them able to coexist in the same map.</p>
+
+<p>In this structure, it is simply done by going from a leaf of the tree to a
+branch, containing both key-value pairs (say a bucket is <code>Leaf(entry)</code> and you
+want to insert an entry there called <code>entry2</code>, then the bucket is changed to
+<code>Table(new_table)</code> where <code>new_table</code> has both entries; if the two keys still
+collide in the new table, repeat).</p>
+
+<p>The natural question to ask here is how we hash. Surely, if we simply used the
+same hash function throughout, a collision would keep happening, even after
+branches, as the keys would be assigned the same bucket, over and over again.
+Hence, we must choose a way, wherein we can produce distinct hashes for
+different tables.</p>
+
+<p>The easiest way to do this is of course using one of these fancy &quot;seeded hash
+functions&quot;, but even that has it's limitations: What if (like most of these
+functions) their independence isn't mathematically proven? What if there
+exists a key which would always generate a collision, despite of the seed? In
+other words, it relies on the correctness and quality of the underlying hash
+function, which we would like to avoid. We will come back to another way of
+producing the hashes in next section.</p>
+
+<p>Searching is pretty obvious from here: We simply index by the hash until we
+find a leaf or empty bucket, in which case we're done.</p>
+
+<p>Lastly, we have deleting, which is simply a matter of replacing a bucket with
+&quot;empty&quot;.</p>
+
+<h1 id="hashing">Hashing</h1>
+
+<p>So, how exactly do we generate the sequence (I say sequence, as in the indexes
+for each of the tables in traversing to the entry, namely the sequence of
+buckets to follow/jump)?</p>
+
+<p>Well, we could start by formulating a property of correctness:</p>
+
+<blockquote>
+<p>Given enough elements of the sequence, it shall be possible to reproduce the
+hashed value?</p>
+</blockquote>
+
+<p>Since the sequence is never-ending (and hence has an infinite codomain), this
+is possible to satisfy, contrary to classical hash functions, with a finite
+codomain.</p>
+
+<p>Another way of thinking about this is that such function is a function of byte
+strings to numbers in the interval, <span  class="math">\(\left[0;1\right)\)</span>. This definition
+actually allows us to go one step further and define bijectiveness to create the
+ideal of such function.</p>
+
+<p>Anyway, now that we know what we're looking for, we must find a way to actually
+find it.</p>
+
+<p>The way I've done it is by having a state, which is altering based on the
+previous element; and a stack, which contains permuted input.</p>
+
+<p>The idea is like this: First the stack is populated with the input,
+one-byte-by-one. Each byte XOR'd with the state and then permuted by some
+table. The generated element is pushed to the stack and is made the state.</p>
+
+<p>When the stack is populated, elements of the sequence can be read by popping
+from the stack, and then permuting the popped element according to the state
+(i.e. XOR, then use lookup table). Again, this is set to the state.</p>
+
+<p>So why exactly this thing? Doesn't it seem a bit arbitrary?</p>
+
+<p>Well, there is a reason. First of all, the state is there for bringing in some
+context, such that the element in the output can't simply be predicted
+according to the same element in the input.</p>
+
+<p>Secondly, from the stack, we can reconstruct the input sequence. And from the
+output sequence, we can reconstruct the stack, so the input sequence is
+reconstructible from the input sequence.</p>
+
+<p>But why not simply have the output sequence be the stack? Well, without
+permuting it after each pop, entropy would only move upwards, i.e. the output
+would only depend on the elements <em>before</em> it in the input. The permutation in
+the pop brings in context of the elements <em>after</em>?</p>
+
+<p>Is this optimal? Probably not, but it's fine, as it isn't exactly critical in
+performance, kind of like how you don't optimize command-line parsing in
+<code>wget</code>, the real hit comes from the atomics, not the hashing.</p>
+
+<h1 id="making-it-concurrent">Making it concurrent</h1>
+
+<p>If you've noticed, so far we've really only constructed our table in terms of
+single-threaded algorithms.</p>
+
+<p>Maybe it's obvious to the reader how to make it concurrent, maybe not. It
+depends on your experience with things, but I hope the text that follows will
+make it sensical to you.</p>
+
+<p>We can represent each bucket in a node (table) as a pointer, which we only
+modify atomically. The null state represents the empty bucket. This allows us
+to do certain pretty convenient things.</p>
+
+<p>Namely, it allows us to use CAS (compare-and-swap) to ensure that the entry,
+we're replacing, is indeed empty. If not, we get the non-matching value, which
+allows us to handle things case-by-case.</p>
+
+<h2 id="searching">Searching</h2>
+
+<p>Searching is painfully obvious: Simply read and follow the appropriate buckets,
+until you get to a leaf, which is your final destination. It is a match, if the
+key of the leaf matches the key, you're searching for.</p>
+
+<h2 id="insertion">Insertion</h2>
+
+<p>As described above, the insert routine starts by effectively CAS-ing the bucket
+of the key for null pointers (empty buckets), and replacing with the leaf
+containing the key and value, we're interested in inserting.</p>
+
+<p>If it failed, we do the following:</p>
+
+<ul>
+<li>If the bucket is a leaf, try to CAS this bucket pointer to a branching table
+containing the leaf's K/V pair and the pair, we're inserting. If the CAS
+fails, start over with the updated value (see below).</li>
+<li>If the bucket is a table, simply go to that table and insert it there.</li>
+<li>If the bucket is an empty (this means there've been an ABA condition; another
+thread has removed the value in the meantime), start over with the updated value.</li>
+</ul>
+
+<h2 id="removal">Removal</h2>
+
+<p>Removal is slightly more complicated.</p>
+
+<p>First, the bucket is read. If it is a subtable, recurse and remove on that.</p>
+
+<p>If not a table and not empty, then you must CAS for the pointer to the null
+pointer. If this fails, one must restart the process (ABA).</p>
+
+<h1 id="optional-the-aba-problem">(Optional:) The ABA problem</h1>
+
+<p>I've mentioned the ABA problem a few times so far, and it turns out to be a
+very important issue of concurrent algorithms, but what does it mean?</p>
+
+<p>In simple terms, it means that some data, we've read has changed in the
+meantime.</p>
+
+<p>This is why I don't read and then write the modified version. Instead I read
+<span  class="math">\(A\)</span>, then find <span  class="math">\(f(A)\)</span> and then try to CAS <span  class="math">\(A\)</span> to <span  class="math">\(f(A)\)</span>. It can be a
+pain, but it's necessary. The reason for this is that the atomic, we read as
+<span  class="math">\(A\)</span>, could have been changed before or while we evaluated <span  class="math">\(f(A)\)</span>, hence
+meaning that <span  class="math">\(f(A)\)</span> would reverse progress another thread has made.</p>
+
+<p>So the question (to which I have already revealed the answer) is, what happens
+if this CAS fails?</p>
+
+<p>Well, we use a loop. If it fails, we use the new value and repeat our
+operation.</p>
+
+<p>Doesn't this kind of defeat the point of concurrent algorithms? Well, in a
+sense, it does make it non-atomic, but it isn't really a spin-lock or anything
+like that, even though it can seem like that: It doesn't wait for the data to
+be in a state (like a spin-lock will do), it just repeats if the data failed to
+be substituted.</p>
+
+<h1 id="the-code">The code</h1>
+
+<p>It is available
+<a href="https://github.com/redox-os/tfs/tree/master/atomic-hashmap/src">here</a>. Note
+that it won't compile right now, as it relies on some patches I made to the
+<code>crossbeam</code> library. Eventually, I will replace the dependency with my own
+replacement for crossbeam.</p>
+
+<h1 id="limitations">Limitations</h1>
+
+<ul>
+<li>It cannot shrink. Hopefully, this isn't that big of an issue, given that the
+space is reusable, despite not being able to shrink. It is similar to certain
+balanced trees, which cannot shrink. In general, the space isn't lost, nor
+leads to unbounded memory usage.</li>
+<li>It is cache suboptimal. This cannot really be avoided. There will, likely, be
+more than one cache miss, during traversal. However, the added concurrency
+often pays that off performance-wise.</li>
+<li>It relies on some type of concurrent memory reclamation (e.g. hazard
+pointers) in order to free memory of removed entries.</li>
+</ul>
+
+<p>Are these worth it? Well, it depends on what you're doing. In my case, these
+are all very much worth it, and I haven't had any issue with any of them, but
+every program is unique and will have its own set of conditions.</p>
 
 
                 <hr>
@@ -266,18 +404,22 @@ code, to give you another's perspective on the code.</p>
             
                 <a href="http://ticki.github.io//tags/design/">design</a>
             
-                <a href="http://ticki.github.io//tags/cryptography/">cryptography</a>
+                <a href="http://ticki.github.io//tags/programming/">programming</a>
+            
+                <a href="http://ticki.github.io//tags/concurrency/">concurrency</a>
+            
+                <a href="http://ticki.github.io//tags/atomic/">atomic</a>
             
             
   				</div>
   				<div class="post-share">
-  					<a class="icon-twitter" href="https://twitter.com/share?text=You%20Are%20%28Probably%29%20Doing%20Login%20Systems%20Wrong&url=http%3a%2f%2fticki.github.io%2fblog%2fyou-are-probably-doing-login-systems-wrong%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+  					<a class="icon-twitter" href="https://twitter.com/share?text=An%20Atomic%20Hash%20Table&url=http%3a%2f%2fticki.github.io%2fblog%2fan-atomic-hash-table%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
   						<span>Twitter</span>
   					</a>
-  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fyou-are-probably-doing-login-systems-wrong%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fan-atomic-hash-table%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
   						<span>Facebook</span>
   					</a>
-  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fyou-are-probably-doing-login-systems-wrong%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fan-atomic-hash-table%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
   						<span>Google+</span>
   					</a>
   				</div>
@@ -297,23 +439,13 @@ code, to give you another's perspective on the code.</p>
 
 			<nav class="post-nav">
 				
-					<a class="post-nav-item post-nav-next" href="http://ticki.github.io/blog/an-atomic-hash-table/">
-						<section class="post-nav-teaser">
-							<span class="post-nav-icon"><i class="icon-arrow-left"></i></span>
-							<span class="post-nav-info">
-								<h4 class="post-nav-title">An Atomic Hash Table</h4>
-								<p class="post-nav-excerpt">A design for a high-performance atomic and linearizable hash table.&hellip;</p>
-							</span>
-						</section>
-					</a>
 				
-				
-					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/the-lazy-argument-of-human-nature/">
+					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/you-are-probably-doing-login-systems-wrong/">
 						<section class="post-nav-teaser">
 							<span class="post-nav-icon"><i class="icon-arrow-right"></i></span>
 							<span class="post-nav-info">
-								<h4 class="post-nav-title">The Lazy Argument of Human Nature</h4>
-								<p class="post-nav-excerpt">Why human nature is a lazy argument in the context of socialism.&hellip;</p>
+								<h4 class="post-nav-title">You Are (Probably) Doing Login Systems Wrong</h4>
+								<p class="post-nav-excerpt">This blog post details various ideas to create a secure login system.&hellip;</p>
 							</span>
 						</section>
 					</a>
