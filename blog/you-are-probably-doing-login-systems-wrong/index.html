@@ -59,7 +59,7 @@
         },
         "datePublished": "2017-05-12",
         "description": "This blog post details various ideas to create a secure login system.",
-        "wordCount": 885
+        "wordCount": 934
     }
 
     </script>
@@ -118,7 +118,7 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">12 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">885</span> words)</span></span>
+						<span class="post-date">12 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">5 min.</span> (<span class="word-count">934</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
   				<h1 class="post-title">You Are (Probably) Doing Login Systems Wrong</h1>
@@ -166,6 +166,11 @@ are logged in with a given account to the server.</p>
 
 <p>The session token shall have an expiration date, for security reasons.
 Furthermore, the session token shall be deactivated when the user logs out.</p>
+
+<p>One mistake often made in storing the session tokens is to store them in
+memory. This is wrong, as it means that crashes or restarts logs every user
+out, suspending all sessions. Instead, it ought to be stored in a database,
+possibly in a column of the users table.</p>
 
 <p>Lastly, the session must not be shared through GET or other logged means.
 Rather, it should be stored in a cookie or <code>localStorage</code>.</p>

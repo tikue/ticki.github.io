@@ -57,6 +57,11 @@ are logged in with a given account to the server.&lt;/p&gt;
 &lt;p&gt;The session token shall have an expiration date, for security reasons.
 Furthermore, the session token shall be deactivated when the user logs out.&lt;/p&gt;
 
+&lt;p&gt;One mistake often made in storing the session tokens is to store them in
+memory. This is wrong, as it means that crashes or restarts logs every user
+out, suspending all sessions. Instead, it ought to be stored in a database,
+possibly in a column of the users table.&lt;/p&gt;
+
 &lt;p&gt;Lastly, the session must not be shared through GET or other logged means.
 Rather, it should be stored in a cookie or &lt;code&gt;localStorage&lt;/code&gt;.&lt;/p&gt;
 
