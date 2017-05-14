@@ -61,7 +61,7 @@
         },
         "datePublished": "2017-05-13",
         "description": "A design for a high-performance atomic and linearizable hash table.",
-        "wordCount": 1962
+        "wordCount": 2000
     }
 
     </script>
@@ -120,7 +120,7 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">13 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">10 min.</span> (<span class="word-count">1962</span> words)</span></span>
+						<span class="post-date">13 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">10 min.</span> (<span class="word-count">2000</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
   				<h1 class="post-title">An Atomic Hash Table</h1>
@@ -225,11 +225,14 @@ different tables.</p>
 
 <p>The easiest way to do this is of course using one of these fancy &quot;seeded hash
 functions&quot;, but even that has it's limitations: What if (like most of these
-functions) their independence isn't mathematically proven? What if there
-exists a key which would always generate a collision, despite of the seed? In
-other words, it relies on the correctness and quality of the underlying hash
-function, which we would like to avoid. We will come back to another way of
-producing the hashes in next section.</p>
+functions) their independence isn't mathematically proven? What if there exists
+a key which would always generate a collision, despite of the seed? In other
+words, it relies on the correctness and quality of the underlying hash
+function, which we would like to avoid. In fact, even if we asssumed the
+correctness, it would still be suboptimal, due to an unnecessary amount of
+collisions, and on top of that, we'd be forced to recalculate the hash for
+every table, we traverse. We will come back to another way of producing the
+hashes in next section.</p>
 
 <p>Searching is pretty obvious from here: We simply index by the hash until we
 find a leaf or empty bucket, in which case we're done.</p>
@@ -371,9 +374,9 @@ be substituted.</p>
 
 <p>It is available
 <a href="https://github.com/redox-os/tfs/tree/master/atomic-hashmap/src">here</a>. Note
-that it won't compile right now, as it relies on some patches I made to the
-<code>crossbeam</code> library. Eventually, I will replace the dependency with my own
-replacement for crossbeam.</p>
+that it won't compile out-of-the-box right now, as it relies on some patches I
+made to the <code>crossbeam</code> library. Eventually, I will replace the dependency with
+my own replacement for crossbeam.</p>
 
 <h1 id="limitations">Limitations</h1>
 

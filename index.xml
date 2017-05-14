@@ -113,11 +113,14 @@ different tables.&lt;/p&gt;
 
 &lt;p&gt;The easiest way to do this is of course using one of these fancy &amp;quot;seeded hash
 functions&amp;quot;, but even that has it&#39;s limitations: What if (like most of these
-functions) their independence isn&#39;t mathematically proven? What if there
-exists a key which would always generate a collision, despite of the seed? In
-other words, it relies on the correctness and quality of the underlying hash
-function, which we would like to avoid. We will come back to another way of
-producing the hashes in next section.&lt;/p&gt;
+functions) their independence isn&#39;t mathematically proven? What if there exists
+a key which would always generate a collision, despite of the seed? In other
+words, it relies on the correctness and quality of the underlying hash
+function, which we would like to avoid. In fact, even if we asssumed the
+correctness, it would still be suboptimal, due to an unnecessary amount of
+collisions, and on top of that, we&#39;d be forced to recalculate the hash for
+every table, we traverse. We will come back to another way of producing the
+hashes in next section.&lt;/p&gt;
 
 &lt;p&gt;Searching is pretty obvious from here: We simply index by the hash until we
 find a leaf or empty bucket, in which case we&#39;re done.&lt;/p&gt;
@@ -259,9 +262,9 @@ be substituted.&lt;/p&gt;
 
 &lt;p&gt;It is available
 &lt;a href=&#34;https://github.com/redox-os/tfs/tree/master/atomic-hashmap/src&#34;&gt;here&lt;/a&gt;. Note
-that it won&#39;t compile right now, as it relies on some patches I made to the
-&lt;code&gt;crossbeam&lt;/code&gt; library. Eventually, I will replace the dependency with my own
-replacement for crossbeam.&lt;/p&gt;
+that it won&#39;t compile out-of-the-box right now, as it relies on some patches I
+made to the &lt;code&gt;crossbeam&lt;/code&gt; library. Eventually, I will replace the dependency with
+my own replacement for crossbeam.&lt;/p&gt;
 
 &lt;h1 id=&#34;limitations&#34;&gt;Limitations&lt;/h1&gt;
 
