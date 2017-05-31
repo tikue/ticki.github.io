@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/</link>
+    <description>Recent content in Tags on Ticki&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 14 Sep 2016 22:50:08 +0200</lastBuildDate>
+    
+	<atom:link href="http://ticki.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>http://ticki.github.io/tags/about/</link>
+      <pubDate>Wed, 14 Sep 2016 22:50:08 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/about/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Algorithms</title>
+      <link>http://ticki.github.io/tags/algorithms/</link>
+      <pubDate>Sun, 11 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/algorithms/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Allocators</title>
+      <link>http://ticki.github.io/tags/allocators/</link>
+      <pubDate>Sun, 23 Oct 2016 23:25:15 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/allocators/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Atomic</title>
+      <link>http://ticki.github.io/tags/atomic/</link>
+      <pubDate>Sat, 13 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/atomic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Coding Theory</title>
+      <link>http://ticki.github.io/tags/coding-theory/</link>
+      <pubDate>Fri, 11 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/coding-theory/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Collection</title>
+      <link>http://ticki.github.io/tags/collection/</link>
+      <pubDate>Mon, 19 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/collection/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Communism</title>
+      <link>http://ticki.github.io/tags/communism/</link>
+      <pubDate>Wed, 19 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/communism/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Compression</title>
+      <link>http://ticki.github.io/tags/compression/</link>
+      <pubDate>Fri, 11 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/compression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Computer Science</title>
+      <link>http://ticki.github.io/tags/computer-science/</link>
+      <pubDate>Thu, 16 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/computer-science/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Concurrency</title>
+      <link>http://ticki.github.io/tags/concurrency/</link>
+      <pubDate>Sat, 13 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/concurrency/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cow</title>
+      <link>http://ticki.github.io/tags/cow/</link>
+      <pubDate>Sun, 23 Oct 2016 23:25:15 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/cow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Critique</title>
+      <link>http://ticki.github.io/tags/critique/</link>
+      <pubDate>Mon, 12 Sep 2016 22:50:08 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/critique/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cryptography</title>
+      <link>http://ticki.github.io/tags/cryptography/</link>
+      <pubDate>Fri, 12 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/cryptography/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Data</title>
+      <link>http://ticki.github.io/tags/data/</link>
+      <pubDate>Tue, 25 Oct 2016 23:25:15 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/data/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Data Structures</title>
+      <link>http://ticki.github.io/tags/data-structures/</link>
+      <pubDate>Thu, 16 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/data-structures/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Design</title>
+      <link>http://ticki.github.io/tags/design/</link>
+      <pubDate>Sat, 13 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/design/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Eudex</title>
+      <link>http://ticki.github.io/tags/eudex/</link>
+      <pubDate>Sun, 11 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/eudex/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Explanation</title>
+      <link>http://ticki.github.io/tags/explanation/</link>
+      <pubDate>Tue, 25 Oct 2016 23:25:15 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/explanation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>File Systems</title>
+      <link>http://ticki.github.io/tags/file-systems/</link>
+      <pubDate>Sun, 23 Oct 2016 23:25:15 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/file-systems/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Follow Up</title>
+      <link>http://ticki.github.io/tags/follow-up/</link>
+      <pubDate>Wed, 14 Sep 2016 16:07:34 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/follow-up/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formal Verification</title>
+      <link>http://ticki.github.io/tags/formal-verification/</link>
+      <pubDate>Sat, 24 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/formal-verification/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fs</title>
+      <link>http://ticki.github.io/tags/fs/</link>
+      <pubDate>Sun, 23 Oct 2016 23:25:15 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/fs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Graphics</title>
+      <link>http://ticki.github.io/tags/graphics/</link>
+      <pubDate>Mon, 19 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/graphics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hash</title>
+      <link>http://ticki.github.io/tags/hash/</link>
+      <pubDate>Fri, 04 Nov 2016 16:28:44 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/hash/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hash Functions</title>
+      <link>http://ticki.github.io/tags/hash-functions/</link>
+      <pubDate>Thu, 02 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/hash-functions/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hashing</title>
+      <link>http://ticki.github.io/tags/hashing/</link>
+      <pubDate>Thu, 08 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/hashing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Introduction</title>
+      <link>http://ticki.github.io/tags/introduction/</link>
+      <pubDate>Wed, 14 Sep 2016 22:50:08 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/introduction/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lambda Crabs</title>
+      <link>http://ticki.github.io/tags/lambda-crabs/</link>
+      <pubDate>Wed, 08 Jun 2016 11:24:24 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/lambda-crabs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lifetimes</title>
+      <link>http://ticki.github.io/tags/lifetimes/</link>
+      <pubDate>Mon, 06 Jun 2016 09:12:56 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/lifetimes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linux</title>
+      <link>http://ticki.github.io/tags/linux/</link>
+      <pubDate>Tue, 30 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lz4</title>
+      <link>http://ticki.github.io/tags/lz4/</link>
+      <pubDate>Tue, 25 Oct 2016 23:25:15 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/lz4/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mathematics</title>
+      <link>http://ticki.github.io/tags/mathematics/</link>
+      <pubDate>Sat, 24 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/mathematics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mind Dump</title>
+      <link>http://ticki.github.io/tags/mind-dump/</link>
+      <pubDate>Sun, 23 Oct 2016 23:25:15 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/mind-dump/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Notes</title>
+      <link>http://ticki.github.io/tags/notes/</link>
+      <pubDate>Tue, 30 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/notes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Optimizations</title>
+      <link>http://ticki.github.io/tags/optimizations/</link>
+      <pubDate>Sat, 17 Sep 2016 13:46:49 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/optimizations/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Personal</title>
+      <link>http://ticki.github.io/tags/personal/</link>
+      <pubDate>Wed, 14 Sep 2016 22:50:08 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/personal/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Phonetics</title>
+      <link>http://ticki.github.io/tags/phonetics/</link>
+      <pubDate>Sun, 11 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/phonetics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Pointers</title>
+      <link>http://ticki.github.io/tags/pointers/</link>
+      <pubDate>Wed, 08 Jun 2016 11:24:24 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/pointers/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Politics</title>
+      <link>http://ticki.github.io/tags/politics/</link>
+      <pubDate>Wed, 19 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/politics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Programming</title>
+      <link>http://ticki.github.io/tags/programming/</link>
+      <pubDate>Sat, 13 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/programming/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Random Access</title>
+      <link>http://ticki.github.io/tags/random-access/</link>
+      <pubDate>Sun, 23 Oct 2016 23:25:15 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/random-access/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Rant</title>
+      <link>http://ticki.github.io/tags/rant/</link>
+      <pubDate>Mon, 12 Sep 2016 22:50:08 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/rant/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Regions</title>
+      <link>http://ticki.github.io/tags/regions/</link>
+      <pubDate>Mon, 06 Jun 2016 11:06:21 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/regions/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Rust</title>
+      <link>http://ticki.github.io/tags/rust/</link>
+      <pubDate>Thu, 06 Oct 2016 10:12:22 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/rust/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Skip Lists</title>
+      <link>http://ticki.github.io/tags/skip-lists/</link>
+      <pubDate>Sat, 17 Sep 2016 13:46:49 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/skip-lists/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Socialism</title>
+      <link>http://ticki.github.io/tags/socialism/</link>
+      <pubDate>Wed, 19 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/socialism/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Standard Library</title>
+      <link>http://ticki.github.io/tags/standard-library/</link>
+      <pubDate>Wed, 14 Sep 2016 16:07:34 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/standard-library/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Static Analysis</title>
+      <link>http://ticki.github.io/tags/static-analysis/</link>
+      <pubDate>Sat, 24 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/static-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Termion</title>
+      <link>http://ticki.github.io/tags/termion/</link>
+      <pubDate>Thu, 06 Oct 2016 10:12:22 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/termion/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Theory</title>
+      <link>http://ticki.github.io/tags/theory/</link>
+      <pubDate>Sat, 24 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/theory/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tui</title>
+      <link>http://ticki.github.io/tags/tui/</link>
+      <pubDate>Thu, 06 Oct 2016 10:12:22 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/tui/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Type Inference</title>
+      <link>http://ticki.github.io/tags/type-inference/</link>
+      <pubDate>Mon, 06 Jun 2016 11:06:21 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/type-inference/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Type Systems</title>
+      <link>http://ticki.github.io/tags/type-systems/</link>
+      <pubDate>Mon, 06 Jun 2016 11:06:21 +0200</pubDate>
+      
+      <guid>http://ticki.github.io/tags/type-systems/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Usa</title>
+      <link>http://ticki.github.io/tags/usa/</link>
+      <pubDate>Wed, 09 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/usa/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

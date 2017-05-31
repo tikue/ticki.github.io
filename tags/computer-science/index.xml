@@ -2,11 +2,14 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Computer Science on Ticki&#39;s blog</title>
-    <link>http://ticki.github.io/tags/computer-science/index.xml</link>
+    <link>http://ticki.github.io/tags/computer-science/</link>
     <description>Recent content in Computer Science on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://ticki.github.io/tags/computer-science/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 16 Feb 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://ticki.github.io/tags/computer-science/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Collision Resolution with Nested Hash Tables</title>
@@ -14,53 +17,8 @@
       <pubDate>Thu, 16 Feb 2017 00:00:00 +0000</pubDate>
       
       <guid>http://ticki.github.io/blog/collision-resolution-with-nested-hash-tables/</guid>
-      <description>&lt;script type=&#34;text/javascript&#34;
-  src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
-&lt;/script&gt;
-
-&lt;h1 id=&#34;collision-resolution&#34;&gt;Collision resolution&lt;/h1&gt;
-
-&lt;p&gt;Hash collisions in hash tables are unevitable, and therefore every proper implementation needs a form of &lt;em&gt;collision resolution&lt;/em&gt;. Collision resolution is the name of the class of algorithms and techniques used to organize and resolve the case where two entries in the table hash to the same bucket.&lt;/p&gt;
-
-&lt;p&gt;It turns out that the choice and implementation of collision resolution is absolutely critical for the performance of the table, because while hash tables are often mistaken for having &lt;span  class=&#34;math&#34;&gt;\(O(1)\)&lt;/span&gt; lookups, they do in reality and theory have a sligthly more complicated behavior.&lt;/p&gt;
-
-&lt;p&gt;There are really two big competing families of algorithms of resolving collisions:&lt;/p&gt;
-
-&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;Open addressing: This keeps all entries in the bucket array, but applies some way of finding a new bucket if the ideal one is occupied. To keep the load factor low, they generally reallocate before they get full. This is an OK solution when doing things in-memory, but on-disk this absolutely sucks, since you potentially have millions of entries. If you plot the lookup time over the number of entries, it will look like an increasing line, which suddenly peaks and then falls, with the peaks getting more and more uncommon. This rather complex performance behavior can also make them unfit for certain purposes.&lt;/li&gt;
-&lt;li&gt;Chaining: This uses some structure for storing multiple entries in a bucket. Often through B-trees or linked lists.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;In this post, we will look at chaining.&lt;/p&gt;
-
-&lt;h1 id=&#34;nested-tables&#34;&gt;Nested tables&lt;/h1&gt;
-
-&lt;p&gt;What if we used another hash table for multi-entry buckets?&lt;/p&gt;
-
-&lt;p&gt;The idea is that we have some sequence of independent (this is a very important invariant) hash functions &lt;span  class=&#34;math&#34;&gt;\(\{h_n(x)\}\)&lt;/span&gt;, and the root table uses hash function &lt;span  class=&#34;math&#34;&gt;\(h_0(k)\)&lt;/span&gt; to assign a bucket to key &lt;span  class=&#34;math&#34;&gt;\(k\)&lt;/span&gt;. If the entry is empty, the value is simply inserted there and the bucket&#39;s tag is set to &amp;quot;single&amp;quot;.&lt;/p&gt;
-
-&lt;p&gt;If however the bucket already has at least one entry, it will be inserted into a hash table, placed in said bucket, and the bucket where the entry will be (in the new hash table) is determined by &lt;span  class=&#34;math&#34;&gt;\(h_1(k)\)&lt;/span&gt;.&lt;/p&gt;
-
-&lt;p&gt;This process (&lt;span  class=&#34;math&#34;&gt;\(h_0(k)\)&lt;/span&gt;, &lt;span  class=&#34;math&#34;&gt;\(h_1(k)\)&lt;/span&gt;, &lt;span  class=&#34;math&#34;&gt;\(h_2(k)\)&lt;/span&gt;...) repeats until a free bucket is found.&lt;/p&gt;
-
-&lt;p&gt;This seems like a pretty obvious thing, but when you think about it it has some interesting properties for block-based on-disk structures, as we will discuss later.&lt;/p&gt;
-
-&lt;h1 id=&#34;analysis&#34;&gt;Analysis&lt;/h1&gt;
-
-&lt;p&gt;The analysis is pretty simple: If the hash functions are sufficiently good and independent, the space usage has a (amortized) linear upper-bound.&lt;/p&gt;
-
-&lt;p&gt;The lookup speed is perhaps more important than the space, and it is in many ways similar to B+ trees, except that this is simpler and perhaps faster. Both have logarithmic complexity of lookups, and more importantly, the base of the logarithm is usually pretty high (although it depends on the choice of default table size).&lt;/p&gt;
-
-&lt;h1 id=&#34;blockbased-ondisk-storage&#34;&gt;Block-based on-disk storage&lt;/h1&gt;
-
-&lt;p&gt;Because block-based storage is so convenient, it is used in many database systems and file systems. It is one of the reasons B+ trees is such a popular indexing method.&lt;/p&gt;
-
-&lt;p&gt;In particular, if a single block can store N pointers, we can simply let one table have N buckets, meaning there is no waste of space.&lt;/p&gt;
-
-&lt;p&gt;Compared to B+ trees, there is a pretty clear advantage in the case of dynamically sized keys, since comparing requires loading, which is generally a very expensive task. Hashing on the other hand is easy, and never requires any comparison (with the exception of the last table, perhaps¹).&lt;/p&gt;
-
-&lt;p&gt;¹it is popular to use cryptographic fingerprints to avoid the inconvenience of arbitrary-sized keys.&lt;/p&gt;
-</description>
+      <description>Collision resolution Hash collisions in hash tables are unevitable, and therefore every proper implementation needs a form of collision resolution. Collision resolution is the name of the class of algorithms and techniques used to organize and resolve the case where two entries in the table hash to the same bucket.
+It turns out that the choice and implementation of collision resolution is absolutely critical for the performance of the table, because while hash tables are often mistaken for having \(O(1)\) lookups, they do in reality and theory have a sligthly more complicated behavior.</description>
     </item>
     
     <item>
@@ -69,112 +27,8 @@
       <pubDate>Thu, 08 Dec 2016 00:00:00 +0000</pubDate>
       
       <guid>http://ticki.github.io/blog/seahash-explained/</guid>
-      <description>&lt;script type=&#34;text/javascript&#34;
-  src=&#34;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;&gt;
-&lt;/script&gt;
-
-&lt;p&gt;So, not so long ago, I designed &lt;a href=&#34;https://github.com/ticki/tfs/tree/master/seahash&#34;&gt;SeaHash&lt;/a&gt;, an alternative hash algorithm with performance better than most (all?) of the existing non-cryptographic hash functions available. I designed it for checksumming for a file system, I&#39;m working on, but I quickly found out it was sufficient for general hashing.&lt;/p&gt;
-
-&lt;p&gt;It blew up. I got a lot of cool feedback, and yesterday it was picked as &lt;a href=&#34;https://this-week-in-rust.org/blog/2016/12/06/this-week-in-rust-159/&#34;&gt;crate of the week&lt;/a&gt;. It shows that there is some interest in it, so I want to explain the ideas behind it.&lt;/p&gt;
-
-&lt;h1 id=&#34;hashing-an-introduction&#34;&gt;Hashing: an introduction&lt;/h1&gt;
-
-&lt;p&gt;The basic idea of hashing is to map data with patterns in it to pseudorandom values. It should be designed such that only few collisions happen.&lt;/p&gt;
-
-&lt;p&gt;Simply put, the hash function should behave like a pseudorandom function (PRF) producing a seemingly random stream from a non-random stream. It is similar to pseudorandom functions, in a sense, with difference that they must take variable input.&lt;/p&gt;
-
-&lt;p&gt;Formally, perfect PRFs are defined as follows:&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\(f : \{0, 1\}^n \to \{0, 1\}^n\)&lt;/span&gt; is a perfect PRF if and only if given a distribution &lt;span  class=&#34;math&#34;&gt;\(d : \{0, 1\}^n \to \left[0,1\right]\)&lt;/span&gt;, &lt;span  class=&#34;math&#34;&gt;\(f\)&lt;/span&gt; maps inputs following the distribution &lt;span  class=&#34;math&#34;&gt;\(d\)&lt;/span&gt; to the uniform distribution.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Note that there is a major difference between cryptographic and non-cryptographic hash functions. SeaHash is not cryptographic, and that&#39;s very important to understand: It doesn&#39;t aim to be. It aims to give a good hash quality, but not cryptographic guarentees.&lt;/p&gt;
-
-&lt;h1 id=&#34;constructing-a-hash-function-from-a-prf&#34;&gt;Constructing a hash function from a PRF&lt;/h1&gt;
-
-&lt;p&gt;There are various ways to construct a variable-length hash function from a PRF. The most famous one is Merkle–Damgård construction. We will focus on this.&lt;/p&gt;
-
-&lt;p&gt;There are multiple ways to do Merkle–Damgård construction. The most famous one is the wide-pipe construction. It works by having a state, which combined with one block of the input data at a time. The final state will then be the hash value. This combining function is called a &amp;quot;compression function&amp;quot;. It takes two blocks of same length and maps it to one: &lt;span  class=&#34;math&#34;&gt;\(f : \{0, 1\}^n \times \{0, 1\}^n \to \{0, 1\}^n\)&lt;/span&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[h = f(f(f(\ldots, b_0), b_1), b_2)\]&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;It is important that this compression emits pseudorandom behavior, and that&#39;s where PRFs comes in. For general-purpose hash function where we don&#39;t care about security, the construction usually looks like this:&lt;/p&gt;
-
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[f(a, b) = p(a \oplus b)\]&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;This of course is commutative, but that doesn&#39;t matter, because we don&#39;t need non-commutativity in the Merkle–Damgård construction.&lt;/p&gt;
-
-&lt;h1 id=&#34;choosing-a-prf&#34;&gt;Choosing a PRF&lt;/h1&gt;
-
-&lt;p&gt;The &lt;a href=&#34;http://www.pcg-random.org/&#34;&gt;PCG family of PRFs&lt;/a&gt; is my favorite PRF I&#39;ve seen so far:&lt;/p&gt;
-
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\begin{align*}
-x &amp;\gets p \otimes x \\
-x &amp;\gets x \oplus ((x \gg 32) \gg (x \gg 60)) \\
-x &amp;\gets p \otimes x
-\end{align*}\]&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;(&lt;span  class=&#34;math&#34;&gt;\(\otimes\)&lt;/span&gt; means modular multiplication)&lt;/p&gt;
-
-&lt;p&gt;The PCG paper goes into depth on why this. In particular, it is a quite uncommon to use these kinds of non-fixed shifts.&lt;/p&gt;
-
-&lt;p&gt;This is a bijective function, which means that we can&#39;t ever have less entropy than the input, which is a good property to have in a hash function.&lt;/p&gt;
-
-&lt;h1 id=&#34;parallelism&#34;&gt;Parallelism&lt;/h1&gt;
-
-&lt;p&gt;This construction of course relies on dependencies between the states, rendering it impossible to parallelize.&lt;/p&gt;
-
-&lt;p&gt;We need a way to be able to independently calculate multiple block updates. With a single state, this is simply not possible, but fear not, we can add multiple states.&lt;/p&gt;
-
-&lt;p&gt;Instruction-level parallelism means that we don&#39;t even need to fire up multiple threads (which would be quite expensive), but simply exploit CPU&#39;s instruction pipelines.&lt;/p&gt;
-
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/seahash_state_update_diagram.svg&#34; alt=&#34;A diagram of the new design.&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
-
-&lt;p&gt;In the above diagram, you can see a 4-state design, where every state except the first is shifted down. The first state (&lt;span  class=&#34;math&#34;&gt;\(a\)&lt;/span&gt;) gets the last one (&lt;span  class=&#34;math&#34;&gt;\(d\)&lt;/span&gt;) after being combined with the input block (&lt;span  class=&#34;math&#34;&gt;\(D\)&lt;/span&gt;) through our PRF:&lt;/p&gt;
-
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\begin{align*}
-a&#39; &amp;= b \\
-b&#39; &amp;= c \\
-c&#39; &amp;= d \\
-d&#39; &amp;= f(a \oplus D) \\
-\end{align*}\]&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;It isn&#39;t obvious how this design allows parallelism, but it has to do with the fact that you can unroll the loop, such that the shifts aren&#39;t needed. In particular, after 4 rounds, everything is back at where it started:&lt;/p&gt;
-
-&lt;p&gt;&lt;span  class=&#34;math&#34;&gt;\[\begin{align*}
-a &amp;\gets f(a \oplus B_1) \\
-b &amp;\gets f(b \oplus B_2) \\
-c &amp;\gets f(c \oplus B_3) \\
-d &amp;\gets f(d \oplus B_4) \\
-\end{align*}\]&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;If we take 4 rounds every iteration, we get 4 independent state updates, which are run in parallel.&lt;/p&gt;
-
-&lt;p&gt;This is also called an &lt;em&gt;alternating 4-state Merkle–Damgård construction&lt;/em&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;finalizing-the-four-states&#34;&gt;Finalizing the four states&lt;/h2&gt;
-
-&lt;p&gt;Naively, we would just XOR the four states (which have difference initialization vectors, and hence would not commute).&lt;/p&gt;
-
-&lt;p&gt;There are some issues: What if the input doesn&#39;t divide our 4 blocks? Well, the simple solution is of course padding, but that gives us another issue: how do we distinguish between padding and normal zeros?&lt;/p&gt;
-
-&lt;p&gt;We XOR the length with the hash value. Unfortunately, this is obviously not discrete, since appending another zero would then only affect the value slightly, so we need to run it through our PRF:&lt;/p&gt;
-
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/seahash_finalization_diagram.svg&#34; alt=&#34;SeaHash finalization&#34;&gt;&lt;/figure&gt;&lt;/p&gt;
-
-&lt;p&gt;One concern I&#39;ve heard is that XOR is commutative, and hence permuting the states wouldn&#39;t affect the output. But that&#39;s simply not true: Each state has distinct initial value, making each lane hash differently.&lt;/p&gt;
-
-&lt;h1 id=&#34;putting-it-all-together&#34;&gt;Putting it all together&lt;/h1&gt;
-
-&lt;p&gt;We can finally put it all together:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://ticki.github.io/img/seahash_construction_diagram.svg&#34;&gt;&lt;figure&gt;&lt;img src=&#34;http://ticki.github.io/img/seahash_construction_diagram.svg&#34; alt=&#34;SeaHash construction&#34;&gt;&lt;/figure&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;(click to zoom)&lt;/p&gt;
-
-&lt;p&gt;You can see the code and benchmarks &lt;a href=&#34;https://github.com/ticki/tfs/tree/master/seahash&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-</description>
+      <description>So, not so long ago, I designed SeaHash, an alternative hash algorithm with performance better than most (all?) of the existing non-cryptographic hash functions available. I designed it for checksumming for a file system, I&#39;m working on, but I quickly found out it was sufficient for general hashing.
+It blew up. I got a lot of cool feedback, and yesterday it was picked as crate of the week. It shows that there is some interest in it, so I want to explain the ideas behind it.</description>
     </item>
     
   </channel>

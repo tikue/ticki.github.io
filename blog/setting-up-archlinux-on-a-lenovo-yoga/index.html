@@ -1,0 +1,724 @@
+
+<!DOCTYPE html>
+<html lang="en-us">
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+        <meta property="og:title" content=" Setting up ArchLinux on a Lenovo Yoga &middot;  Ticki&#39;s blog" />
+        <meta property="og:site_name" content="Ticki&#39;s blog" />
+        <meta property="og:url" content="http://ticki.github.io/blog/setting-up-archlinux-on-a-lenovo-yoga/" />
+
+    
+        <meta property="og:type" content="article" />
+        <meta property="og:article:published_time" content="2017-05-30T00:00:00Z" />
+        <meta property="og:article:tag" content="linux" />
+        <meta property="og:article:tag" content="notes" />
+        
+
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@ticki_" />
+        <meta name="twitter:creator" content="@ticki_" />
+        <meta name="twitter:title" content="Setting up ArchLinux on a Lenovo Yoga" />
+        <meta name="twitter:description" content="A tutorial-ish bunch of notes on Linux on Lenovo Yoga." />
+        <meta name="twitter:url" content="http://ticki.github.io/blog/setting-up-archlinux-on-a-lenovo-yoga/" />
+    
+
+        <title> Setting up ArchLinux on a Lenovo Yoga &middot;  Ticki&#39;s blog</title>
+
+    
+        <meta name="description" content="A tutorial-ish bunch of notes on Linux on Lenovo Yoga." />
+    
+
+        <meta name="p:domain_verify" content="fc173d84e3a4de948ed4bda2908afd3e"/>
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        
+        
+
+    
+        <link href="http://ticki.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Ticki&#39;s blog" />
+    
+
+    
+        <link rel="canonical" href="http://ticki.github.io/blog/setting-up-archlinux-on-a-lenovo-yoga/" />
+
+    
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "Setting up ArchLinux on a Lenovo Yoga",
+        "author": {
+            "@type": "Person",
+            "name": "http://profiles.google.com/?rel=author"
+        },
+        "datePublished": "2017-05-30",
+        "description": "A tutorial-ish bunch of notes on Linux on Lenovo Yoga.",
+        "wordCount": 1854
+    }
+
+    </script>
+
+    <script type="text/javascript">
+    
+    
+      var disqus_shortname = 'http-ticki-github-io';
+      var disqus_identifier = 'http:\/\/ticki.github.io\/blog\/setting-up-archlinux-on-a-lenovo-yoga\/';
+      var disqus_title = 'Setting up ArchLinux on a Lenovo Yoga';
+      var disqus_url = 'http:\/\/ticki.github.io\/blog\/setting-up-archlinux-on-a-lenovo-yoga\/';
+    
+
+    </script>
+    
+
+    <style>
+@charset "UTF-8";article,header,img,main,nav,section{display:block}blockquote,p,pre,ul{margin:2em auto}#wrapper,pre{width:100%;box-sizing:border-box}#nav,#wrapper,code{position:relative}#nav,body{background:#fff}#menu,blockquote,pre code{background:0 0}#menu,#menu .menu-header,#menu .menu-list,#wrapper,.post-nav .post-nav-item .post-nav-teaser .post-nav-info,blockquote,pre{box-sizing:border-box}img{border:0;max-width:100%;height:auto;margin:2.5em auto}html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}code,pre{font-family:monospace,monospace;font-size:1em}@font-face{font-family:'Merriweather Sans';font-style:normal;font-weight:300;src:local("Merriweather Sans Light"),local("MerriweatherSans-Light"),url(//fonts.gstatic.com/s/merriweathersans/v5/6LmGj5dOJopQKEkt88GowY_zIojJi0m4a5Z6tRh6itY.woff) format("woff")}@font-face{font-family:'Merriweather Sans';font-style:normal;font-weight:400;src:local("Merriweather Sans Regular"),local("MerriweatherSans-Regular"),url(//fonts.gstatic.com/s/merriweathersans/v5/AKu1CjQ4qnV8MUltkAX3sL2aU247V0zTzydO4RoO9Ok.woff) format("woff")}@font-face{font-family:'Merriweather Sans';font-style:normal;font-weight:700;src:local("Merriweather Sans Bold"),local("MerriweatherSans-Bold"),url(//fonts.gstatic.com/s/merriweathersans/v5/6LmGj5dOJopQKEkt88GowQfd-b-I5PxxcmB4_-MNcqw.woff) format("woff")}@font-face{font-family:'Merriweather Sans';font-style:normal;font-weight:800;src:local("Merriweather Sans ExtraBold"),local("MerriweatherSans-ExtraBold"),url(//fonts.gstatic.com/s/merriweathersans/v5/6LmGj5dOJopQKEkt88GowWT7sFQ1Iz1BbpcuCPlgc9Q.woff) format("woff")}@font-face{font-family:'Merriweather Sans';font-style:italic;font-weight:300;src:local("Merriweather Sans Light Italic"),local("MerriweatherSans-LightItalic"),url(//fonts.gstatic.com/s/merriweathersans/v5/nAqt4hiqwq3tzCecpgPmVX9UU5BmOJGkLxUCVv5VXdc.woff) format("woff")}@font-face{font-family:'Merriweather Sans';font-style:italic;font-weight:400;src:local("Merriweather Sans Italic"),local("MerriweatherSans-Italic"),url(//fonts.gstatic.com/s/merriweathersans/v5/3Mz4hOHzs2npRMG3B1ascf0KIgDhPIHb_R-SWdtqte8.woff) format("woff")}@font-face{font-family:'Merriweather Sans';font-style:italic;font-weight:700;src:local("Merriweather Sans Bold Italic"),local("MerriweatherSans-BoldItalic"),url(//fonts.gstatic.com/s/merriweathersans/v5/nAqt4hiqwq3tzCecpgPmVYM8pfYvjMoOxygpzLVILAs.woff) format("woff")}@font-face{font-family:Inconsolata;font-style:normal;font-weight:400;src:local("Inconsolata"),url(//fonts.gstatic.com/s/inconsolata/v12/BjAYBlHtW3CJxDcjzrnZCIbN6UDyHWBl620a-IRfuBk.woff) format("woff")}@font-face{font-family:Inconsolata;font-style:normal;font-weight:700;src:local("Inconsolata Bold"),local("Inconsolata-Bold"),url(//fonts.gstatic.com/s/inconsolata/v12/AIed271kqQlcIRSOnQH0yTqR_3kx9_hJXbbyU8S6IN0.woff) format("woff")}@font-face{font-family:icons;src:url(/fonts/icons.eot?9273991);src:url(/fonts/icons.eot?9273991#iefix) format("embedded-opentype"),url(/fonts/icons.woff?9273991) format("woff"),url(/fonts/icons.ttf?9273991) format("truetype"),url(/fonts/icons.svg?9273991#icons) format("svg");font-weight:400;font-style:normal}[class^=icon-]:before{font-family:icons;font-style:normal;font-weight:400;speak:none;display:inline-block;text-decoration:inherit;width:1em;margin-right:.2em;text-align:center;font-variant:normal;text-transform:none;line-height:1em;margin-left:.2em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.icon-arrow-left:before{content:'\e804'}.icon-arrow-right:before{content:'\e807'}.icon-rss:before{content:'\e808'}.icon-menu:before{content:'\e809'}body{margin:0;font:300 1em/1.5em 'Merriweather Sans',sans-serif;color:#595B66}blockquote,i{font-style:italic}code,pre{font-family:Inconsolata,monospace}a,blockquote,code,i{font-weight:400}::-moz-selection{color:#222;background:#D6EDFF;text-shadow:none}::-moz-selection,::selection{color:#222;background:#D6EDFF;text-shadow:none}a{background-color:transparent;color:inherit;text-decoration:none;transition:all ease-out .2s}.post-content a{border-bottom:2px solid #36D995}h1,h4{text-rendering:optimizeLegibility;color:#1F2026}h1{font-size:2em;line-height:1em;margin:2em 0 -.5em}h4{font-size:1.25em;line-height:1.2em;margin:2.4em 0 -.8em}ul{list-style:none;padding-left:3em}blockquote{padding:0 1em;border-left:.25em solid #D4D5D9;color:#595B66}blockquote *{margin:1em auto}blockquote :first-child{margin-top:0}blockquote :last-child{margin-bottom:0}i{color:#363740}code{display:inline-block;top:-1px;padding:3px 6px;margin:-1px 2px;font-size:.875em;line-height:1.143em;background:#E1E2E6;color:#000;border-radius:2px}pre{padding:1em;white-space:pre;overflow:auto;background:#9D9FA6;color:#fff}pre code{position:static;top:auto;font-size:1em;line-height:1.5em;white-space:-moz-pre-wrap;white-space:pre-wrap;vertical-align:inherit;border:none;padding:0}#menu .menu-header:before,.post .post-title:before{border-bottom:4px solid #36D995;content:''}.inner{max-width:48em;margin:0 auto;padding:0 1em}#wrapper{min-height:100vh;padding-bottom:6em;background:#F2F3F5}#push{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);-webkit-transform-style:preserve-3d;transform-style:preserve-3d;opacity:1}#nav{z-index:70;transition:all ease-out .4s;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);-webkit-transform-style:preserve-3d;transform-style:preserve-3d;opacity:1}#nav:after{clear:both;content:'';display:table}#nav .nav-logo{float:left;height:2em;padding:1em;max-width:50%}#nav .nav-logo img{width:auto;max-width:none;height:2em;margin:0}#nav .nav-menu{float:right}#nav .nav-menu:after{clear:both;content:'';display:table}#nav .nav-menu a{display:block;width:1em;height:1em;line-height:1em;padding:1.5em;text-align:center;float:left;cursor:pointer}#nav .nav-menu a i:before{margin:auto}#menu{display:none;position:fixed;left:50%;top:5%;width:30em;height:90%;margin-left:-15em;padding:3em 0 0;overflow:hidden;transition:all ease-out .3s;-webkit-transform:translate3d(0,2em,0);transform:translate3d(0,2em,0);-webkit-transform-style:preserve-3d;transform-style:preserve-3d;opacity:0;z-index:100}@media only screen and (max-width:50em){#menu{width:90%;left:5%;margin-left:auto}}#menu .menu-header{position:absolute;left:0;top:0;width:100%;height:3.5em;padding:1em 1.5em .5em;margin-bottom:1em;line-height:2em;z-index:110;background:#fff}#menu .menu-header:before{position:absolute;left:-5%;bottom:-1em;width:110%;height:2em;background:#fff;box-shadow:0 .125em .125em rgba(0,0,0,.1);-webkit-transform:rotate(2.5deg);transform:rotate(2.5deg);transition:all ease-out .2s;z-index:115}#menu .menu-header:after{clear:both;content:'';display:table}#menu .menu-header .menu-label{position:relative;display:block;float:left;z-index:120}#menu .menu-header .menu-close{position:relative;display:block;float:right;width:2em;height:2em;padding:1em;margin:-1em -1.5em -1em 0;cursor:pointer;z-index:125}#menu .menu-header .menu-close:after,#menu .menu-header .menu-close:before{content:'';position:absolute;left:50%;top:50%;background:#9D9FA6;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.overlay,.overlay:before{top:0;width:100%;height:100%}#menu .menu-header .menu-close:after{width:2px;height:1em;margin:-.5em 0 0 -1px}#menu .menu-header .menu-close:before{width:1em;height:2px;margin:-1px 0 0 -.5em}#menu .menu-list{position:relative;list-style:none;margin:0;padding:2em 0;height:100%;overflow-x:hidden;overflow-y:scroll;background:#fff}.overlay{position:fixed;left:0;z-index:80;display:none}.overlay:before{content:'';position:absolute;left:0;background:#1F2026;opacity:0;transition:all ease-out .3s;-webkit-transform-style:preserve-3d;transform-style:preserve-3d}.post{position:relative;z-index:20}.post .post-meta{display:block;font-size:.75em;line-height:1.334em;font-weight:400;margin-bottom:1.334em}.post .post-title{position:relative;color:#000;font-size:2em;line-height:1.375em;font-weight:800;text-indent:-1px;margin:.25em 0 .75em}.post .post-title:before{position:absolute;left:0;bottom:-.334em;width:1em;margin-bottom:-2px}.post .post-header{padding:4em 0 0;margin-bottom:3em}.post-footer .post-share a span{display:none}.post-nav .post-nav-item{position:fixed;top:50%;display:block;margin-top:-4em;overflow:hidden;border-radius:10em;transition:none}@media only screen and (max-width:70em){.post-nav .post-nav-item{position:absolute;top:auto;margin:auto;max-width:50%}}.post-nav .post-nav-item.post-nav-next{left:0;text-align:left}.post-nav .post-nav-item.post-nav-next .post-nav-icon{float:left}.post-nav .post-nav-item.post-nav-next .post-nav-icon i{left:-.05em}.post-nav .post-nav-item.post-nav-next .post-nav-info{padding-left:6em}.post-nav .post-nav-item.post-nav-prev{right:0;text-align:right}.post-nav .post-nav-item.post-nav-prev .post-nav-icon{float:right}.post-nav .post-nav-item.post-nav-prev .post-nav-icon i{right:-.05em}.post-nav .post-nav-item.post-nav-prev .post-nav-info{padding-right:6em}.post-nav .post-nav-item .post-nav-teaser{display:block;padding:1em;transition:all ease-out .2s;max-width:25em;overflow:visible}.post-nav .post-nav-item .post-nav-teaser:after{clear:both;content:'';display:table}.post-nav .post-nav-item .post-nav-teaser .post-nav-icon{display:block;width:5em;height:5em;line-height:5em;text-align:center;box-sizing:border-box;border-radius:10em;border:1px solid #36D995;box-shadow:0 0 0 0 transparent;transition:all ease-out .1s;background:#F2F3F5}.post-nav .post-nav-item .post-nav-teaser .post-nav-icon i{position:relative;font-size:2em}@media only screen and (max-width:30em){.post-nav .post-nav-item .post-nav-teaser .post-nav-icon{width:4em;height:4em;line-height:4em}.post-nav .post-nav-item .post-nav-teaser .post-nav-icon i{font-size:1.5em}}.post-nav .post-nav-item .post-nav-teaser .post-nav-icon i:before{margin:auto}.post-nav .post-nav-item .post-nav-teaser .post-nav-info{display:none;width:100%;transition:all ease-out .2s}.post-nav .post-nav-item .post-nav-teaser .post-nav-info .post-nav-title{display:block;max-height:1.25em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin:1.25em 0 .25em;font-size:1em;line-height:1.25em;font-weight:700;color:#363740}.post-nav .post-nav-item .post-nav-teaser .post-nav-info .post-nav-excerpt{display:block;max-height:1.334em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin:0;font-size:.75em;line-height:1.334em;font-weight:400;color:#9D9FA6}
+</style>
+
+
+    </head>
+    <body class="home-template" style="display: none;">
+      <section id="wrapper">
+        <div id="ajax-container">
+          <nav id="nav" class="nav">
+            <div class="nav-logo">
+              <a href="http://ticki.github.io/">
+      			  	
+      			  	
+      			  	<img src="/logo.png" alt="Logo"/>
+      			  	
+              </a>
+			  	    
+            </div>
+            <div class="nav-menu">
+              <a class="menu" href="https://twitter.com/ticki_"><i class="icon-twitter"></i></a>
+              <a class="rss" href="">
+                <i class="icon-rss"></i>
+              </a>
+                
+                <a class="menu" data-action="toc" data-target="toc"><i class="icon-location"></i></a>
+                
+                
+                <a class="menu" data-action="menu" data-target="menu"><i class="icon-menu"></i></a>
+                
+            </div>
+          </nav>
+
+
+<main class="content" role="main">
+	<article class="post">
+		<div class="inner">
+
+			<div id="push">
+
+  			<header class="post-header">
+  				<span class="post-meta">
+						<span class="post-date">30 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">9 min.</span> (<span class="word-count">1854</span> words)</span></span>
+  				</span>
+  				<div class="clear"></div>
+  				<h1 class="post-title">Setting up ArchLinux on a Lenovo Yoga</h1>
+  			</header>
+
+  			<section class="post-content">
+  				<p>So, I recently broke my computer by spilling tea unto it, so I needed a new
+computer, and found the Lenovo Yoga 710, which is pretty lightweight and yet
+strong. As the resources on installing Linux (ArchLinux specifically) on this
+machine are barely existing, I thought I had to make this post, explaining
+various critical thing about the installation.</p>
+
+<p>Bear in mind that all this is made from notes and what I recall from when I
+installed it (yesterday), so there might be minor inaccuracies.</p>
+
+<h1 id="goals">Goals</h1>
+
+<p>The goal is to get started with a system, which is fully encrypted, supports
+wifi, sounds and is usable in general.</p>
+
+<p>There might be things, which I will not cover. In that case, the ArchLinux wiki
+is your friend.</p>
+
+<h1 id="creating-the-arch-usb-flash-media">Creating the Arch USB flash media</h1>
+
+<p>Grab the torrent from <a href="https://archlinux.org">their website</a> and load it onto
+an USB flash. Refer to
+<a href="https://wiki.archlinux.org/index.php/Category:Getting_and_installing_Arch">this</a>
+for details.</p>
+
+<h1 id="booting-to-the-flash-media">Booting to the flash media</h1>
+
+<p>You will likely initially have Windows installed on the machine. Due to
+fastboot, you must do some special steps to close it. In particular, you need
+to hold down shift while clicking &quot;shutdown&quot;.</p>
+
+<p>Before we boot to our flash, you must enable legacy booting. This is done by
+entering the UEFI menu, by holding down F2 while you start the computer. An
+interface should appear, navigate to the tab that says something like &quot;Boot&quot;.
+Then enable all the options with &quot;legacy booting&quot; or &quot;legacy USB&quot; or similar.</p>
+
+<p>Now, you can save the settings and restart the computer with the USB flash in
+it. While you start the computer, hold down F12, which will cause a menu of
+bootable devices to show up.</p>
+
+<p>Hopefully, the flash drive should appear. Select this, and you should start up.</p>
+
+<h1 id="getting-internet-connection">Getting internet connection</h1>
+
+<p>To get any further, you need to connect to the internet. You can either use
+Ethernet cable (assuming you have an adapter, as the machine in question has no
+ethernet port) or use Wifi, as I explain below.</p>
+
+<p>Write <code>wifi-menu</code> and you should get a TUI-like interface allowing you to
+choose your network. This should etablish connection to the internet.</p>
+
+<p>To test the internet connection, do <code>ping google.com</code>.</p>
+
+<h1 id="setting-up-the-partitions">Setting up the partitions</h1>
+
+<p>Now, we want to set up the disk, which we will install ArchLinux on. This
+disk must first be properly partitioned for the usage.</p>
+
+<p>I will assume your disk is <code>/dev/sda</code> for now. If not, substitute this with the
+disk, you want to install Arch on (if you don't know which disk, try to run
+<code>fdisk -l</code> and see if that solves your question).</p>
+
+<p>To create the partitions, we use the cgdisk utility:</p>
+
+<pre><code>cgdisk /dev/sda
+</code></pre>
+
+<p>This should give you a TUI. Delete all the existing partitions, and create the
+following:</p>
+
+<ol>
+<li>128 MB¹ partition named &quot;EFI&quot; with type &quot;EFI partition&quot; (hex code <code>ef00</code>).</li>
+<li>256 MB partition named &quot;boot&quot; with default type (just press enter when it asks for type).</li>
+<li>The rest (press enter to fill out the rest) forming a partition named &quot;fs&quot;
+with default type (again, just press enter).</li>
+</ol>
+
+<p>The utility will probably ask for where to start and end. Just press enter and
+let it fill out the values.</p>
+
+<p>Don't be freaked out if the highest row contains some small space, that you
+can't use. This space is usually reserved, and we won't touch it.</p>
+
+<p>Now click &quot;Write&quot; to write the new partition table to the disk.</p>
+
+<p>¹Note that the utility takes units, so you don't need to calculate the number
+ of sectors yourself.</p>
+
+<h1 id="setting-up-the-file-system">Setting up the file system</h1>
+
+<p>Now, we want to initialize the file system of the two first partitions
+(important: do not touch the last partition yet!):</p>
+
+<pre><code>mkfs.vfat -F32 /dev/sda1
+mkfs.ext2 /dev/sda2
+</code></pre>
+
+<p>Don't change the FS types. These are for the bootloader and thus only support a
+limited collections of file systems.</p>
+
+<p>Next, we want to set up our main partition (<code>/dev/sda3</code>), which is going to be
+encrypted at block-level:</p>
+
+<pre><code>cryptsetup -c aes-xts-plain64 -y --use-random luksFormat /dev/sda3
+</code></pre>
+
+<p>This will prompt you for a password, which you will have to remember. Use a
+strong password.</p>
+
+<p>Next, we want to mount this partition:</p>
+
+<pre><code>cryptsetup luksOpen /dev/sda3 luks
+</code></pre>
+
+<p>Now that we have this going, we are going to set up some logical/virtual
+volumes within this physical partition:</p>
+
+<pre><code>pvcreate /dev/mapper/luks
+vgcreate vg0 /dev/mapper/luks
+# This is the swap partition, change the size (8G) if necessary.
+lvcreate --size 8G vg0 --name swap
+# This is the rest of the disk, which will be used to store the root of the filesystem.
+lvcreate -l +100%FREE vg0 --name root
+</code></pre>
+
+<p>We will now set up the swap logical volume:</p>
+
+<pre><code>mkswap /dev/mapper/vg0-swap
+</code></pre>
+
+<p>Now we can create the filesystem. I choose btrfs because it's the best the
+Linux kernel has IMO:</p>
+
+<pre><code>mkfs.btrfs /dev/mapper/vg0-root
+</code></pre>
+
+<h1 id="bootstrapping-the-system">Bootstrapping the system</h1>
+
+<p>Now, first we want to mount it to <code>/mnt</code>, which we can do like this:</p>
+
+<pre><code>mount /dev/mapper/vg0-root /mnt
+mkdir /mnt/boot
+mount /dev/sda2 /mnt/boot
+mkdir /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
+</code></pre>
+
+<p>Next, we will install ArchLinux on the disk!</p>
+
+<pre><code>pacstrap /mnt base base-devel efibootmgr grub-efi-x86_64
+</code></pre>
+
+<p>The disk should have Arch now, but it can't boot yet. First, let's chroot into it:</p>
+
+<pre><code>arch-chroot /mnt
+</code></pre>
+
+<h1 id="basic-setup">Basic setup</h1>
+
+<p>Set the locale:</p>
+
+<pre><code>echo LANGUAGE=en_US &gt;&gt; /etc/locale.conf
+echo LANG=en_US.UTF-8 &gt;&gt; /etc/locale.conf
+echo LC_ALL=C &gt;&gt; /etc/locale.conf
+</code></pre>
+
+<p>Set the hw clock:</p>
+
+<pre><code>rm /etc/localtime
+ln -s /usr/share/zoneinfo/America/Chicago /etc/localtime
+hwclock --systohc --utc
+</code></pre>
+
+<p>Set the root password:</p>
+
+<pre><code>passwd
+</code></pre>
+
+<h2 id="creating-your-user">Creating your user</h2>
+
+<p>Next, you probably want to create a user:</p>
+
+<pre><code>useradd -m -g users -G wheel YOUR_USERNAME_HERE
+</code></pre>
+
+<p>The <code>-G wheel</code> ensures that you can do <code>sudo</code>.</p>
+
+<p>Next, set the password for this user:</p>
+
+<pre><code>passwd YOUR_USERNAME_HERE
+</code></pre>
+
+<h1 id="configuring-the-kernel">Configuring the kernel</h1>
+
+<p>Open up <code>/etc/mkinitcpio.conf</code> in your editor of choice.</p>
+
+<h2 id="encryption">Encryption</h2>
+
+<p>Add <code>encrypt</code> and <code>lvm2</code> to the <code>HOOKS</code> line, but BEFORE <code>filesystems</code>, so it looks something like this:</p>
+
+<pre><code>HOOKS=&quot;base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck&quot;
+</code></pre>
+
+<h2 id="enable-nouveau-and-btrfs">Enable nouveau and btrfs</h2>
+
+<p><code>nouveau</code> is the open-source NVIDIA driver, which I found to work better than
+the proprietary. <code>btrfs</code> is needed because of our file system.</p>
+
+<p>Add <code>nouveau</code> and <code>btrfs</code> to <code>MODULES</code> so the line reads:</p>
+
+<pre><code>MODULES=&quot;btrfs nouveau&quot;
+</code></pre>
+
+<h2 id="generate-the-initial-ramdisk-image">Generate the initial ramdisk image</h2>
+
+<p>Simply run:</p>
+
+<pre><code>mkinitcpio -p linux
+</code></pre>
+
+<h1 id="setting-up-a-bootloader">Setting up a bootloader</h1>
+
+<p>We'll choose GRUB as our bootloader.</p>
+
+<p>First, install it:</p>
+
+<pre><code>grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=&quot;Red Hat Enterprise Linux&quot; --recheck --debug
+</code></pre>
+
+<p>Note that the &quot;Red Hat Enterprise Linux&quot; is necessary on the hardware, we use, due to some weird whitelist of bootloader IDs.</p>
+
+<h2 id="configuring-grub">Configuring GRUB</h2>
+
+<p>This step is important. Without this, you won't be able to boot.</p>
+
+<p>Since there are issues with ACPI IRQs on our computer, we will disable those.
+Add <code>acpi=noirq</code> to <code>/etc/default/grub</code> in <code>GRUB_CMDLINE_LINUX_DEFAULT</code>, so
+that the line looks something like</p>
+
+<pre><code>GRUB_CMDLINE_LINUX_DEFAULT=&quot;acpi=noirq quiet splash&quot;
+</code></pre>
+
+<p>Next, we want to tell the initial Linux kernel that our disk is encrypted. We
+can do so by adding <code>cryptdevice=/dev/sda3:luks:allow-discards</code> in the
+<code>GRUB_CMDLINE_LINUX</code> variable, so it looks something like this:</p>
+
+<pre><code>GRUB_CMDLINE_LINUX=&quot;cryptdevice=/dev/sda3:luks:allow-discards&quot;
+</code></pre>
+
+<p>Finally, we can generate the config:</p>
+
+<pre><code>grub-mkconfig -o /boot/grub/grub.cfg
+</code></pre>
+
+<h1 id="reboot">Reboot</h1>
+
+<p>You need to be careful not to destroy anything here, as the initial unmounting
+can contain all sorts of weird operations setting up stuff etc., so do:</p>
+
+<pre><code>exit
+cd
+umount -R /mnt
+swapoff -a
+reboot
+</code></pre>
+
+<p>You should now boot up to an ArchLinux system.</p>
+
+<h1 id="internet">Internet</h1>
+
+<p>Again, unless you have Ethernet, use <code>wifi-menu</code> initially.</p>
+
+<h1 id="disableing-the-beep-sound">Disableing the beep sound</h1>
+
+<p>First, disable to module</p>
+
+<pre><code>rmmod pcspkr
+</code></pre>
+
+<p>Then blacklist the module, so you won't have to repeat on reboot:</p>
+
+<pre><code>echo &quot;blacklist pcspkr&quot; &gt; /etc/modprobe.d/nobeep.conf
+</code></pre>
+
+<h1 id="getting-audio">Getting audio</h1>
+
+<p>I tried a bunch of things, but found that installing <code>pulseaudio</code> and co. worked the best:</p>
+
+<pre><code>pacman -S pulseaudio pulseaudio-jack pulseaudio-alsa
+</code></pre>
+
+<p>Audio should now work.</p>
+
+<h1 id="power-management-and-cpu-frequency-scaling">Power management and CPU frequency scaling</h1>
+
+<p>TLP is a deamon that manages battery and power for you. It's pretty simple and
+works very well:</p>
+
+<pre><code>pacman -S tlp
+</code></pre>
+
+<p>To avoid having the machine getting too hot, we install <code>thermald</code>, which will
+control the fans based on the CPU usage:</p>
+
+<pre><code>pacman -S thermald
+systemctl start thermald
+</code></pre>
+
+<h1 id="setting-up-xorg">Setting up Xorg</h1>
+
+<p>Next, we want to set up Xorg, which can be done by simply:</p>
+
+<pre><code>pacman -S xorg-server xorg-apps xorg-xinit
+</code></pre>
+
+<p>Next, install the window manager or desktop environment of your choice. I
+personally like i3, but pick what you want.</p>
+
+<p>I recommend installing a display manager, like <code>slim</code>:</p>
+
+<pre><code>pacman -S slim
+</code></pre>
+
+<h2 id="xinitrc"><code>.xinitrc</code></h2>
+
+<p>In order to get QT to use GTK's style, add this to your <code>.xinitrc</code>:</p>
+
+<pre><code>export QT_STYLE_OVERRIDE=GTK+
+</code></pre>
+
+<p>(before <code>xrdb -merge</code>)</p>
+
+<h1 id="touchpad">Touchpad</h1>
+
+<p>Just install <code>xf86-input-synaptics</code>:</p>
+
+<pre><code>pacman -S xf86-input-synaptics
+</code></pre>
+
+<p>It can be a little bothersome, because the touchpad is super sensitive and will sometimes click when writing. Therefore, go to <code>/etc/X11/xorg.conf.d/70-synaptics.conf</code> and set:</p>
+
+<pre><code>Option &quot;FingerLow&quot; &quot;50&quot;
+Option &quot;FingerHigh&quot; &quot;70&quot;
+</code></pre>
+
+<p>If you dislike this driver, try <code>xorg-libinput</code> instead.</p>
+
+<h1 id="basic-desktop-necessities">Basic desktop necessities</h1>
+
+<p>We need a tray icon for battery, network, and volume. We also want to be able
+to control the volume through the respective keys. For this, install these
+utilities:</p>
+
+<pre><code>pacman -S volumeicon networkmanager network-manager-applet cbatticon
+</code></pre>
+
+<p>Make these run when you start your desktop environment or window manager.</p>
+
+<h1 id="fixing-the-font-size">Fixing the font size</h1>
+
+<p>For unknown reasons, the fonts seem to be screwed up, but adjusting the DPI
+doesn't work. If you find a good solution, please leave a comment, but until
+then, I found a working, but ugly solution (visually it looks just like).</p>
+
+<p>First, go to <code>.Xresources</code> and set:</p>
+
+<pre><code>Xft.dpi: 96
+</code></pre>
+
+<p>Then adjust the cursor size to something like this:</p>
+
+<pre><code>Xcursor.size: 20
+</code></pre>
+
+<p>Next, open <code>~/.gtkrc-2.0</code> and <code>~/.config/gtk-3.0/settings.ini</code>, and set the font like this:</p>
+
+<pre><code>gtk-font-name=&quot;DejaVu Sans 13&quot;
+</code></pre>
+
+<p>(if you haven't already, install <code>ttf-dejavu</code>)</p>
+
+<p>Although most GTK applications should work fine now, Firefox is still kinda
+messy with super small UI. I found that going to <code>about:config</code> and setting
+<code>layout.css.devPixelsPerPx</code> to <code>1.5</code> fixed this.</p>
+
+<p>If you use Thunderbird, repeat the instructions for Firefox. You can find
+<code>about:config</code> under <code>Preferences -&gt; Advanced -&gt; Config Editor</code>.</p>
+
+<p>If you think the font in websites looks small in Firefox, go to <code>Preferences -&gt;
+Content</code> and adjust the size to what you like.</p>
+
+<h1 id="firewall">Firewall</h1>
+
+<p>For security, you might want to install a firewall. I recommend <code>ufw</code>, which is
+simple and nice. Simply do:</p>
+
+<pre><code>pacman -S ufw
+ufw enable
+</code></pre>
+
+<p>And it should work. Refer to the UFW docs to information on adding rules etc.
+if necessary.</p>
+
+<h1 id="cleaning-up">Cleaning up</h1>
+
+<p>You can uninstall <code>efibootmgr</code> and <code>wifi-menu</code> if you want to.</p>
+
+<h1 id="finally">Finally</h1>
+
+<p>Reboot!</p>
+
+<pre><code>reboot
+</code></pre>
+
+<p>and hopefully you computer won't explode.</p>
+
+<h1 id="troubleshooting">Troubleshooting</h1>
+
+<p>I ran into one problem, which took me a while to fix. When I booted, it kept
+saying something like <code>a start job started by dev-disk-by...</code>. I ended up
+fixing it by booting to the USB stick and doing:</p>
+
+<pre><code># Mount the disk
+cryptsetup luksOpen /dev/sda3 luks
+mount /dev/mapper/vg0-root /mnt
+mkdir /mnt/boot
+mount /dev/sda2 /mnt/boot
+mkdir /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
+# Install necessary utilities
+pacman -S efibootmgr
+# Reconstruct initrd
+pacman -S linux
+mkinitcpio -p linux
+# Reinstall GRUB
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=&quot;Red Hat Enterprise Linux&quot; --recheck --debug
+grub-mkconfig -o /boot/grub/grub.cfg
+# Remake the swap
+mkswap /dev/mapper/vg0-swap
+# Cleanup
+pacman -Rncs efibootmgr
+</code></pre>
+
+<p>If you get problems with booting, run the above lines in <code>bash</code> and try to
+reboot.</p>
+
+<h1 id="things-i-havent-figured-out">Things I haven't figured out</h1>
+
+<ul>
+<li>Touchscreen. No idea on how to get it working, but I haven't tried much
+either, since I don't really use it.</li>
+</ul>
+
+<h1 id="credits">Credits</h1>
+
+<p>The authors of the ArchLinux wiki deserves a huge &quot;thank you&quot;. That wiki is an
+absolutely amazing resource, for not only ArchLinux but Linux in general.</p>
+
+
+                <hr>
+                <i>Follow me on <a href="https://twitter.com/ticki_">Twitter</a> or <a href="https://twitter.com/ticki">Github</a>.</i>
+  			</section>
+
+  			<footer class="post-footer">
+  				<div class="post-tags">
+            
+            
+                <a href="http://ticki.github.io//tags/linux/">linux</a>
+            
+                <a href="http://ticki.github.io//tags/notes/">notes</a>
+            
+            
+  				</div>
+  				<div class="post-share">
+  					<a class="icon-twitter" href="https://twitter.com/share?text=Setting%20up%20ArchLinux%20on%20a%20Lenovo%20Yoga&url=http%3a%2f%2fticki.github.io%2fblog%2fsetting-up-archlinux-on-a-lenovo-yoga%2f" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+  						<span>Twitter</span>
+  					</a>
+  					<a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fticki.github.io%2fblog%2fsetting-up-archlinux-on-a-lenovo-yoga%2f" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+  						<span>Facebook</span>
+  					</a>
+  					<a class="icon-gplus" href="https://plus.google.com/share?url=http%3a%2f%2fticki.github.io%2fblog%2fsetting-up-archlinux-on-a-lenovo-yoga%2f" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+  						<span>Google+</span>
+  					</a>
+  				</div>
+  			</footer>
+
+  			<aside class="post-comments">
+    
+    
+    <div id="disqus_thread"></div>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    
+    
+</aside>
+
+
+			</div>
+
+			<nav class="post-nav">
+				
+				
+					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/an-atomic-hash-table/">
+						<section class="post-nav-teaser">
+							<span class="post-nav-icon"><i class="icon-arrow-right"></i></span>
+							<span class="post-nav-info">
+								<h4 class="post-nav-title">An Atomic Hash Table</h4>
+								<p class="post-nav-excerpt">A design for a high-performance atomic and linearizable hash table.&hellip;</p>
+							</span>
+						</section>
+					</a>
+				
+				<div class="clear"></div>
+			</nav>
+
+		</div>
+	</article>
+</main>
+
+				<div id="body-class" style="display: none;"></div>
+				<footer id="footer">
+					<section class="credits">
+						<span class="credits-theme">Theme <a href="https://github.com/zenithar/hugo-theme-bleak" target="_blank" rel="nofollow">Bleak</a> by <a href="http://zutrinken.com" target="_blank" rel="nofollow">zutrinken</a></span>
+						<span class="credits-software">Published with <a href="http://gohugo.io" target="_blank" rel="nofollow">Hugo</a></span>
+					</section>
+				</footer>
+				
+<div id="menu" data-target="menu">
+    <div class="menu-header">
+        <span class="menu-label">Menu</span>
+        <a class="menu-close" data-action="menu" data-target="menu"></a>
+    </div>
+
+    <div class="menu-list">
+        
+        
+        <li class="menu-list-item">
+            
+            <a class="home current js-ajax-link" href="/about/">About</a>
+        </li>
+        
+        
+        <li class="menu-list-item">
+            
+            <a class="home current js-ajax-link" href="https://github.com/ticki">GitHub</a>
+        </li>
+        
+        
+        <li class="menu-list-item">
+            
+            <a class="home current js-ajax-link" href="https://twitter.com/ticki_">Twitter</a>
+        </li>
+        
+    </div>
+
+</div>
+
+				
+<div id="tocMenu" data-target="toc">
+    <div class="menu-header">
+        <span class="menu-label">Menu</span>
+        <a class="menu-close" data-action="toc" data-target="toc"></a>
+    </div>
+    <div id="toc" class="menu-list">
+        
+    </div>
+</div>
+
+
+				<div class="overlay"></div>
+			</div>
+		</section>
+
+    <script>
+      (function(c,f){asyncLoader=function(i,h){i.foreach(function(k,j){e(j,d(j),h)});if(typeof h.callback=="function"){var g=setInterval(function(){if(f.readyState==="complete"){clearInterval(g);h.callback()}},10)}};var d=function(g){var h=g.split(".");return h[h.length-1]},e=function(h,i,g){switch(i){case"js":a(h,g);break;case"css":b(h);break;default:break}},a=function(i,h){var g=document.createElement("script");g.type="text/javascript";g.async=true;g.src=i;document.getElementsByTagName("head")[0].appendChild(g)},b=function(g){var h=document.createElement("link");h.type="text/css";h.rel="stylesheet";h.href=g;document.getElementsByTagName("head")[0].appendChild(h)};Array.prototype.foreach=function(h){for(var g=0;g<this.length;g++){h(g,this[g])}}})(this,document);
+
+      asyncLoader([
+				"/js/dependencies.js",
+				"/css/dependencies.css"
+      ],{
+        callback:function(){
+					asyncLoader([
+						"/css/style.css",
+						"/js/script.js"
+					], {
+						callback: function() {
+							$('body').fadeIn( 800 );
+						}
+					});
+        }
+      });
+
+</script>
+
+
+
+</body>
+</html>
+

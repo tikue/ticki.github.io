@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on Ticki&#39;s blog</title>
+    <link>http://ticki.github.io/tags/linux/</link>
+    <description>Recent content in Linux on Ticki&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 30 May 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://ticki.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Setting up ArchLinux on a Lenovo Yoga</title>
+      <link>http://ticki.github.io/blog/setting-up-archlinux-on-a-lenovo-yoga/</link>
+      <pubDate>Tue, 30 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/blog/setting-up-archlinux-on-a-lenovo-yoga/</guid>
+      <description>So, I recently broke my computer by spilling tea unto it, so I needed a new computer, and found the Lenovo Yoga 710, which is pretty lightweight and yet strong. As the resources on installing Linux (ArchLinux specifically) on this machine are barely existing, I thought I had to make this post, explaining various critical thing about the installation.
+Bear in mind that all this is made from notes and what I recall from when I installed it (yesterday), so there might be minor inaccuracies.</description>
+    </item>
+    
+  </channel>
+</rss>
