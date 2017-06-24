@@ -59,7 +59,7 @@
         },
         "datePublished": "2017-05-30",
         "description": "A tutorial-ish bunch of notes on Linux on Lenovo Yoga.",
-        "wordCount": 1854
+        "wordCount": 1890
     }
 
     </script>
@@ -118,7 +118,7 @@
 
   			<header class="post-header">
   				<span class="post-meta">
-						<span class="post-date">30 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">9 min.</span> (<span class="word-count">1854</span> words)</span></span>
+						<span class="post-date">30 May 2017</span> <span class="reading-time">| <span class="estimated-reading-time">9 min.</span> (<span class="word-count">1890</span> words)</span></span>
   				</span>
   				<div class="clear"></div>
   				<h1 class="post-title">Setting up ArchLinux on a Lenovo Yoga</h1>
@@ -527,6 +527,19 @@ ufw enable
 <p>And it should work. Refer to the UFW docs to information on adding rules etc.
 if necessary.</p>
 
+<h1 id="autosnapshotting">Auto-snapshotting</h1>
+
+<p>Set up <code>snapper</code> like this:</p>
+
+<pre><code>pacman -S snapper
+snapper -c root create-config /
+</code></pre>
+
+<p>Then set up the systemd timer to take snapshots hourly (not necessary if you have a cron deamon):</p>
+
+<pre><code>sudo systemctl start snapper-timeline.timer
+</code></pre>
+
 <h1 id="cleaning-up">Cleaning up</h1>
 
 <p>You can uninstall <code>efibootmgr</code> and <code>wifi-menu</code> if you want to.</p>
@@ -623,6 +636,16 @@ absolutely amazing resource, for not only ArchLinux but Linux in general.</p>
 			</div>
 
 			<nav class="post-nav">
+				
+					<a class="post-nav-item post-nav-next" href="http://ticki.github.io/blog/the-case-for-non-binary-genders/">
+						<section class="post-nav-teaser">
+							<span class="post-nav-icon"><i class="icon-arrow-left"></i></span>
+							<span class="post-nav-info">
+								<h4 class="post-nav-title">The Case for Non-Binary Genders</h4>
+								<p class="post-nav-excerpt">In this post, I provide an overview of the scientific and philosophical side of the debate.&hellip;</p>
+							</span>
+						</section>
+					</a>
 				
 				
 					<a class="post-nav-item post-nav-prev" href="http://ticki.github.io/blog/an-atomic-hash-table/">
