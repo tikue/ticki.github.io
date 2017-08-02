@@ -13,10 +13,10 @@
     
     <item>
       <title>Fearless concurrency with hazard pointers</title>
-      <link>http://ticki.github.io/blog/an-efficient-hazard-based-concurrent-memory-reclamation-system/</link>
+      <link>http://ticki.github.io/blog/fearless-concurrency-with-hazard-pointers/</link>
       <pubDate>Wed, 02 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>http://ticki.github.io/blog/an-efficient-hazard-based-concurrent-memory-reclamation-system/</guid>
+      <guid>http://ticki.github.io/blog/fearless-concurrency-with-hazard-pointers/</guid>
       <description>For those who don&#39;t know, I am working on a file system, TFS, which employs various concurrent structures to improve performance. Whenever you do this kind of advanced concurrency, you will meet the ABA problem, roughly describable as &amp;quot;what if another thread runs the destructor on a value you are reading?&amp;quot;
 What this problem is, and how can it be solved, is what this blog post will investigate. It presents a form of an optimized form of hazard-pointers as well as an implementation thereof.</description>
     </item>

@@ -3,7 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://ticki.github.io/blog/an-efficient-hazard-based-concurrent-memory-reclamation-system/</loc>
+    <loc>http://ticki.github.io/blog/fearless-concurrency-with-hazard-pointers/</loc>
     <lastmod>2017-08-02T00:00:00+00:00</lastmod>
   </url>
   
