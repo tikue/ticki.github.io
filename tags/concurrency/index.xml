@@ -6,10 +6,20 @@
     <description>Recent content in Concurrency on Ticki&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 13 May 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 02 Aug 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://ticki.github.io/tags/concurrency/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Fearless concurrency with hazard pointers</title>
+      <link>http://ticki.github.io/blog/an-efficient-hazard-based-concurrent-memory-reclamation-system/</link>
+      <pubDate>Wed, 02 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/blog/an-efficient-hazard-based-concurrent-memory-reclamation-system/</guid>
+      <description>For those who don&#39;t know, I am working on a file system, TFS, which employs various concurrent structures to improve performance. Whenever you do this kind of advanced concurrency, you will meet the ABA problem, roughly describable as &amp;quot;what if another thread runs the destructor on a value you are reading?&amp;quot;
+What this problem is, and how can it be solved, is what this blog post will investigate. It presents a form of an optimized form of hazard-pointers as well as an implementation thereof.</description>
+    </item>
     
     <item>
       <title>An Atomic Hash Table</title>

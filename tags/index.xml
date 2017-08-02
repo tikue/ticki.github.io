@@ -95,7 +95,7 @@
     <item>
       <title>Concurrency</title>
       <link>http://ticki.github.io/tags/concurrency/</link>
-      <pubDate>Sat, 13 May 2017 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 02 Aug 2017 00:00:00 +0000</pubDate>
       
       <guid>http://ticki.github.io/tags/concurrency/</guid>
       <description></description>
@@ -255,6 +255,15 @@
     </item>
     
     <item>
+      <title>Hazard Pointers</title>
+      <link>http://ticki.github.io/tags/hazard-pointers/</link>
+      <pubDate>Wed, 02 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/hazard-pointers/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Introduction</title>
       <link>http://ticki.github.io/tags/introduction/</link>
       <pubDate>Wed, 14 Sep 2016 22:50:08 +0200</pubDate>
@@ -383,7 +392,7 @@
     <item>
       <title>Programming</title>
       <link>http://ticki.github.io/tags/programming/</link>
-      <pubDate>Sat, 13 May 2017 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 02 Aug 2017 00:00:00 +0000</pubDate>
       
       <guid>http://ticki.github.io/tags/programming/</guid>
       <description></description>
@@ -467,6 +476,15 @@
       <pubDate>Sat, 24 Sep 2016 00:00:00 +0000</pubDate>
       
       <guid>http://ticki.github.io/tags/static-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Systems</title>
+      <link>http://ticki.github.io/tags/systems/</link>
+      <pubDate>Wed, 02 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ticki.github.io/tags/systems/</guid>
       <description></description>
     </item>
     
