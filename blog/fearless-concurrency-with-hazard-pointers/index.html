@@ -235,17 +235,17 @@ impl&lt;T&gt; Stm&lt;T&gt; {
 
 <h1 id="concurrent-memory-reclamation">Concurrent memory reclamation</h1>
 
-<p>&quot;Concurrent memory reclamation systems&quot; names the class of systems which solves this problem. Often, they manage a queue of garbage objects, and a system that determines what garbage can be destroyed. Since this is a problem, which is pretty core to concurrent program, there are several of such concurrent memory reclamation systems.</p>
+<p>&quot;Concurrent memory reclamation systems&quot; names the class of systems which solves this problem. Often, they manage a queue of garbage objects, and a system that determines what garbage can be destroyed. Since this problem is pretty core to concurrent programming, there are several of such concurrent memory reclamation systems.</p>
 
 <p>In some languages (e.g. Java), they are implemented into the language itself, in the form of garbage collectors.</p>
 
 <p>This blog post describes a runtime-less (in the sense that it doesn't require the lagnuage to implement a runtime) solution.</p>
 
-<h1 id="deffered-destruction">Deffered destruction</h1>
+<h1 id="deferred-destruction">Deferred destruction</h1>
 
-<p>The first mechanism, we will explore, is <em>deffered destruction</em>. The idea is that we have a queue of garbage to be destroyed, which is shared among all threads. The queue is a simple MPSC channel, where the sender is shared among all the threads and the receiver is protected behind a mutex. Various messages (hereunder adding garbage to be destroyed) can then be passed to the garbage collector.</p>
+<p>The first mechanism, we will explore, is <em>deferred destruction</em>. The idea is that we have a queue of garbage to be destroyed, which is shared among all threads. The queue is a simple MPSC channel, where the sender is shared among all the threads and the receiver is protected behind a mutex. Various messages (hereunder adding garbage to be destroyed) can then be passed to the garbage collector.</p>
 
-<p>The idea behind deffering destructors is that we get to choose under what conditions an object can be destroyed. If an object is being read, the garbage collector will skip it until next collection cycle.</p>
+<p>The idea behind deferred destructors is that we get to choose under what conditions an object can be destroyed. If an object is being read, the garbage collector will skip it until next collection cycle.</p>
 
 <p>The garbage collection is simply run randomly according to some probability distribution (to avoid more communication than necessary). If another thread is GC-ing, we skip the cycle.</p>
 
@@ -368,7 +368,7 @@ impl&lt;T&gt; Stm&lt;T&gt; {
 
 <p>Epoch-based reclamation or EBR is another popular way of doing concurrent memory reclamation.</p>
 
-<p>The architectural difference is in how destruction is deffered. EBR blocks all the objects from the epoch from being collected, whereas hazard pointers is more fine grained in its behavior. It does it on an object-to-object basis.</p>
+<p>The architectural difference is in how destruction is deferred. EBR blocks all the objects from the epoch from being collected, whereas hazard pointers is more fine grained in its behavior. It does it on an object-to-object basis.</p>
 
 <p>This approach is necessarily slower than EBR as described in <a href="https://aturon.github.io/blog/2015/08/27/epoch/">aturon's</a> blog post. There is however a serious problem with epochs in some cases: Memory blowup, which happens when several threads constantly reads and writes, blocking garbage collection indefinitely and thus causing very high memory usage, if not out-of-memory. This issue isn't in hazards (like this design).</p>
 
